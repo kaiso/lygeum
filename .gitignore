@@ -1,0 +1,14 @@
+/.gradle/
+.settings/
+.project
+lygeum-ui/node_modules/
+lygeum-ui/dist/
+.classpath
+build/
+bin/
+.gradle/
+.vscode/
+docs/sources/node_modules/
+ui/node_modules/
+ui/dist/
+pers/data

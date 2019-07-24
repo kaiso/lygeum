@@ -1,0 +1,172 @@
+/**
+   * Copyright 2018 Kais OMRI [kais.omri.int@gmail.com]
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *     http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+
+/* 
+* select 
+*/
+#properties_application_select {
+    caret-color: whitesmoke !important;
+}
+.toolbar-select-content .card > div{
+  background-color: var(--input-primary-background-color) !important;
+}
+
+/*
+* button
+*/
+.aps-primary-btn {
+    min-width: 113px;
+    display: flex;
+    justify-content: center;
+    background-color: var(--input-primary-background-color) !important;
+    border-radius: var(--input-primary-border-radius);
+    border-color: var(--input-primary-border-color) !important;
+    border: var(--input-primary-border);
+    color: var(--input-primary-color) !important;
+    cursor: pointer;
+    height: 30px;
+  }
+
+  .aps-buttons-container-line {
+    display:flex;
+    justify-content:center;
+    margin-top:50px
+  }
+
+/*
+* dialog
+*/
+.global-dialog-content {
+  width: 100%;
+  height: 150px;
+  position: absolute;
+  top: 0px;
+  background-color: #424242;
+}
+
+.aps-dialog-actions {
+    width:100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 20px;
+    align-self: flex-end;
+    margin-bottom: 0 !important;
+  }
+
+  /*
+  * input
+  */
+
+  .aps-input-container {
+    width: 20%;
+    height: 30px;
+    margin-left: 10px;
+  }
+  
+  .aps-input-container .input-group {
+    padding: 0%;
+    height: 100%;
+  }
+  
+  span.aps-input-container > div > div.input-group__details, ::before, ::after {
+    display: none ;
+  }
+
+  .aps-simple-input {
+    width : 100%;
+    background-color: inherit;
+    height: 33px;
+  }
+  
+  input.aps-simple-input:disabled {
+    color: white;
+  }
+  
+  .aps-input-active {
+    background-color: var(--input-primary-background-color);
+    border-radius: var(--input-primary-border-radius);
+    border-color: var(--input-primary-border-color) !important;
+    border: var(--input-primary-border);
+    color: var(--input-primary-color) !important;
+    padding-left: 10px !important;
+    padding: 0px;
+  }
+
+  /*
+  * table
+  */
+  .aps-table-container {
+    margin-top: 10px;
+  }
+  
+  .aps-table-container table{
+    border-collapse: separate;
+    border-spacing: 2;
+    width: 100%;
+    color: white;
+    text-decoration: black;
+  }
+  
+  .aps-table-container table td {
+    background-color: var(--table-bg-primary);
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+/*
+* badge
+*/
+  .aps-badge-small > span {
+    top: -5px;
+    right: -7px;
+    height: 15px;
+    width: 15px;
+  }
+
+  /*
+  * stepper
+  */
+  .aps-stepper-step span.stepper__step__step.primary {
+    background-color: var(--input-primary-background-color) !important;
+  }
+
+
+  /*
+  * form
+  */
+
+  .aps-form-label {
+    max-width: 200px;
+    display: block;
+    text-align: left;
+  }
+  
+  .aps-form-line {
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+    margin: 5px;
+  }
+
+  .aps-form-container {
+    width: 60vw;
+    height: 90vh;
+    background-color: var(--color-grey-secondary);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+  }

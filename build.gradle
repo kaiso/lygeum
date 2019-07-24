@@ -1,0 +1,114 @@
+buildscript {
+	ext {
+		springBootVersion = '2.1.5.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+
+allprojects {
+    group = 'io.github.kaiso.lygeum'
+    version = '1.0.0-SNAPSHOT'
+}
+
+subprojects {
+	 if(it.name != 'ui') {
+	  	ext {
+		  springBootVersion = '2.1.5.RELEASE'
+	    }
+	    repositories {
+     	   mavenCentral()
+    	}
+    	
+    	apply plugin : 'java'
+	    apply plugin : 'eclipse'
+	    apply plugin : 'org.springframework.boot'
+	    apply plugin : 'io.spring.dependency-management'
+	    
+	    sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        
+        bootJar.enabled = false
+        jar.enabled = true
+        
+		ext['liquibase.version'] = '3.6.2'
+		ext['jaxb.version'] = '2.3.1'
+		ext['javax.el.version'] = '3.0.0'
+		
+		configurations.all {
+		  exclude group: 'junit'
+		  exclude group: 'org.codehaus.jackson'
+		}
+    	
+	    dependencies {
+	      implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
+	      implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0'
+	      implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-properties:2.9.0'
+	      implementation 'org.springframework.boot:spring-boot-starter-web'
+	      implementation  group: 'org.springframework', name: 'spring-tx'
+	      implementation 'com.h2database:h2:1.4.197'
+	      implementation  group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+	      implementation  group: 'org.hibernate', name: 'hibernate-core'
+	      implementation  group: 'org.springframework.data', name: 'spring-data-commons'
+	      implementation  group: 'org.springframework.data', name: 'spring-data-jpa'
+	      implementation  group: 'javax.xml.bind', name: 'jaxb-api', version: "${project.'jaxb.version'}"
+	      implementation  group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: "${project.'jaxb.version'}"
+	      implementation  group: 'javax.enterprise', name: 'cdi-api', version: '2.0'
+	      implementation  group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+	      implementation  group: 'javax.el', name: 'javax.el-api', version: "${project.'javax.el.version'}"
+	      implementation  group: 'org.glassfish', name: 'javax.el', version: "${project.'javax.el.version'}"
+	      
+	      //Test dependencies
+          testImplementation 'org.jmockit:jmockit:1.47'    
+	      testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
+          testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+          testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.3.2'
+          testRuntimeOnly  group: 'org.springframework', name: 'spring-aspects'
+          testImplementation('org.springframework.boot:spring-boot-starter-test') {
+             exclude group: 'org.mockito', module: 'mockito-core'
+             exclude group: 'org.junit', module: 'junit'
+          }    
+          testImplementation group: 'org.springframework.security', name: 'spring-security-test'
+        }
+        
+	    test.doFirst {
+	       def jmockitPath = "${classpath.find { it.name.contains("jmockit") }.absolutePath}"
+	       println "jmockit path ${jmockitPath}" 
+	       jvmArgs "-javaagent:${jmockitPath}"
+           useJUnitPlatform()
+        }
+      }
+}
+
+project(':loader') {
+	dependencies {
+	  compile project(':pers')
+	  compile project(':api')
+	  compile project(':core')
+	  compile project(':sec')
+	}
+}
+
+project(':api') {
+	dependencies {
+	  compile project(':core')
+	}
+}
+
+project(':sec') {
+	dependencies {
+	  compile project(':core')
+	}
+}
+
+project(':pers') {
+	dependencies {
+	  compile project(':core')
+	}
+}
+

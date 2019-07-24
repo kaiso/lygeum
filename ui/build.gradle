@@ -1,0 +1,43 @@
+buildscript {
+    project.ext.'nodeDir' = "${this.properties['projectDir']}/.node"
+    ext.execPath = "$System.env.PATH" + System.getProperty("path.separator") + "/usr/local/bin/"
+}
+
+
+if (project.hasProperty('front.skip')) {
+   println 'project tasks are skipped'
+   project.tasks.all { task -> task.enabled = false }
+}
+        
+apply plugin: 'base'
+
+clean.doFirst {
+  println 'cleaning lygeum-ui project'
+}
+
+task removeDist(type:Delete) {
+  delete 'dist'
+}
+
+clean.dependsOn removeDist
+
+task installPackages(type:Exec) {
+   doFirst {
+	   println 'installing nodejs packages...'
+	   println "node path: ${this.properties['nodeDir']}"
+   }
+   environment "PATH", execPath
+   commandLine 'sh', '-c', 'npm install'
+}
+
+
+task buildPackage(type:Exec) {
+   doFirst {
+	   println 'building the ui app...'
+	   println "node path: ${this.properties['nodeDir']}"
+   }
+   environment "PATH", execPath
+   commandLine 'sh', '-c', 'npm run build'
+}
+buildPackage.dependsOn installPackages
+build.dependsOn buildPackage

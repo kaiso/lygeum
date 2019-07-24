@@ -1,0 +1,37 @@
+bootJar.enabled = true
+jar.enabled = false
+
+configurations {
+    implementation.exclude module: 'logback-classic'
+    implementation.exclude module: 'log4j-to-slf4j'
+} 
+
+dependencies {
+ implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.0'
+}
+
+
+bootJar {
+  manifest {
+		attributes(
+		['Specification-Title': 'Lygeum server',
+		'Specification-Version': version,
+		'Implementation-Title': 'APOPHIS',
+		'Implementation-Version': version,
+		'Implementation-Vendor' :'Kais OMRI [kais.omri.int@gmail.com]',
+		'Implementation-Timestamp': new Date().format('yyyy-MM-dd HH:mm:ssZ')])
+      }
+}
+
+task includeUI(type: Copy) {
+    doFirst {
+      println 'including ui views'
+    }
+	from '../ui/dist'
+	into 'build/resources/main/web-content'
+}
+
+includeUI.dependsOn(":ui:build")
+processResources.dependsOn includeUI
+
+
