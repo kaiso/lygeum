@@ -14,16 +14,40 @@
    * limitations under the License.
    */
 
-import Vue from 'vue'
-import Vuex from 'vuex'
-import dialog from './modules/dialog'
-import notification from './modules/notification'
+const state = {
+  open: false,
+  message: '',
+  status: ''
+}
 
-Vue.use(Vuex)
-
-export default new Vuex.Store({
-  modules: {
-    dialog,
-    notification
+const actions = {
+  open({ commit, state }, payload) {
+    if (state.open === true) {
+      return
+    }
+    commit('open', { payload })
+  },
+  close({ commit, state }) {
+    commit('close')
   }
-})
+}
+
+const mutations = {
+  open(state, { payload }) {
+    state.open = true
+    state.message = payload.message
+    state.status = payload.status
+  },
+  close(state) {
+    state.open = false
+    state.message = null
+    state.status = null
+  }
+}
+
+export default {
+  namespaced: true,
+  state,
+  actions,
+  mutations
+}

@@ -1,5 +1,7 @@
 package io.github.kaiso.lygeum.api.resources;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -9,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class PropertyResource {
 
 	private String code;
+	@NotBlank
 	private String key;
 	private String description;
 	private String value;

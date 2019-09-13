@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -32,7 +33,6 @@ import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
 import io.github.kaiso.lygeum.core.entities.Client;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
-import io.github.kaiso.lygeum.core.entities.PropertyValueEntity;
 import io.github.kaiso.lygeum.core.entities.User;
 import io.github.kaiso.lygeum.core.spi.StorageService;
 import io.github.kaiso.lygeum.persistence.repositories.ApplicationRepository;
@@ -212,10 +212,23 @@ public class StorageServiceImpl implements StorageService {
 		ApplicationEntity app = applicationRepository.findByCode(application).orElseThrow(
 				() -> new IllegalArgumentException("application can not be found with code " + application));
 
-		List<PropertyValueEntity> existing = propertyValueRepository
-				.findByEnvironmentCodeAndPropertyApplicationCode(environment, application).collect(Collectors.toList());
-
-		propertyValueRepository.deleteInBatch(existing);
+		list.addAll(propertyRepository.findByEnvironmentAndApplicationNamed(environment, application).map(p -> {
+			if (props.containsKey(p.getKey())) {
+				p.getValues().forEach(v -> {
+					if (v.getEnvironment().equals(env)) {
+						v.setValue(props.get(p.getKey()));
+					}
+				});
+				props.remove(p.getKey());
+			} else {
+				p.getValues().forEach(v -> {
+					if (v.getEnvironment().equals(env)) {
+						v.setValue(null);
+					}
+				});
+			}
+			return p;
+		}).collect(Collectors.toList()));
 
 		props.forEach((k, v) -> list.add(
 				PropertyEntity.builder().withKey(k).withValue(v).withApplication(app).withEnvironment(env).build()));
@@ -257,6 +270,13 @@ public class StorageServiceImpl implements StorageService {
 	public Optional<User> findUserByUsername(String username) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void deleteProperty(String code) {
+		propertyRepository.delete(propertyRepository.findByCode(code)
+				.orElseThrow(() -> new EntityNotFoundException("Can not find property with code " + code)));
+
 	}
 
 }

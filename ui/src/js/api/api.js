@@ -16,19 +16,6 @@
 
 import client from './restClient'
 
-export function getProperties (application) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      let appProperties = []
-      appProperties.push({ 'key': 'app.locale', 'value': 'US-en' })
-      appProperties.push({ 'key': 'app.author', 'value': 'Kais OMRI' })
-      appProperties.push({ 'key': 'app.region', 'value': 'West Europe' })
-      appProperties.push({ 'key': 'app.isActive', 'value': 'true' })
-      resolve(appProperties)
-    }, 1000)
-  })
-}
-
 export function getAllEnvs (context) {
   return client.call(
     context,
@@ -55,17 +42,114 @@ export function saveEnv (context, env) {
   )
 }
 
-export function getAllApps () {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      let envs = []
-      envs.push({ 'code': 'APP01', 'name': 'Relmongo' })
-      envs.push({ 'code': 'APP02', 'name': 'Hystrix' })
-      envs.push({ 'code': 'APP03', 'name': 'Docker' })
-      envs.push({ 'code': 'APP04', 'name': 'Jenkins' })
-      resolve(envs)
-    }, 1000)
-  })
+export function deleteEnv (context, env) {
+  return client.call(
+    context,
+    'delete',
+    '/api/environments/' + env.code
+  )
+}
+
+export function getAllApps (context) {
+  return client.call(
+    context,
+    'get',
+    '/api/applications'
+  )
+}
+
+export function createApp (context, app) {
+  return client.call(
+    context,
+    'post',
+    '/api/applications',
+    app
+  )
+}
+
+export function saveApp (context, app) {
+  return client.call(
+    context,
+    'put',
+    '/api/applications/' + app.code,
+    app
+  )
+}
+
+export function deleteApp (context, app) {
+  return client.call(
+    context,
+    'delete',
+    '/api/applications/' + app.code
+  )
+}
+
+export function getProperties (context, environment, application) {
+  return client.call(
+    context,
+    'get',
+    '/api/properties',
+    {},
+    [],
+    {
+      env: environment.code,
+      app: application.code
+    }
+  )
+}
+
+export function saveProperties (context, environment, application, properties) {
+  return client.call(
+    context,
+    'post',
+    '/api/properties',
+    properties,
+    [],
+    {
+      env: environment.code,
+      app: application.code
+    }
+  )
+}
+
+export function uploadProperties (context, environment, application, file) {
+  var data = new FormData()
+  data.append('file', file)
+  return client.call(
+    context,
+    'post',
+    '/api/properties/upload',
+    data,
+    { 'Content-Type': 'multipart/form-data' },
+    {
+      env: environment.code,
+      app: application.code
+    }
+  )
+}
+
+export function downloadProperties (context, environment, application, layout) {
+  return client.call(
+    context,
+    'get',
+    '/api/properties/download',
+    {},
+    {},
+    {
+      env: environment.code,
+      app: application.code,
+      layout: layout
+    },
+    'blob'
+  )
+}
+
+export function deleteProperty (context, prop) {
+  return client.call(
+    context,
+    'delete',
+    '/api/properties/' + prop.code
+  )
 }
 
 export function getUsers (pattern) {

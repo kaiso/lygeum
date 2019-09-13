@@ -21,7 +21,7 @@ package io.github.kaiso.lygeum.core.properties;
  */
 public enum PropertiesMediaType {
 
-	YAML("text/x-yaml"), PROPERTIES("text/x-java-properties");
+	YAML("text/x-yaml"), PROPERTIES("text/x-java-properties"), UNKNOWN("unknown");
 
 	private String value;
 
@@ -39,7 +39,7 @@ public enum PropertiesMediaType {
 				return type;
 			}
 		}
-		return null;
+		return UNKNOWN;
 	}
 
 }

@@ -61,8 +61,8 @@
                   v-model="propItem.name"
                   type="text"
                   @blur="envChanged(index)"
-                  v-bind:class="{ 'aps-input-active': propItem.editing , 'aps-simple-input': true }"
-                  :disabled="propItem.editing === undefined ? 'disabled' : false"
+                  v-bind:class="[{ 'aps-input-active': propItem.editing , 'aps-simple-input': true }]"
+                  :disabled="(propItem.editing === undefined || propItem.editing === false) ? true : false"
                 />
               </td>
               <td class="actions_cell">
@@ -113,10 +113,20 @@ export default {
       switch (caller) {
         case this.$router.currentRoute.name + '/' + DELETE_ENV:
           if (this.$store.state.dialog.action === CONST_ACTIONS.CONFIRM) {
-            let i = this.envs.indexOf(this.$store.state.dialog.target);
-            if (i !== -1) {
-              this.envs.splice(i, 1);
-            }
+            let context = this
+            let target = this.$store.state.dialog.target
+            api.deleteEnv(this, target).then(function (result) {
+              context.$store.dispatch('notification/open', {
+                message: context.$i18n.t('envs.notifications.delete.success', { target: target.name }),
+                status: 'success'
+              })
+              context.loadEnvs()
+            }).catch(function (error) {
+              context.$store.dispatch('notification/open', {
+                message: context.$i18n.t('envs.notifications.delete.error', { target: target.name, error: error }),
+                status: 'error'
+              })
+            })
           }
           consumed = true;
           break;
@@ -135,18 +145,25 @@ export default {
   },
   methods: {
     loadEnvs() {
-      this.loadingEnvs = true;
-      this.envs = [];
-      this.filteredEnvs = [];
+      this.loadingEnvs = true
+      this.envs = []
+      let context = this
+      this.filteredEnvs = []
       api.getAllEnvs(this).then(result => {
         if (result.data != null) {
           result.data.forEach(element => {
-            tableUtils.enhanceEditable(element);
-            this.envs.push(element);
-          });
+            tableUtils.enhanceEditable(element)
+            this.envs.push(element)
+          })
         }
-        this.loadingEnvs = false;
-      });
+      }).catch(error => {
+        context.$store.dispatch('notification/open', {
+          message: context.$i18n.t('envs.notifications.load.error', { error: error }),
+          status: 'error'
+        })
+      }).finally(() => {
+        this.loadingEnvs = false
+      })
     },
     hasUnsavedChanges() {
       let res = false;
@@ -186,7 +203,7 @@ export default {
     },
     deleteEnv(item) {
       this.$store.dispatch('dialog/open', {
-        message: 'Are you sure to remove the environment',
+        message: this.$i18n.t('generic.confirm_delete', { target: item.name }),
         caller: this.$router.currentRoute.name + '/' + DELETE_ENV,
         target: item
       });
@@ -198,23 +215,26 @@ export default {
       this.envs
         .filter(env => env.hasChanges === true)
         .forEach(val => {
-          console.log(JSON.stringify(val));
           if (val.code) {
-            console.log('updating env');
             promises.push(api.saveEnv(this, val));
           } else {
-            console.log('creating env');
             promises.push(api.createEnv(this, val));
           }
         });
       await Promise.all(promises)
         .then(function (result) {
-          console.log('reloading evns')
-          context.loadEnvs();
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('envs.notifications.save.success'),
+            status: 'success'
+          });
+          context.loadEnvs()
         })
         .catch(function (error) {
-          console.log('problem saving envs ', error);
-          context.loadingEnvs = false;
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('envs.notifications.save.error', { error: error }),
+            status: 'error'
+          })
+          context.loadingEnvs = false
         });
     },
     addEnv() {

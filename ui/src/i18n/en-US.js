@@ -15,7 +15,8 @@
    */
 const messages = {
   generic: {
-    nodata: 'No data available'
+    nodata: 'No data available',
+    confirm_delete: 'Are you sure to delete {target} ?'
   },
   wizard: {
     header: 'Lygeum first run',
@@ -46,6 +47,7 @@ const messages = {
   actions: {
     ok: 'Ok',
     confirm: 'Confirm',
+    close: 'Close',
     cancel: 'Cancel',
     continue: 'Continue',
     login: {
@@ -64,6 +66,19 @@ const messages = {
     actions: {
       add_tooltip: 'Add a new environment',
       save_tooltip: 'Save this configuration'
+    },
+    notifications: {
+      save: {
+        success: 'Environments have been successfully saved',
+        error: 'Failed to save environments, cause: [<i>{error}</i>]'
+      },
+      delete: {
+        success: 'Environment <b>{target}</b> has been deleted successfully',
+        error: 'Failed to delete environment <b>{target}</b>, cause: [<i>{error}</i>]'
+      },
+      load: {
+        error: 'Failed to load environments, cause: [<i>{error}</i>]'
+      }
     }
   },
   props: {
@@ -74,10 +89,40 @@ const messages = {
       add_tooltip: 'Add a new property',
       save_tooltip: 'Save this configuration',
       loadall_tooltip: 'Load all'
+    },
+    notifications: {
+      save: {
+        success: 'Properties have been successfully saved',
+        error: 'Failed to save properties, cause: [<i>{error}</i>]'
+      },
+      delete: {
+        success: 'Property <b>{target}</b> has been deleted successfully',
+        error: 'Failed to delete property <b>{target}</b>, cause: [<i>{error}</i>]'
+      },
+      load: {
+        error: 'Failed to load properties, cause: [<i>{error}</i>]'
+      }
     }
   },
   apps: {
-    application: 'Application | Applications'
+    application: 'Application | Applications',
+    actions: {
+      add_tooltip: 'Add a new application',
+      save_tooltip: 'Save this configuration'
+    },
+    notifications: {
+      save: {
+        success: 'Applications have been successfully saved',
+        error: 'Failed to save applications, cause: [<i>{error}</i>]'
+      },
+      delete: {
+        success: 'Application <b>{target}</b> has been deleted successfully',
+        error: 'Failed to delete application <b>{target}</b>, cause: [<i>{error}</i>]'
+      },
+      load: {
+        error: 'Failed to load applications, cause: [<i>{error}</i>]'
+      }
+    }
   },
   file: {
     choose: 'Choose file to upload',

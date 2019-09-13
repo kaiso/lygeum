@@ -2,8 +2,6 @@ package io.github.kaiso.lygeum.api;
 
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,10 +40,7 @@ public class EnvironmentsController extends LygeumRestController {
 		AuthrorizationManager.preAuthorize(null, environment.getName(), AuthorizationAction.UPDATE);
 
 		environmentsManager.update(env);
-        
-		if(true) {
-			throw new RuntimeException();
-		}
+
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Environment successfully updated");
 	}
 

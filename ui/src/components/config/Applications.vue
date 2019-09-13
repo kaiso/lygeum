@@ -114,10 +114,20 @@ export default {
       switch (caller) {
         case this.$router.currentRoute.name + '/' + DELETE_APP:
           if (this.$store.state.dialog.action === CONST_ACTIONS.CONFIRM) {
-            let i = this.apps.indexOf(this.$store.state.dialog.target)
-            if (i !== -1) {
-              this.apps.splice(i, 1)
-            }
+            let context = this
+            let target = this.$store.state.dialog.target
+            api.deleteApp(this, target).then(function (result) {
+              context.$store.dispatch('notification/open', {
+                message: context.$i18n.t('apps.notifications.delete.success', { target: target.name }),
+                status: 'success'
+              })
+              context.loadApps()
+            }).catch(function (error) {
+              context.$store.dispatch('notification/open', {
+                message: context.$i18n.t('apps.notifications.delete.error', { target: target.name, error: error }),
+                status: 'error'
+              })
+            })
           }
           consumed = true
           break
@@ -132,20 +142,30 @@ export default {
     }
   },
   mounted: function () {
-    this.loadingApps = true
-    this.apps = []
-    this.filteredApps = []
-    api.getAllApps().then((result) => {
-      if (result != null) {
-        result.forEach(element => {
-          tableUtils.enhanceEditable(element)
-          this.apps.push(element)
-        })
-      }
-      this.loadingApps = false
-    })
+    this.loadApps()
   },
   methods: {
+    loadApps() {
+      this.loadingApps = true
+      this.apps = []
+      let context = this
+      this.filteredApps = []
+      api.getAllApps(this).then(result => {
+        if (result.data != null) {
+          result.data.forEach(element => {
+            tableUtils.enhanceEditable(element)
+            this.apps.push(element)
+          })
+        }
+        this.loadingApps = false
+      }).catch(error => {
+        context.$store.dispatch('notification/open', {
+          message: context.$i18n.t('apps.notifications.load.error', { error: error }),
+          status: 'error'
+        })
+        this.loadingApps = false
+      });
+    },
     hasUnsavedChanges() {
       let res = false
       this.apps.some(element => {
@@ -180,13 +200,39 @@ export default {
     },
     deleteApp(item) {
       this.$store.dispatch('dialog/open', {
-        message: 'Are you sure to remove the application',
+        message: this.$i18n.t('generic.confirm_delete', { target: item.name }),
         caller: this.$router.currentRoute.name + '/' + DELETE_APP,
         target: item
       })
     },
-    saveApps() {
-      console.log('save apps')
+    async saveApps() {
+      this.loadingApps = true;
+      let promises = [];
+      let context = this;
+      this.apps
+        .filter(env => env.hasChanges === true)
+        .forEach(val => {
+          if (val.code) {
+            promises.push(api.saveApp(this, val))
+          } else {
+            promises.push(api.createApp(this, val))
+          }
+        })
+      await Promise.all(promises)
+        .then(function (result) {
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('apps.notifications.save.success'),
+            status: 'success'
+          });
+          context.loadApps()
+        })
+        .catch(function (error) {
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('apps.notifications.save.error', { error: error }),
+            status: 'error'
+          })
+          context.loadingApps = false
+        });
     },
     addApp() {
       this.appFilter = ''

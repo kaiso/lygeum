@@ -75,4 +75,9 @@ public class PropertiesManagerImpl implements PropertiesManager {
 		storageService.updateProperties(props);
 	}
 
+	@Override
+	public void delete(String code) {
+		storageService.deleteProperty(code);
+	}
+
 }

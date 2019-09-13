@@ -18,7 +18,7 @@ Configuration:
           ref: STDOUT
       -
         name: org.springframework.security
-        level: debug
+        level: error
       -
         name: liquibase
         level: error

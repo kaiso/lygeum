@@ -41,6 +41,15 @@
         </div>
       </v-dialog>
     </div>
+    <v-snackbar
+      v-model="notification"
+      :color="notificationStatus"
+      :multi-line="false"
+      :timeout="5000"
+      :vertical="false">
+      <span v-html="notificationMessage"/>
+      <v-btn dark flat @click="notification = false">{{$t('actions.close')}}</v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -52,6 +61,7 @@ export default {
   data: () => ({
     drawer: true,
     dialog: false,
+    notification: false,
     dialog_action: CONST_ACTIONS.CANCEL
   }),
   props: {
@@ -60,7 +70,10 @@ export default {
   computed: {
     ...mapState({
       open: state => state.dialog.open,
-      message: state => state.dialog.message
+      message: state => state.dialog.message,
+      notificationOpened: state => state.notification.open,
+      notificationMessage: state => state.notification.message,
+      notificationStatus: state => state.notification.status
     })
   },
   watch: {
@@ -75,6 +88,16 @@ export default {
       if (val) {
         this.dialog_action = CONST_ACTIONS.CANCEL
         this.dialog = true
+      }
+    },
+    notificationOpened(val) {
+      if (val) {
+        this.notification = true
+      }
+    },
+    notification(val) {
+      if (!val) {
+        this.$store.dispatch('notification/close')
       }
     }
   },

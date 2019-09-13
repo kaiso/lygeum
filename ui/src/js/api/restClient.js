@@ -15,29 +15,32 @@
    */
 
 export default {
-  call(context, method, uri, data, headers, ...params) {
+  call(context, method, uri, data, headers, params, responseType = 'json') {
     let defaultHeaders = this.getAuthHeader()
     let concreteHeaders = { ...headers, ...defaultHeaders }
+    console.log('data ', data)
     return new Promise(function (resolve, reject) {
       context.$http({
         'method': method,
         'url': uri,
         'headers': concreteHeaders,
         'data': data,
-        'params': params
+        'params': params,
+        'responseType': responseType
       }).then(function (response) {
-        console.log('rest client response', response)
+        console.log('REST Client Response ==> ', response)
         resolve(response)
       }).catch(function (error) {
-        if (error.response) {
-          if (error.response.data.error_description && error.response.data.error_description.startsWith('Invalid access token')) {
-            context.$router.push({ path: '/auth/login' })
-          }
+        if (error.response &&
+          error.response.data.error_description &&
+          error.response.data.error_description.startsWith('Invalid access token')) {
+          context.$router.push({ path: '/auth/login' })
+          resolve('authentication required')
         } else {
           // Something happened in setting up the request that triggered an Error
-          console.log('Error', error.message)
+          console.log('REST Client Error ==>  ', error.message, '\nDetails: ', error.response)
+          reject(error.response ? `status: ${error.response.data.status}, message: ${error.response.data.message}` : error)
         }
-        reject(error)
       })
     })
   },

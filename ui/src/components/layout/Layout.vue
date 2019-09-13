@@ -67,7 +67,7 @@
         <v-toolbar-title style="margin:auto;width:200px">{{title}}</v-toolbar-title>
       </div>
     </v-toolbar>
-    <v-content style="margin-top: 65px;">
+    <v-content>
       <v-container fluid fill-height>
         <v-layout justify-center align-center>
           <slot name="mainContent"></slot>

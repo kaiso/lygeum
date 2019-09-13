@@ -47,4 +47,6 @@ public interface PropertiesManager {
 	 * @param properties
 	 */
 	void updateProperties(List<PropertyEntity> properties);
+
+	void delete(String code);
 }

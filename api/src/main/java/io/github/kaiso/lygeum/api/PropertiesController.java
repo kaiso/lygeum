@@ -11,11 +11,14 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -64,11 +67,22 @@ public class PropertiesController extends LygeumRestController {
 		return ResponseEntity.ok(propertiesManager.findPropertiesByEnvironmentAndApplication(environment, application)
 				.parallelStream().map(PropertyMapper::map).collect(Collectors.toList()));
 	}
+	
+	@RequestMapping(path = "/properties/{code}", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deleteProperty(@PathVariable(required = true, name = "code") String code) {
+		
+		AuthrorizationManager.preAuthorize(null, null, AuthorizationAction.UPDATE);
+
+		propertiesManager.delete(code);
+
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Property successfully deleted");
+	}
+
 
 	@RequestMapping(method = RequestMethod.POST, path = "/properties", produces = "application/json", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> updateProperties(@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application,
-			@RequestBody(required = true) List<PropertyResource> properties) {
+			@RequestBody(required = true) @Valid List<PropertyResource> properties) {
 		AuthrorizationManager.preAuthorize(application, environment, AuthorizationAction.UPDATE);
 		EnvironmentEntity env = environmentsManager.findByCode(environment)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + environment));
@@ -121,11 +135,12 @@ public class PropertiesController extends LygeumRestController {
 
 	@RequestMapping(method = RequestMethod.POST, path = "/properties/upload")
 	public ResponseEntity<String> upload(@RequestParam(name = "env", required = true) String environment,
-			@RequestParam(name = "app", required = true) String application, @RequestBody MultipartFile file) {
+			@RequestParam(name = "app", required = true) String application,
+			@RequestBody MultipartFile file) {
 		AuthrorizationManager.preAuthorize(application, environment, AuthorizationAction.UPDATE);
 		PropertiesMediaType mimeType = PropertiesMediaType.fromValue(file.getContentType());
 
-		if (mimeType == null) {
+		if (PropertiesMediaType.UNKNOWN.equals(mimeType)) {
 			throw new IllegalArgumentException("invalid mime type: " + file.getContentType());
 		}
 

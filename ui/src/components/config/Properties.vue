@@ -19,30 +19,19 @@
     <aps-layout :title="this.$i18n.tc('props.prop',2)">
       <v-layout slot="mainContent" column wrap style="height:100%">
         <v-toolbar dense style="background-color:var(--content-toolbar-bg); height:45px;">
-          <!-- <v-toolbar-title class="aps-toolbar-title">
-        <v-icon right class="aps-toolbar-title">list</v-icon>
-        {{$t('configurations.props')}}
-          </v-toolbar-title>-->
-          <!-- <v-menu transition="scale-transition">
-        <v-toolbar-title slot="activator">
-          <span>Environment: </span>
-          <span>{{selectedEnv}}</span>
-          <v-icon dark>arrow_drop_down</v-icon>
-        </v-toolbar-title>
-        <v-list>
-          <v-list-tile  v-for="item in items" :key="item" @click="selectEnv(item)">
-            <v-list-tile-title class="dropdown_element" v-text="item"></v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-          </v-menu>-->
           <v-toolbar-title>
             <span>{{$tc('envs.env',1)}}</span>
           </v-toolbar-title>
           <span class="aps-input-container">
             <v-select
-              :items="items"
+              :items="envs"
+              item-text="name"
+              :return-object="true"
+              @change="selectEnv"
+              v-model="selectedEnv"
+              style="height: inherit;"
               class="aps-simple-input, aps-input-active"
-              content-class="toolbar-select-content"
+              :menu-props="{contentClass:'toolbar-select-content'}"
             ></v-select>
           </span>
           <v-spacer></v-spacer>
@@ -50,22 +39,24 @@
             <span>{{$tc('apps.application',1)}}:</span>
           </v-toolbar-title>
           <span class="aps-input-container">
-            <v-select
+            <v-autocomplete
               id="properties_application_select"
+              style="height: inherit;"
               class="aps-simple-input, aps-input-active"
-              content-class="toolbar-select-content"
+              :menu-props="{contentClass:'toolbar-select-content'}"
               @change="appChanged"
+              item-text="name"
               :items="apps"
+              :return-object="true"
               :search-input.sync="searchApp"
               v-model="selectedApp"
-              autocomplete
-              cache-items
-            ></v-select>
+              hide-no-data
+            ></v-autocomplete>
           </span>
         </v-toolbar>
         <v-system-bar window class="system-toolbar">
           <v-tooltip bottom>
-            <v-btn icon slot="activator" @click="downloadProps()" style="cursor: pointer;">
+            <v-btn icon slot="activator" @click="openDownloadDialog()" style="cursor: pointer;">
               <v-icon>cloud_download</v-icon>
             </v-btn>
             <span>{{$t('props.actions.download_tooltip')}}</span>
@@ -122,7 +113,7 @@
                   type="text"
                   @blur="propChanged(index, $event)"
                   v-bind:class="{ 'aps-input-active': propItem.editing , 'aps-simple-input': true }"
-                  :disabled="propItem.editing === undefined ? 'disabled' : false"
+                  :disabled="(propItem.editing === undefined || propItem.editing === false)? true : false"
                 />
               </td>
               <td class="regular_cell">
@@ -132,7 +123,7 @@
                   :ref="'name' + index"
                   @blur="propChanged(index, $event)"
                   v-bind:class="{ 'aps-input-active': propItem.editing , 'aps-simple-input': true }"
-                  :disabled="propItem.editing === undefined ? 'disabled' : false"
+                  :disabled="(propItem.editing === undefined || propItem.editing === false)? true : false"
                 />
               </td>
               <td class="actions_cell">
@@ -162,7 +153,7 @@
           <span v-if="fileUpload.file">{{$t('file.type')}}: {{fileUpload.filetype}}</span>
           <div class="aps-dialog-actions">
             <v-btn
-              :loading="loadingUpload"
+              :loading="loadingUpload || !fileUpload.ready"
               v-if="fileUpload.file"
               class="upload-btn"
               @click="submitUploadedFile"
@@ -174,6 +165,30 @@
               <input type="file" @change="fileUploaded" accept=".properties, .yml, .yaml" />
             </label>
             <v-btn class="aps-primary-btn" @click="cancelUploadedFile">cancel</v-btn>
+          </div>
+        </div>
+      </v-layout>
+    </v-dialog>
+    <v-dialog v-model="dialogFileDownload" max-width="500px" max-height="500px">
+      <v-layout class="aps-dialog-layout">
+        <v-system-bar style="width:100%">
+          <v-spacer />
+          <v-btn icon @click.stop="dialogFileDownload=false">
+            <v-icon>close</v-icon>
+          </v-btn>
+        </v-system-bar>
+        <div class="aps-dialog-content">
+          <v-radio-group v-model="selectedLayout" row>
+            <v-radio label="Yaml" value="yaml" style="margin-right:5px;"></v-radio>
+            <v-radio label="Properties" value="properties"></v-radio>
+          </v-radio-group>
+          <div class="aps-dialog-actions">
+            <v-btn
+              :loading="loadingDownload"
+              class="upload-btn"
+              @click="downloadAppProps"
+            >Download</v-btn>
+            <v-btn class="aps-primary-btn" @click="dialogFileDownload=false">cancel</v-btn>
           </div>
         </div>
       </v-layout>
@@ -197,22 +212,27 @@ export default {
     loadingApps: false,
     loadingProps: false,
     loadingUpload: false,
+    loadingDownload: false,
     dialogFileUpload: false,
+    dialogFileDownload: false,
     fileUpload: {
       file: null,
       filename: '',
-      filetype: ''
+      filetype: '',
+      ready: false
     },
     apps: [],
     searchApp: null,
-    items: [
-      'Production', 'Development'
-    ],
-    selectedEnv: '',
-    selectedApp: '',
+    envs: [],
+    selectedLayout: 'yaml',
+    selectedEnv: {},
+    selectedApp: {},
     appProperties: [],
     filteredAppProperties: []
   }),
+  mounted: function () {
+    this.loadEnvs()
+  },
   computed: {
     ...mapState({
       mainDialogOpen: state => state.dialog.open
@@ -230,13 +250,30 @@ export default {
       let consumed = false
       switch (caller) {
         case this.$router.currentRoute.name + '/' + DELETE_PROP:
-          if (this.$store.state.dialog.action === CONST_ACTIONS.CONFIRM) {
-            let i = this.appProperties.indexOf(this.$store.state.dialog.target)
-            if (i !== -1) {
-              this.appProperties.splice(i, 1)
+          try {
+            if (this.$store.state.dialog.action === CONST_ACTIONS.CONFIRM) {
+              let context = this
+              let target = this.$store.state.dialog.target
+              api.deleteProperty(this, target).then(function (result) {
+                let i = context.appProperties.indexOf(target)
+                if (i !== -1) {
+                  context.appProperties.splice(i, 1)
+                }
+                context.$store.dispatch('notification/open', {
+                  message: context.$i18n.t('props.notifications.delete.success', { target: target.key }),
+                  status: 'success'
+                })
+                context.loadEnvs()
+              }).catch(function (error) {
+                context.$store.dispatch('notification/open', {
+                  message: context.$i18n.t('props.notifications.delete.error', { target: target.key, error: error }),
+                  status: 'error'
+                })
+              })
             }
+          } finally {
+            consumed = true
           }
-          consumed = true
           break
         default:
           break
@@ -249,16 +286,65 @@ export default {
     }
   },
   methods: {
+    loadEnvs() {
+      this.envs = []
+      let context = this
+      api.getAllEnvs(this).then(result => {
+        if (result.data != null) {
+          result.data.forEach(element => {
+            this.envs.push(element)
+          })
+        }
+      }).catch(error => {
+        context.$store.dispatch('notification/open', {
+          message: context.$i18n.t('envs.notifications.load.error', { error: error }),
+          status: 'error'
+        })
+      })
+    },
+    loadProps() {
+      this.loadingProps = true
+      this.appProperties = []
+      this.filteredAppProperties = []
+      api.getProperties(this, this.selectedEnv, this.selectedApp).then((result) => {
+        if (result.data != null) {
+          result.data.forEach((entry) => {
+            tableUtils.enhanceEditable(entry)
+            this.appProperties.push(entry)
+          })
+        }
+      }).catch(error => {
+        this.$store.dispatch('notification/open', {
+          message: this.$i18n.t('props.notifications.load.error', { error: error }),
+          status: 'error'
+        })
+      }).finally(() => {
+        this.loadingProps = false
+      })
+    },
     selectEnv: function (env) {
-      this.selectedEnv = env
+      if (!this.selectedApp.code) {
+        return
+      }
+      this.loadProps()
     },
     queryAppSelections(v) {
       this.loadingApps = true
-      // Simulated ajax query
-      setTimeout(() => {
-        this.apps = ['RelMongo', 'Hystrix']
+      let context = this
+      api.getAllApps(this).then(result => {
+        if (result.data != null) {
+          result.data.forEach(element => {
+            this.apps.push(element)
+          })
+        }
+      }).catch(error => {
+        context.$store.dispatch('notification/open', {
+          message: context.$i18n.t('apps.notifications.load.error', { error: error }),
+          status: 'error'
+        })
+      }).finally(() => {
         this.loadingApps = false
-      }, 500)
+      })
     },
     hasUnsavedChanges() {
       let res = false
@@ -299,16 +385,45 @@ export default {
     },
     deleteAppProperty(item) {
       this.$store.dispatch('dialog/open', {
-        message: 'Are you sure to remove the property',
+        message: this.$i18n.t('generic.confirm_delete', { target: item.key }),
         caller: this.$router.currentRoute.name + '/' + DELETE_PROP,
         target: item
       })
     },
     downloadAppProps() {
-      console.log('download clicked')
+      this.loadingDownload = true
+      api.downloadProperties(this, this.selectedEnv, this.selectedApp, this.selectedLayout).then((result) => {
+        const url = window.URL.createObjectURL(new Blob([result.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `${this.selectedApp.name}-${this.selectedEnv.name}.${this.selectedLayout}`)
+        document.body.appendChild(link)
+        this.dialogFileDownload = false
+        this.loadingDownload = false
+        link.click()
+      })
+    },
+    openDownloadDialog() {
+      this.dialogFileDownload = true
     },
     saveAppProps() {
-      console.log('save props')
+      this.loadingProps = true;
+      let context = this
+      api.saveProperties(context, context.selectedEnv, context.selectedApp, context.appProperties)
+        .then(function (result) {
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('props.notifications.save.success'),
+            status: 'success'
+          });
+          context.loadProps()
+        })
+        .catch(function (error) {
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('props.notifications.save.error', { error: error }),
+            status: 'error'
+          })
+          context.loadingProps = false
+        })
     },
     addAppProperty() {
       this.filteredAppProperties = []
@@ -319,41 +434,58 @@ export default {
       })
     },
     appChanged(val) {
-      let newApp = JSON.parse(JSON.stringify(val))
-      if (newApp === this.selectedApp || !this.apps.includes(newApp)) {
+      if (!this.selectedEnv) {
         return
       }
-      this.loadingProps = true
-      this.searchApp = newApp
-      this.appProperties = []
-      this.filteredAppProperties = []
-      api.getProperties(this.selectedApp).then((result) => {
-        if (result != null) {
-          result.forEach((entry) => {
-            tableUtils.enhanceEditable(entry)
-            this.appProperties.push(entry)
-          })
-        }
-        this.loadingProps = false
-      })
+      this.loadProps()
     },
-    fileUploaded(event) {
+    async fileUploaded(event) {
+      this.fileUpload.ready = false
       this.fileUpload.file = event.target.files[0]
       this.fileUpload.filename = this.fileUpload.file.name
-      if (this.fileUpload.file.type.startsWith('application/')) {
-        this.fileUpload.filetype = this.fileUpload.file.type.substring(12)
-      } else {
-        this.fileUpload.filetype = this.fileUpload.file.name.split('.').pop()
-        if (['yml', 'yaml'].includes(this.fileUpload.filetype.toLowerCase())) {
-          this.fileUpload.filetype = 'yaml'
-        }
+      let mimeType
+      this.fileUpload.filetype = this.fileUpload.file.name.split('.').pop()
+      if (['yml', 'yaml'].includes(this.fileUpload.filetype.toLowerCase())) {
+        this.fileUpload.filetype = 'yaml'
+        mimeType = 'text/x-yaml'
+      } else if ('properties'.includes(this.fileUpload.filetype.toLowerCase())) {
+        this.fileUpload.filetype = 'properties'
+        mimeType = 'text/x-java-properties'
       }
-      this.fileUpload.filetype = this.fileUpload.filetype.toUpperCase()
+      let context = this
+      let reader = new FileReader();
+      reader.onload = function (e) {
+        var file = new File([reader.result], context.fileUpload.file.name, {
+          type: mimeType
+        })
+        context.fileUpload.file = file
+        context.fileUpload.filetype = context.fileUpload.filetype.toUpperCase()
+        setTimeout(() => {
+          context.fileUpload.ready = true
+        }, 1000)
+      }
+      await reader.readAsText(this.fileUpload.file);
     },
     submitUploadedFile() {
       this.loadingUpload = true
-      console.log('submit uploaded file')
-      setTimeout(() => (this.loadingUpload = false), 3000)
+      let context = this
+      api.uploadProperties(context, context.selectedEnv, context.selectedApp, context.fileUpload.file)
+        .then(function (result) {
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('props.notifications.save.success'),
+            status: 'success'
+          });
+          context.cancelUploadedFile()
+          context.loadingUpload = false
+          context.loadProps()
+        })
+        .catch(function (error) {
+          context.cancelUploadedFile()
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('props.notifications.save.error', { error: error }),
+            status: 'error'
+          })
+        })
     },
     cancelUploadedFile() {
       this.dialogFileUpload = false

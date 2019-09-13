@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "APS_PROPERTY")
-@NamedQuery(name = "PropertyEntity.findByEnvironmentAndApplicationNamed", query = "select p from PropertyEntity p left join fetch p.values q join q.environment e where e.code=?1 and p.application.code=?2")
+@NamedQuery(name = "PropertyEntity.findByEnvironmentAndApplicationNamed", query = "select p from PropertyEntity p left join fetch p.values q left join q.environment e where (e.code=?1 or e.code is null) and p.application.code=?2")
 public class PropertyEntity extends BaseEntity {
 
 	private String key;

@@ -119,4 +119,6 @@ public interface StorageService {
 	 */
 	Optional<User> findUserByUsername(String username);
 
+	void deleteProperty(String code);
+
 }

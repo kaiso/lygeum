@@ -94,6 +94,7 @@
   
   input.aps-simple-input:disabled {
     color: white;
+    outline : none;
   }
   
   .aps-input-active {
@@ -103,7 +104,8 @@
     border: var(--input-primary-border);
     color: var(--input-primary-color) !important;
     padding-left: 10px !important;
-    padding: 0px;
+    padding: 0px !important;
+    margin-top: 1px !important;
   }
 
   /*

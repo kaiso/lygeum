@@ -25,6 +25,7 @@
             type="text"
             class="aps-input-active"
             :placeholder="this.$t('fields.username')"
+            :disabled="loading"
             v-model="credentials.username"
           />
         </div>
@@ -33,14 +34,15 @@
             type="password"
             class="aps-input-active"
             :placeholder="this.$t('fields.password')"
+            :disabled="loading"
             v-model="credentials.password"
           />
         </div>
       </div>
       <div class="aps-buttons-container-line">
-        <v-btn class="aps-primary-btn btn" @click="submit()" :loading="loading">
+        <v-btn class="aps-primary-btn btn" @click="doLogin()" :loading="loading">
           {{$t('actions.login.button')}}
-          <!-- <template v-slot:loader>
+          <!--<template v-slot:loader>
                 <span class="custom-loader">
                   <v-icon light>cached</v-icon>
                 </span>
@@ -52,7 +54,7 @@
 </template>
 
 <script>
-import auth from '@/js/api/auth.js'
+import * as auth from '@/js/api/auth.js'
 import Layout from '@/components/layout/Layout'
 export default {
   components: { 'aps-layout': Layout },
@@ -67,14 +69,10 @@ export default {
     }
   },
   methods: {
-    submit() {
+    doLogin() {
       let context = this
       context.loading = true
-      var credentials = {
-        username: this.credentials.username,
-        password: this.credentials.password
-      }
-      auth.login(context, credentials, '../').then(function (response) {
+      auth.login(context, this.credentials, '../').then(function (response) {
         context.loading = false
       })
     }
