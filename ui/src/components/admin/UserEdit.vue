@@ -26,7 +26,7 @@
           <span class="input-container">
             <v-text-field
               class="aps-input-active"
-              v-model="userSearch"
+              v-model="user.code"
               disabled
               single-line
               hide-details
@@ -39,7 +39,7 @@
             style="width:150px;height: 35px;line-height: inherit;"
           >{{$t('admin.firstName')}}</div>
           <span class="input-container">
-            <v-text-field class="aps-input-active" v-model="userSearch" single-line hide-details></v-text-field>
+            <v-text-field class="aps-input-active" v-model="user.firstName" single-line hide-details></v-text-field>
           </span>
         </div>
         <div class="aps-form-line" style="height:30px;">
@@ -48,7 +48,7 @@
             style="width:150px;height: 35px;line-height: inherit;"
           >{{$t('admin.lastName')}}</div>
           <span class="input-container">
-            <v-text-field class="aps-input-active" v-model="userSearch" single-line hide-details></v-text-field>
+            <v-text-field class="aps-input-active" v-model="user.lastName" single-line hide-details></v-text-field>
           </span>
         </div>
         <div class="aps-form-line" style="height:30px;">
@@ -57,7 +57,7 @@
             style="width:150px;height: 35px;line-height: inherit;"
           >{{$t('admin.email')}}</div>
           <span class="input-container">
-            <v-text-field class="aps-input-active" v-model="userSearch" single-line hide-details></v-text-field>
+            <v-text-field class="aps-input-active" v-model="user.email" single-line hide-details></v-text-field>
           </span>
         </div>
         <div class="aps-form-line" style="height:150px;margin-top:20px;">
@@ -81,7 +81,9 @@ export default {
   name: 'useredit-component',
   components: { 'aps-layout': Layout,
     'list-picker': ListPicker },
-  data: () => ({}),
+  props: {
+    'user': Object
+  },
   computed: {
     title() {
       return this.$route.params.user ? this.$t('admin.edituser') : this.$t('admin.createuser')

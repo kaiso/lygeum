@@ -75,7 +75,7 @@
       </v-container>
     </v-content>
     <v-footer app fixed>
-      <span>&copy; APOPHIS - Kais OMRI - 2018</span>
+      <span>&copy; Lygeum - Kais OMRI - 2019</span>
     </v-footer>
   </div>
 </template>

@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -100,7 +101,7 @@ public class PropertiesController extends LygeumRestController {
 		AuthrorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
 		Map<String, String> properties = propertiesManager
 				.findPropertiesByEnvironmentAndApplication(environment, application).stream()
-				.collect(Collectors.toMap(PropertyEntity::getKey, PropertyEntity::getValue));
+				.collect(HashMap::new, (m,v)->m.put(v.getKey(), Optional.ofNullable(v.getValue()).orElse("")), HashMap::putAll);
 		String result;
 		String contentDisposition;
 		try {

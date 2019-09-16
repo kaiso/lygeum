@@ -167,6 +167,9 @@ export default {
           })
         })
       })
+    },
+    editItem (item) {
+      this.$router.push({ name: 'useredit', params: { 'user': item } })
     }
   }
 }

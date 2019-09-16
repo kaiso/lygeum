@@ -80,21 +80,6 @@ public class StorageServiceTest extends BasePersistenceTest {
 	}
 
 	@Test
-	public void should_find_properties_without_values() {
-		Map<String, String> props = new HashMap<>();
-		props.put("key", "value-1");
-		props.put("key-1", null);
-		storageService.storeProperties(createdEnv.getCode(), createdApp.getCode(), props);
-		Collection<PropertyEntity> result = storageService
-				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
-		assertEquals(2, result.size());
-		assertEquals("value-1",
-				result.stream().filter(p -> p.getKey().equals("key")).collect(Collectors.toList()).get(0).getValue());
-		assertEquals(null,
-				result.stream().filter(p -> p.getKey().equals("key-1")).collect(Collectors.toList()).get(0).getValue());
-	}
-
-	@Test
 	public void should_find_all_applications() {
 		List<ApplicationEntity> apps = storageService.findAllApplications();
 		assertEquals(1, apps.size());
@@ -137,6 +122,28 @@ public class StorageServiceTest extends BasePersistenceTest {
 		assertEquals("new_name", app.get().getName());
 	}
 
+	
+	@Test
+	public void should_find_properties_without_values() {
+		EnvironmentEntity env = new EnvironmentEntity();
+		env.setName("ENVONE");
+		env.setDescription("environment 1");
+		EnvironmentEntity newEnv = storageService.createEnvironment(env);
+		Map<String, String> props = new HashMap<>();
+		props.put("key-1", null);
+		props.put("key-2", "value-2");
+		storageService.storeProperties(newEnv.getCode(), createdApp.getCode(), props);
+		Collection<PropertyEntity> result = storageService
+				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
+		assertEquals(3, result.size());
+		assertEquals("value",
+				result.stream().filter(p -> p.getKey().equals("key")).collect(Collectors.toList()).get(0).getValue());
+		assertEquals(null,
+				result.stream().filter(p -> p.getKey().equals("key-1")).collect(Collectors.toList()).get(0).getValue());
+		assertEquals(null,
+				result.stream().filter(p -> p.getKey().equals("key-2")).collect(Collectors.toList()).get(0).getValue());
+	}
+	
 	@Test
 	public void should_store_properties() {
 		Collection<PropertyEntity> result = storageService

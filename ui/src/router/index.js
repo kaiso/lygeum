@@ -74,7 +74,8 @@ export default new Router({
     {
       path: '/admin/usere',
       name: 'useredit',
-      component: UserEdit
+      component: UserEdit,
+      props: true
     },
     {
       path: '/auth/login',

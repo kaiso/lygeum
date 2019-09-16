@@ -188,7 +188,7 @@
               class="upload-btn"
               @click="downloadAppProps"
             >Download</v-btn>
-            <v-btn class="aps-primary-btn" @click="dialogFileDownload=false">cancel</v-btn>
+            <v-btn class="aps-primary-btn" @click="cancelFileDownload">cancel</v-btn>
           </div>
         </div>
       </v-layout>
@@ -406,10 +406,14 @@ export default {
     openDownloadDialog() {
       this.dialogFileDownload = true
     },
+    cancelFileDownload() {
+      this.dialogFileDownload = false
+      this.loadingDownload = false
+    },
     saveAppProps() {
       this.loadingProps = true;
       let context = this
-      api.saveProperties(context, context.selectedEnv, context.selectedApp, context.appProperties)
+      api.saveProperties(context, context.selectedEnv, context.selectedApp, context.appProperties.filter(element => element.hasChanges))
         .then(function (result) {
           context.$store.dispatch('notification/open', {
             message: context.$i18n.t('props.notifications.save.success'),
