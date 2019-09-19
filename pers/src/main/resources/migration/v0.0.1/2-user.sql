@@ -1,14 +1,18 @@
 --liquibase formatted sql
 --changeset kaiso:init-user-table author-name:Kais OMRI
 --preconditions onFail:HALT onError:HALT
-create table aps_user (
+create table lgm_user (
     id BIGINT primary key,
+    code varchar(255),
     createdBy varchar(255),
     createdDate timestamp,
     lastModifiedBy varchar(255),
     lastModifiedDate timestamp,
-    email varchar(255),
+    username varchar(255),
     first_name varchar(255),
     last_name varchar(255),
     password varchar(500),
 );
+
+insert into lgm_user values (1, 'LGMADMSUR01', 'SETUP', SYSDATE, 'SETUP', SYSDATE, 'lygeum', 'Lygeum', '', '$2a$04$.rgQ2uOg0EbUcO9OeGXqFuPqO87M3csr0C9HUkQTXpZYXBnogDsg2');
+commit;

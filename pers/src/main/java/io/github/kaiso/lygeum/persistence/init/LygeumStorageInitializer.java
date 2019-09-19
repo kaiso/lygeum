@@ -19,10 +19,7 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Configuration;
 
 import liquibase.Contexts;
 import liquibase.Liquibase;
@@ -35,37 +32,37 @@ import liquibase.resource.ClassLoaderResourceAccessor;
  * @author Kais OMRI (kaiso)
  *
  */
-@Configuration
-public class LygeumStorageInitializer implements ApplicationRunner {
-	
-	private static final Logger logger = LoggerFactory.getLogger(LygeumStorageInitializer.class);
+public class LygeumStorageInitializer {
 
-	private DataSource dataSource;
+    private static final Logger logger = LoggerFactory.getLogger(LygeumStorageInitializer.class);
 
-	@Autowired
-	public LygeumStorageInitializer(DataSource dataSource) {
-		super();
-		this.dataSource = dataSource;
+    private DataSource dataSource;
+
+    private ApplicationArguments applicationArguments;
+
+    public LygeumStorageInitializer(DataSource dataSource, ApplicationArguments applicationArguments) {
+	super();
+	this.dataSource = dataSource;
+	this.applicationArguments = applicationArguments;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.boot.ApplicationRunner#run(org.springframework.boot.
+     * ApplicationArguments)
+     */
+    public void run() throws Exception {
+	if (applicationArguments.containsOption("install")) {
+	    logger.info("Lygeum started in install mode with (--install) option, will init storage");
+	    Database database = DatabaseFactory.getInstance()
+		    .findCorrectDatabaseImplementation(new JdbcConnection(dataSource.getConnection()));
+	    database.setDatabaseChangeLogLockTableName("LGM_CHANNGESLOCK");
+	    database.setDatabaseChangeLogTableName("LGM_CHANGES");
+	    Liquibase liquibase = new Liquibase("migration/chliqaps.xml", new ClassLoaderResourceAccessor(), database);
+	    liquibase.update(new Contexts());
+	    logger.info("Storage initialized");
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.boot.ApplicationRunner#run(org.springframework.boot.
-	 * ApplicationArguments)
-	 */
-	@Override
-	public void run(ApplicationArguments args) throws Exception {
-		if (args.containsOption("install")) {
-			logger.info("Lygeum started in install mode with (--install) option, will init storage"); 
-			Database database = DatabaseFactory.getInstance()
-					.findCorrectDatabaseImplementation(new JdbcConnection(dataSource.getConnection()));
-			database.setDatabaseChangeLogLockTableName("APS_CHANNGESLOCK");
-			database.setDatabaseChangeLogTableName("APS_CHANGES");
-			Liquibase liquibase = new Liquibase("migration/chliqaps.xml", new ClassLoaderResourceAccessor(), database);
-			liquibase.update(new Contexts());
-			logger.info("Storage initialized");
-		}
-	}
+    }
 
 }

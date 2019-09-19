@@ -28,17 +28,21 @@ import javax.transaction.Transactional.TxType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
 import io.github.kaiso.lygeum.core.entities.Client;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
+import io.github.kaiso.lygeum.core.entities.Role;
 import io.github.kaiso.lygeum.core.entities.User;
 import io.github.kaiso.lygeum.core.spi.StorageService;
 import io.github.kaiso.lygeum.persistence.repositories.ApplicationRepository;
 import io.github.kaiso.lygeum.persistence.repositories.EnvironmentRepository;
 import io.github.kaiso.lygeum.persistence.repositories.PropertyRepository;
 import io.github.kaiso.lygeum.persistence.repositories.PropertyValueRepository;
+import io.github.kaiso.lygeum.persistence.repositories.RoleRepository;
+import io.github.kaiso.lygeum.persistence.repositories.UserRepository;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -54,15 +58,22 @@ public class StorageServiceImpl implements StorageService {
 
     private PropertyRepository propertyRepository;
 
+    private RoleRepository roleRepository;
+
+    private UserRepository userRepository;
+
     private PropertyValueRepository propertyValueRepository;
 
     @Autowired
     public StorageServiceImpl(ApplicationRepository applicationRepository, EnvironmentRepository environmentRepository,
-	    PropertyRepository propertyRepository, PropertyValueRepository propertyValueRepository) {
+	    PropertyRepository propertyRepository, PropertyValueRepository propertyValueRepository,
+	    RoleRepository roleRepository, UserRepository userRepository) {
 	this.applicationRepository = applicationRepository;
 	this.environmentRepository = environmentRepository;
 	this.propertyRepository = propertyRepository;
 	this.propertyValueRepository = propertyValueRepository;
+	this.roleRepository = roleRepository;
+	this.userRepository = userRepository;
     }
 
     /*
@@ -272,8 +283,7 @@ public class StorageServiceImpl implements StorageService {
      */
     @Override
     public Optional<User> findUserByUsername(String username) {
-	// TODO Auto-generated method stub
-	return null;
+	return userRepository.findByUsername(username);
     }
 
     @Override
@@ -281,6 +291,36 @@ public class StorageServiceImpl implements StorageService {
 	propertyRepository.delete(propertyRepository.findByCode(code)
 		.orElseThrow(() -> new EntityNotFoundException("Can not find property with code " + code)));
 
+    }
+
+    @Override
+    public Optional<PropertyEntity> findPropertyByCode(String code) {
+	return propertyRepository.findByCode(code);
+    }
+
+    @Override
+    public List<Role> findAllRoles() {
+	return roleRepository.findAll();
+    }
+
+    @Override
+    public User saveUser(User user) {
+	if (!CollectionUtils.isEmpty(user.getRoles())) {
+	    List<String> codes = user.getRoles().stream().map(r -> r.getCode()).collect(Collectors.toList());
+	    user.setRoles(
+		    roleRepository.streamAll().filter(r -> codes.contains(r.getCode())).collect(Collectors.toList()));
+	}
+	return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+	return userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> findUserByCode(String code) {
+	return userRepository.findByCode(code);
     }
 
 }

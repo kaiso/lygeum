@@ -1,7 +1,7 @@
 --liquibase formatted sql
 --changeset kaiso:init-application author-name:Kais OMRI
 --preconditions onFail:HALT onError:HALT
-create table aps_application (
+create table lgm_application (
     id BIGINT primary key,
     createdBy varchar(255),
     createdDate timestamp,
