@@ -17,14 +17,19 @@ package io.github.kaiso.lygeum.security.oauth2;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+
+import io.github.kaiso.lygeum.core.manager.UsersManager;
+import io.github.kaiso.lygeum.core.security.LygeumPasswordEncoder;
 
 /**
  * 
@@ -34,18 +39,31 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 @Configuration
 public class LygeumOauth2ServerConfig {
 
-	@Bean(name = "lygeumServerAuthenticationManager")
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return new ProviderManager(Arrays.asList(new LygeumOauth2ServerAuthProvider()));
-	}
+    private UsersManager usersManager;
+    private LygeumPasswordEncoder encoder;
 
-	@Bean
-	@Primary
-	public AuthorizationServerTokenServices lygeumServerTokenServices() {
-		final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-		defaultTokenServices.setTokenStore(new InMemoryTokenStore());
-		defaultTokenServices.setSupportRefreshToken(true);
-		return defaultTokenServices;
-	}
+    @Autowired
+    public LygeumOauth2ServerConfig(UsersManager usersManager, LygeumPasswordEncoder encoder) {
+	super();
+	this.usersManager = usersManager;
+	this.encoder = encoder;
+    }
+
+    @Bean(name = "lygeumServerAuthenticationManager")
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+	DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+	authProvider.setUserDetailsService(usersManager);
+	authProvider.setPasswordEncoder(encoder);
+	return new ProviderManager(Arrays.asList(authProvider));
+    }
+
+    @Bean
+    @Primary
+    public AuthorizationServerTokenServices lygeumServerTokenServices() {
+	final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+	defaultTokenServices.setTokenStore(new InMemoryTokenStore());
+	defaultTokenServices.setSupportRefreshToken(true);
+	return defaultTokenServices;
+    }
 
 }
