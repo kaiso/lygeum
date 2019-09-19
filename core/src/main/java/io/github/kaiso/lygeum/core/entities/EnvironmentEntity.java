@@ -23,7 +23,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="APS_ENVIRONMENT")
+@Table(name="LGM_ENVIRONMENT")
 public class EnvironmentEntity extends BaseEntity {
 
 	private String name;

@@ -15,12 +15,18 @@
 */
 package io.github.kaiso.lygeum.core.manager.impl;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import io.github.kaiso.lygeum.core.entities.Role;
 import io.github.kaiso.lygeum.core.entities.User;
 import io.github.kaiso.lygeum.core.manager.UsersManager;
+import io.github.kaiso.lygeum.core.security.LygeumPasswordEncoder;
 import io.github.kaiso.lygeum.core.spi.StorageService;
 
 /**
@@ -30,23 +36,60 @@ import io.github.kaiso.lygeum.core.spi.StorageService;
 @Service
 public class UsersManagerImpl implements UsersManager {
 
-	private StorageService storageService;
+    private StorageService storageService;
 
-	@Autowired
-	public UsersManagerImpl(StorageService storageService) {
-		this.storageService = storageService;
+    private LygeumPasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UsersManagerImpl(StorageService storageService, LygeumPasswordEncoder passwordEncoder) {
+	this.storageService = storageService;
+	this.passwordEncoder = passwordEncoder;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.security.core.userdetails.UserDetailsService#
+     * loadUserByUsername(java.lang.String)
+     */
+    @Override
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+	return storageService.findUserByUsername(username)
+		.orElseThrow(() -> new UsernameNotFoundException("user not found with name " + username));
+    }
+
+    @Override
+    public List<Role> findAllRoles() {
+	return storageService.findAllRoles();
+    }
+
+    @Override
+    public User createUser(User user) {
+	return storageService.saveUser(user);
+    }
+
+    @Override
+    public User saveUser(User user) {
+	User existingUser = findUserByCode(user.getCode())
+		.orElseThrow(() -> new IllegalArgumentException("User can not be found with code" + user.getCode()));
+	existingUser.setFirstName(user.getFirstName());
+	existingUser.setLastName(user.getFirstName());
+	existingUser.setUsername(user.getUsername());
+	if (!StringUtils.isEmpty(user.getPassword())) {
+	    existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.security.core.userdetails.UserDetailsService#
-	 * loadUserByUsername(java.lang.String)
-	 */
-	@Override
-	public User loadUserByUsername(String username) throws UsernameNotFoundException {
-		return storageService.findUserByUsername(username)
-				.orElseThrow(() -> new UsernameNotFoundException("user not found with name " + username));
-	}
+	return storageService.saveUser(user);
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+	return storageService.findAllUsers();
+    }
+
+    @Override
+    public Optional<User> findUserByCode(String code) {
+	return storageService.findUserByCode(code);
+    }
 
 }

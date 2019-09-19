@@ -23,7 +23,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "APS_APPLICATION")
+@Table(name = "LGM_APPLICATION")
 public class ApplicationEntity extends BaseEntity {
 
 	private String name;

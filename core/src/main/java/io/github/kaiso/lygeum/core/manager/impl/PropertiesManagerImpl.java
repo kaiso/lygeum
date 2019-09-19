@@ -18,6 +18,7 @@ package io.github.kaiso.lygeum.core.manager.impl;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +79,11 @@ public class PropertiesManagerImpl implements PropertiesManager {
 	@Override
 	public void delete(String code) {
 		storageService.deleteProperty(code);
+	}
+
+	@Override
+	public Optional<PropertyEntity> findByCode(String code) {
+	    return storageService.findPropertyByCode(code);
 	}
 
 }

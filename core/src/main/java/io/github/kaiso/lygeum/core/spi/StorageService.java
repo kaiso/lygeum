@@ -24,6 +24,7 @@ import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
 import io.github.kaiso.lygeum.core.entities.Client;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
+import io.github.kaiso.lygeum.core.entities.Role;
 import io.github.kaiso.lygeum.core.entities.User;
 
 /**
@@ -120,5 +121,15 @@ public interface StorageService {
 	Optional<User> findUserByUsername(String username);
 
 	void deleteProperty(String code);
+
+	Optional<PropertyEntity> findPropertyByCode(String code);
+
+	List<Role> findAllRoles();
+
+	User saveUser(User user);
+
+	List<User> findAllUsers();
+
+	Optional<User> findUserByCode(String code);
 
 }

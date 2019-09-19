@@ -23,7 +23,26 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="APS_ROLE")
-public class Role extends BaseEntity{
+@Table(name = "LGM_ROLE")
+public class Role extends BaseEntity {
+
+    private String name;
+    private String description;
+
+    public String getName() {
+	return name;
+    }
+
+    public void setName(String name) {
+	this.name = name;
+    }
+
+    public String getDescription() {
+	return description;
+    }
+
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
 }

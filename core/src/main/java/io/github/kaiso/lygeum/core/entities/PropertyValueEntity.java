@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  */
 @Entity
-@Table(name = "APS_PROPERTY_VALUE")
+@Table(name = "LGM_PROPERTY_VALUE")
 public class PropertyValueEntity extends BaseEntity {
 
 	private String value;

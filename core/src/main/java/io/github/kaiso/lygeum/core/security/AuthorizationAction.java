@@ -21,6 +21,6 @@ package io.github.kaiso.lygeum.core.security;
  */
 public enum AuthorizationAction {
 
-	READ, UPDATE, ALL_ENV_CREATE, ALL_ENV_DELETE, ALL_APP_CREATE, ALL_APP_DELETE, ALL_PROPS_READ
+	READ, UPDATE, ALL_ENV_CREATE, ALL_ENV_DELETE, ALL_APP_CREATE, ALL_APP_DELETE
 
 }

@@ -35,7 +35,7 @@ import io.github.kaiso.lygeum.core.security.AuthorizationAction;
  *
  */
 @Entity
-@Table(name="APS_CLIENT")
+@Table(name="LGM_CLIENT")
 public class Client extends BaseEntity implements ClientDetails {
 
 	/**
@@ -147,7 +147,7 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
-		return Arrays.asList(new SimpleGrantedAuthority(AuthorizationAction.ALL_PROPS_READ.name()));
+		return null;
 	}
 
 	/*

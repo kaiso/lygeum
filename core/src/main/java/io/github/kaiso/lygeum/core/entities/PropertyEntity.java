@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  */
 @Entity
-@Table(name = "APS_PROPERTY")
+@Table(name = "LGM_PROPERTY")
 @NamedQuery(name = "PropertyEntity.findByEnvironmentAndApplicationNamed", query = "select p from PropertyEntity p left join fetch p.values q left join q.environment e on e.code=?1 where p.application.code=?2")
 public class PropertyEntity extends BaseEntity {
     

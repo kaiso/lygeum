@@ -15,7 +15,13 @@
 */
 package io.github.kaiso.lygeum.core.manager;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import io.github.kaiso.lygeum.core.entities.Role;
+import io.github.kaiso.lygeum.core.entities.User;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -23,4 +29,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 public interface UsersManager extends UserDetailsService{
 
+    
+    public List<Role> findAllRoles();
+
+    public User saveUser(User user);
+
+    public List<User> findAllUsers();
+
+    public Optional<User> findUserByCode(String code);
+
+    public User createUser(User user);
 }

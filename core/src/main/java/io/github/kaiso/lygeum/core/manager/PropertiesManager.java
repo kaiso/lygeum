@@ -18,6 +18,7 @@ package io.github.kaiso.lygeum.core.manager;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
 
@@ -49,4 +50,6 @@ public interface PropertiesManager {
 	void updateProperties(List<PropertyEntity> properties);
 
 	void delete(String code);
+
+	Optional<PropertyEntity> findByCode(String code);
 }
