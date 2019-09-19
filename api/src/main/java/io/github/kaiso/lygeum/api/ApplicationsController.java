@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
 import io.github.kaiso.lygeum.core.manager.ApplicationsManager;
 import io.github.kaiso.lygeum.core.security.AuthorizationAction;
-import io.github.kaiso.lygeum.core.security.AuthrorizationManager;
+import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 
 @RestController
 public class ApplicationsController extends LygeumRestController {
@@ -37,7 +37,7 @@ public class ApplicationsController extends LygeumRestController {
 			@PathVariable(required = true, name = "code") String code) {
 		ApplicationEntity application = applicationsManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + code));
-		AuthrorizationManager.preAuthorize(null, application.getName(), AuthorizationAction.UPDATE);
+		AuthorizationManager.preAuthorize(null, application.getName(), AuthorizationAction.UPDATE);
 
 		applicationsManager.update(app);
 
@@ -46,7 +46,7 @@ public class ApplicationsController extends LygeumRestController {
 
 	@RequestMapping(path = "/applications", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApplicationEntity> createApplication(@RequestBody(required = true) ApplicationEntity app) {
-		AuthrorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_APP_CREATE);
+		AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_APP_CREATE);
 
 		ApplicationEntity application = applicationsManager.create(app);
 
@@ -57,7 +57,7 @@ public class ApplicationsController extends LygeumRestController {
 	public ResponseEntity<String> deleteApplication(@PathVariable(required = true, name = "code") String code) {
 		ApplicationEntity application = applicationsManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + code));
-		AuthrorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_APP_DELETE);
+		AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_APP_DELETE);
 
 		applicationsManager.delete(application);
 

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.manager.EnvironmentsManager;
 import io.github.kaiso.lygeum.core.security.AuthorizationAction;
-import io.github.kaiso.lygeum.core.security.AuthrorizationManager;
+import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 
 @RestController
 public class EnvironmentsController extends LygeumRestController {
@@ -37,7 +37,7 @@ public class EnvironmentsController extends LygeumRestController {
 			@PathVariable(required = true, name = "code") String code) {
 		EnvironmentEntity environment = environmentsManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + code));
-		AuthrorizationManager.preAuthorize(null, environment.getName(), AuthorizationAction.UPDATE);
+		AuthorizationManager.preAuthorize(null, environment.getName(), AuthorizationAction.UPDATE);
 
 		environmentsManager.update(env);
 
@@ -46,7 +46,7 @@ public class EnvironmentsController extends LygeumRestController {
 
 	@RequestMapping(path = "/environments", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EnvironmentEntity> createEnvironment(@RequestBody(required = true) EnvironmentEntity env) {
-		AuthrorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_ENV_CREATE);
+		AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_ENV_CREATE);
 
 		EnvironmentEntity environment = environmentsManager.create(env);
 
@@ -57,7 +57,7 @@ public class EnvironmentsController extends LygeumRestController {
 	public ResponseEntity<String> deleteEnvironment(@PathVariable(required = true, name = "code") String code) {
 		EnvironmentEntity environment = environmentsManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + code));
-		AuthrorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_ENV_DELETE);
+		AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_ENV_DELETE);
 
 		environmentsManager.delete(environment);
 

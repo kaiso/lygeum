@@ -43,7 +43,7 @@ import io.github.kaiso.lygeum.core.properties.PropertiesLayout;
 import io.github.kaiso.lygeum.core.properties.PropertiesMediaType;
 import io.github.kaiso.lygeum.core.properties.exception.PropertiesConvertionException;
 import io.github.kaiso.lygeum.core.security.AuthorizationAction;
-import io.github.kaiso.lygeum.core.security.AuthrorizationManager;
+import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 
 @RestController
 public class PropertiesController extends LygeumRestController {
@@ -64,15 +64,16 @@ public class PropertiesController extends LygeumRestController {
 	public ResponseEntity<Collection<PropertyResource>> properties(
 			@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application) {
-		AuthrorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
+		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
 		return ResponseEntity.ok(propertiesManager.findPropertiesByEnvironmentAndApplication(environment, application)
 				.parallelStream().map(PropertyMapper::map).collect(Collectors.toList()));
 	}
 	
 	@RequestMapping(path = "/properties/{code}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteProperty(@PathVariable(required = true, name = "code") String code) {
-		
-		AuthrorizationManager.preAuthorize(null, null, AuthorizationAction.UPDATE);
+	        PropertyEntity p =  propertiesManager.findByCode(code)
+	        	.orElseThrow(() -> new IllegalArgumentException("Property not found with code: " + code));
+		AuthorizationManager.preAuthorize(p.getApplication().getCode(), null, AuthorizationAction.UPDATE);
 
 		propertiesManager.delete(code);
 
@@ -84,7 +85,7 @@ public class PropertiesController extends LygeumRestController {
 	public ResponseEntity<String> updateProperties(@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application,
 			@RequestBody(required = true) @Valid List<PropertyResource> properties) {
-		AuthrorizationManager.preAuthorize(application, environment, AuthorizationAction.UPDATE);
+		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.UPDATE);
 		EnvironmentEntity env = environmentsManager.findByCode(environment)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + environment));
 		ApplicationEntity app = applicationsManager.findByCode(application)
@@ -98,7 +99,7 @@ public class PropertiesController extends LygeumRestController {
 	public ResponseEntity<byte[]> download(@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application,
 			@RequestParam(name = "layout", required = true) String layout) {
-		AuthrorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
+		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
 		Map<String, String> properties = propertiesManager
 				.findPropertiesByEnvironmentAndApplication(environment, application).stream()
 				.collect(HashMap::new, (m,v)->m.put(v.getKey(), Optional.ofNullable(v.getValue()).orElse("")), HashMap::putAll);
@@ -138,7 +139,7 @@ public class PropertiesController extends LygeumRestController {
 	public ResponseEntity<String> upload(@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application,
 			@RequestBody MultipartFile file) {
-		AuthrorizationManager.preAuthorize(application, environment, AuthorizationAction.UPDATE);
+		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.UPDATE);
 		PropertiesMediaType mimeType = PropertiesMediaType.fromValue(file.getContentType());
 
 		if (PropertiesMediaType.UNKNOWN.equals(mimeType)) {
