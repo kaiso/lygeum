@@ -1,3 +1,4 @@
+
 Configuration:
   status: ERROR
   name: LygeumYAMLLoggingConfig
@@ -36,6 +37,6 @@ Configuration:
         AppenderRef:
           ref: STDOUT
     Root:
-      level: error
+      level: TRACE
       AppenderRef:
         ref: STDOUT

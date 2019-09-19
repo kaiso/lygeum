@@ -32,7 +32,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 
 import io.github.kaiso.lygeum.core.system.LygeumServerInfo;
 
@@ -55,9 +57,6 @@ public class LygeumBootLoader implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-
-		String printableArgs = Arrays.toString(args.getSourceArgs());
-		logger.debug("Lygeum starting with options:\n {}", printableArgs);
 		logger.info("Lygeum Version: {}", serverInfo.getImplementationVersion());
 	}
 
@@ -65,9 +64,11 @@ public class LygeumBootLoader implements ApplicationRunner {
 		List<String> filteredArgs = Arrays.asList(args).stream().filter(arg -> {
 			return !arg.contains("server.name");
 		}).collect(Collectors.toList());
+		logger.debug("Lygeum starting with options:\n {}", filteredArgs);
 		filteredArgs.add(
 				"--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration");
 		SpringApplication app = new SpringApplication(LygeumBootLoader.class);
+		addInitHooks(app);
 		Properties defaultProperties = new Properties();
 		defaultProperties.put("server.error.whitelabel.enabled", "false");
 		app.setDefaultProperties(defaultProperties);
@@ -76,6 +77,13 @@ public class LygeumBootLoader implements ApplicationRunner {
 				.withZone(ZoneId.systemDefault());
 		String startupDate = formatter.format(Instant.ofEpochMilli(context.getStartupDate()));
 		logger.info("Lygeum ready Startup Date {}", startupDate);
+	}
+
+	private static void addInitHooks(SpringApplication app) {
+	    app.addListeners((ApplicationListener<ApplicationEnvironmentPreparedEvent>) event -> {
+	           String version = event.getEnvironment().getProperty("java.runtime.version");
+	           logger.info("Running with Java {}", version);
+	       });
 	}
 
 }
