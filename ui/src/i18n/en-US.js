@@ -18,6 +18,11 @@ const messages = {
     nodata: 'No data available',
     confirm_delete: 'Are you sure to delete {target} ?'
   },
+  auth: {
+    login: {
+      error: 'Failed to login, cause: [<i>{error}</i>]'
+    }
+  },
   wizard: {
     header: 'Lygeum first run',
     title: 'Lygeum first run',
@@ -48,6 +53,7 @@ const messages = {
     ok: 'Ok',
     confirm: 'Confirm',
     close: 'Close',
+    save: 'Save',
     cancel: 'Cancel',
     continue: 'Continue',
     login: {
@@ -140,7 +146,14 @@ const messages = {
     edituser: 'Edit user',
     createuser: 'Create user',
     assignedroles: 'Assigned roles',
-    availableroles: 'Available roles'
+    availableroles: 'Available roles',
+    notifications: {
+      roles: {
+        load: {
+          error: 'Failed to load roles, cause: [<i>{error}</i>]'
+        }
+      }
+    }
   }
 
 }

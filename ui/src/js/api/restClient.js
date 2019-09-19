@@ -28,7 +28,7 @@ export default {
         'params': params,
         'responseType': responseType
       }).then(function (response) {
-        console.log('REST Client Response ==> ', response)
+        console.log('REST Client Response ==> ', JSON.stringify(response))
         resolve(response)
       }).catch(function (error) {
         if (error.response &&

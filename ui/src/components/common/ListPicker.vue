@@ -7,12 +7,12 @@
     <div class="lp-content">
         <div class="lp-list-container">
           <template v-for="(item,index) in choice">
-            <div class="lp-list-label" v-bind:key="index" @click="remove(item)">{{item.label}}</div>
+            <div class="lp-list-label" v-bind:key="index" @click="remove(item)">{{item.name}}</div>
           </template>
         </div>
         <div class="lp-list-container">
           <template v-for="(item,index) in source">
-            <div class="lp-list-label" v-bind:key="index" @click="add(item)">{{item.label}}</div>
+            <div class="lp-list-label" v-bind:key="index" @click="add(item)">{{item.name}}</div>
           </template>
         </div>
     </div>
@@ -45,13 +45,13 @@ export default {
   },
   methods: {
     add (item) {
-      console.log('add item', item)
+      console.log('add item', JSON.stringify(item))
       let index = this.source.indexOf(item)
       this.source.splice(index, 1)
       this.choice.push(item)
     },
     remove (item) {
-      console.log('remove item', item)
+      console.log('remove item', JSON.stringify(item))
       let index = this.choice.indexOf(item)
       this.choice.splice(index, 1)
       this.source.push(item)
@@ -76,6 +76,7 @@ export default {
 
 .lp-content {
   width: 100%;
+  overflow: scroll;
   display: flex;
   flex-direction: row;
   flex: 1 1 auto;

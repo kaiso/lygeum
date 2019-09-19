@@ -16,7 +16,7 @@
 
 import client from './restClient'
 
-export function getAllEnvs (context) {
+export function getAllEnvs(context) {
   return client.call(
     context,
     'get',
@@ -24,7 +24,7 @@ export function getAllEnvs (context) {
   )
 }
 
-export function createEnv (context, env) {
+export function createEnv(context, env) {
   return client.call(
     context,
     'post',
@@ -33,7 +33,7 @@ export function createEnv (context, env) {
   )
 }
 
-export function saveEnv (context, env) {
+export function saveEnv(context, env) {
   return client.call(
     context,
     'put',
@@ -42,7 +42,7 @@ export function saveEnv (context, env) {
   )
 }
 
-export function deleteEnv (context, env) {
+export function deleteEnv(context, env) {
   return client.call(
     context,
     'delete',
@@ -50,7 +50,7 @@ export function deleteEnv (context, env) {
   )
 }
 
-export function getAllApps (context) {
+export function getAllApps(context) {
   return client.call(
     context,
     'get',
@@ -58,7 +58,7 @@ export function getAllApps (context) {
   )
 }
 
-export function createApp (context, app) {
+export function createApp(context, app) {
   return client.call(
     context,
     'post',
@@ -67,7 +67,7 @@ export function createApp (context, app) {
   )
 }
 
-export function saveApp (context, app) {
+export function saveApp(context, app) {
   return client.call(
     context,
     'put',
@@ -76,7 +76,7 @@ export function saveApp (context, app) {
   )
 }
 
-export function deleteApp (context, app) {
+export function deleteApp(context, app) {
   return client.call(
     context,
     'delete',
@@ -84,7 +84,7 @@ export function deleteApp (context, app) {
   )
 }
 
-export function getProperties (context, environment, application) {
+export function getProperties(context, environment, application) {
   return client.call(
     context,
     'get',
@@ -98,7 +98,7 @@ export function getProperties (context, environment, application) {
   )
 }
 
-export function saveProperties (context, environment, application, properties) {
+export function saveProperties(context, environment, application, properties) {
   return client.call(
     context,
     'post',
@@ -112,7 +112,7 @@ export function saveProperties (context, environment, application, properties) {
   )
 }
 
-export function uploadProperties (context, environment, application, file) {
+export function uploadProperties(context, environment, application, file) {
   var data = new FormData()
   data.append('file', file)
   return client.call(
@@ -128,7 +128,7 @@ export function uploadProperties (context, environment, application, file) {
   )
 }
 
-export function downloadProperties (context, environment, application, layout) {
+export function downloadProperties(context, environment, application, layout) {
   return client.call(
     context,
     'get',
@@ -144,7 +144,7 @@ export function downloadProperties (context, environment, application, layout) {
   )
 }
 
-export function deleteProperty (context, prop) {
+export function deleteProperty(context, prop) {
   return client.call(
     context,
     'delete',
@@ -152,18 +152,36 @@ export function deleteProperty (context, prop) {
   )
 }
 
-export function getUsers (pattern) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      let data = {
-        users: [],
-        total: 500
-      }
-      data.users.push({ 'id': 'USR01', 'email': 'email@test.com', 'firstName': 'first', 'lastName': 'lasto' })
-      data.users.push({ 'id': 'USR02', 'email': 'email@test.com', 'firstName': 'first', 'lastName': 'last' })
-      data.users.push({ 'id': 'USR03', 'email': 'email@test.com', 'firstName': 'first', 'lastName': 'last' })
-      data.users.push({ 'id': 'USR04', 'email': 'email@test.com', 'firstName': 'first', 'lastName': 'last' })
-      resolve(data)
-    }, 1000)
-  })
+export function getRoles(context) {
+  return client.call(
+    context,
+    'get',
+    '/api/admin/roles'
+  )
+}
+
+export function getUsers(context) {
+  return client.call(
+    context,
+    'get',
+    '/api/admin/users'
+  )
+}
+
+export function saveUser(context, user) {
+  return client.call(
+    context,
+    'put',
+    `/api/admin/users/${user.code}`,
+    user
+  )
+}
+
+export function createUser(context, user) {
+  return client.call(
+    context,
+    'post',
+    `/api/admin/users`,
+    user
+  )
 }

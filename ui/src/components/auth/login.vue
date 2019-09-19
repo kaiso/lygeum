@@ -74,6 +74,11 @@ export default {
       context.loading = true
       auth.login(context, this.credentials, '../').then(function (response) {
         context.loading = false
+      }).catch(error => {
+        this.$store.dispatch('notification/open', {
+          message: this.$i18n.t('auth.login.error', { error: error }),
+          status: 'error'
+        })
       })
     }
   }

@@ -19,7 +19,7 @@
     <v-layout slot="mainContent" column wrap style="height:100%">
       <v-system-bar window class="system-toolbar">
         <v-tooltip bottom>
-          <v-btn icon slot="activator" @click="'#'" style="cursor: pointer;">
+          <v-btn icon slot="activator" @click="addUser()" style="cursor: pointer;">
             <v-icon>add_box</v-icon>
           </v-btn>
           <span>{{$t('admin.adduser')}}</span>
@@ -56,7 +56,7 @@
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
-            <td>{{ props.item.email }}</td>
+            <td>{{ props.item.username }}</td>
             <td>{{ props.item.firstName }}</td>
             <td>{{ props.item.lastName }}</td>
             <td class="justify-center layout px-0">
@@ -98,7 +98,7 @@ export default {
         text: '1',
         align: 'left',
         sortable: false,
-        value: 'email'
+        value: 'username'
       },
       { i18nKey: 'admin.firstName', text: '2', value: 'firstName' },
       { i18nKey: 'admin.lastName', text: '3', value: 'lastName' }
@@ -128,16 +128,24 @@ export default {
         console.log('load all from users', data.items)
       })
     },
+    addUser() {
+      let newuser = {
+        roles: []
+      }
+      this.$router.push({ name: 'useredit', params: { 'user': newuser } })
+    },
     triggerUserSearch(param) {
       search(this, this.userSearch)
     },
     getDataFromApi(pattern) {
       this.loading = true
+      let context = this
       return new Promise((resolve, reject) => {
         const { sortBy, descending, page, rowsPerPage } = this.pagination
-        api.getUsers(pattern).then((data) => {
-          let items = data.users
-          const total = data.total
+        api.getUsers(context).then((result) => {
+          console.log(JSON.stringify(result.data))
+          let items = result.data
+          const total = items.length
 
           if (this.pagination.sortBy) {
             items = items.sort((a, b) => {
