@@ -70,11 +70,11 @@ export default {
   },
   methods: {
     doLogin() {
-      let context = this
-      context.loading = true
-      auth.login(context, this.credentials, '../').then(function (response) {
-        context.loading = false
+      this.loading = true
+      auth.login(this, this.credentials, '../').then(function (response) {
+        this.loading = false
       }).catch(error => {
+        this.loading = false
         this.$store.dispatch('notification/open', {
           message: this.$i18n.t('auth.login.error', { error: error }),
           status: 'error'

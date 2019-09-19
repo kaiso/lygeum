@@ -77,6 +77,12 @@
     margin-left: 10px;
   }
   
+  .v-input__slot {
+    min-height: 20px !important;
+    height: 38px !important;
+    padding: 0px !important;
+  }
+  
   .aps-input-container .input-group {
     padding: 0%;
     height: 100%;
@@ -160,7 +166,7 @@
   .aps-form-line {
     display: flex;
     flex-direction: row;
-    padding: 15px;
+    padding-left: 15px;
     margin: 5px;
   }
 

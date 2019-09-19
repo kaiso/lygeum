@@ -18,12 +18,12 @@
   <aps-layout :title="title" style="heigth:100%">
     <v-layout slot="mainContent" column wrap style="height:90vh">
       <div class="aps-form-container">
-        <div class="aps-form-line" style="height:30px;">
+        <div class="aps-form-line" style="height:40px;">
           <div
             class="aps-form-label"
             style="width:150px;height: 35px;line-height: inherit;"
           >{{$t('admin.id')}}</div>
-          <span class="input-container">
+          <span class="aps-input-container">
             <v-text-field
               class="aps-input-active"
               v-model="user.code"
@@ -33,12 +33,12 @@
             ></v-text-field>
           </span>
         </div>
-        <div class="aps-form-line" style="height:30px;">
+        <div class="aps-form-line" style="height:40px;">
           <div
             class="aps-form-label"
             style="width:150px;height: 35px;line-height: inherit;"
           >{{$t('admin.firstName')}}</div>
-          <span class="input-container">
+          <span class="aps-input-container">
             <v-text-field
               class="aps-input-active"
               v-model="user.firstName"
@@ -47,21 +47,21 @@
             ></v-text-field>
           </span>
         </div>
-        <div class="aps-form-line" style="height:30px;">
+        <div class="aps-form-line" style="height:40px;">
           <div
             class="aps-form-label"
             style="width:150px;height: 35px;line-height: inherit;"
           >{{$t('admin.lastName')}}</div>
-          <span class="input-container">
-            <v-text-field class="aps-input-active" v-model="user.lastName" single-line hide-details></v-text-field>
+          <span class="aps-input-container">
+            <v-text-field class="aps-input-active" v-model="user.lastName" single-line hide-details :error="true" :outline="true" ></v-text-field>
           </span>
         </div>
-        <div class="aps-form-line" style="height:30px;">
+        <div class="aps-form-line" style="height:40px;">
           <div
             class="aps-form-label"
             style="width:150px;height: 35px;line-height: inherit;"
           >{{$t('admin.email')}}</div>
-          <span class="input-container">
+          <span class="aps-input-container">
             <v-text-field class="aps-input-active" v-model="user.username" single-line hide-details></v-text-field>
           </span>
         </div>
@@ -105,7 +105,7 @@ export default {
       return this.$route.params.user ? this.$t('admin.edituser') : this.$t('admin.createuser')
     }
   },
-  mounted: function () {
+  beforeMount: function () {
     let userRoles = this.user.roles.map(r => r.name)
     console.log(userRoles)
     api.getRoles(this).then((result) => {
@@ -140,4 +140,5 @@ export default {
 }
 </script>
 <style scoped>
+
 </style>
