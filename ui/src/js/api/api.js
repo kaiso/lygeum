@@ -185,3 +185,11 @@ export function createUser(context, user) {
     user
   )
 }
+
+export function getMe(context) {
+  return client.call(
+    context,
+    'get',
+    `/api/account/me`
+  )
+}

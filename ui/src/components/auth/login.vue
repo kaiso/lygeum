@@ -55,6 +55,7 @@
 
 <script>
 import * as auth from '@/js/api/auth.js'
+import { getMe } from '@/js/api/api'
 import Layout from '@/components/layout/Layout'
 export default {
   components: { 'aps-layout': Layout },
@@ -70,13 +71,17 @@ export default {
   },
   methods: {
     doLogin() {
-      this.loading = true
-      auth.login(this, this.credentials, '../').then(function (response) {
-        this.loading = false
+      const context = this
+      context.loading = true
+      auth.login(context, context.credentials, '../').then(function (response) {
+        context.loading = false
+        getMe(context).then(function (response) {
+          context.$store.dispatch('session/login', { user: response.data })
+        })
       }).catch(error => {
-        this.loading = false
-        this.$store.dispatch('notification/open', {
-          message: this.$i18n.t('auth.login.error', { error: error }),
+        context.loading = false
+        context.$store.dispatch('notification/open', {
+          message: context.$i18n.t('auth.login.error', { error: error }),
           status: 'error'
         })
       })

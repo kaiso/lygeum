@@ -59,6 +59,10 @@ const messages = {
     login: {
       title: 'Log In',
       button: 'Login'
+    },
+    logout: {
+      title: 'Log Out',
+      button: 'Logout'
     }
   },
   layout: {
@@ -140,6 +144,7 @@ const messages = {
     user: 'User | Users',
     role: 'Role | Roles',
     email: 'Email',
+    password: 'Password',
     firstName: 'First Name',
     lastName: 'Last Name',
     adduser: 'Add user',

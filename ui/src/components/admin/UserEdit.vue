@@ -13,17 +13,16 @@
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-
 <template>
   <aps-layout :title="title" style="heigth:100%">
     <v-layout slot="mainContent" column wrap style="height:90vh">
       <div class="aps-form-container">
-        <div class="aps-form-line" style="height:40px;">
+        <div class="aps-form-line" style="height:7vh;">
           <div
             class="aps-form-label"
-            style="width:150px;height: 35px;line-height: inherit;"
+            style="width:11vw;height:7vh;line-height: inherit;"
           >{{$t('admin.id')}}</div>
-          <span class="aps-input-container">
+          <span class="aps-form-input-container">
             <v-text-field
               class="aps-input-active"
               v-model="user.code"
@@ -33,39 +32,72 @@
             ></v-text-field>
           </span>
         </div>
-        <div class="aps-form-line" style="height:40px;">
+        <div class="aps-form-line" style="height:7vh;">
           <div
             class="aps-form-label"
-            style="width:150px;height: 35px;line-height: inherit;"
+            style="width:11vw;height:7vh;line-height: inherit;"
           >{{$t('admin.firstName')}}</div>
-          <span class="aps-input-container">
+          <span class="aps-form-input-container">
             <v-text-field
               class="aps-input-active"
               v-model="user.firstName"
+              :error="firstNameError"
+              :outline="firstNameError"
               single-line
               hide-details
             ></v-text-field>
           </span>
         </div>
-        <div class="aps-form-line" style="height:40px;">
+        <div class="aps-form-line" style="height:7vh;">
           <div
             class="aps-form-label"
-            style="width:150px;height: 35px;line-height: inherit;"
+            style="width:11vw;height:7vh;line-height: inherit;"
           >{{$t('admin.lastName')}}</div>
-          <span class="aps-input-container">
-            <v-text-field class="aps-input-active" v-model="user.lastName" single-line hide-details :error="true" :outline="true" ></v-text-field>
+          <span class="aps-form-input-container">
+            <v-text-field
+              class="aps-input-active"
+              v-model="user.lastName"
+              single-line
+              hide-details
+              :error="lastNameError"
+              :outline="lastNameError"
+            ></v-text-field>
           </span>
         </div>
-        <div class="aps-form-line" style="height:40px;">
+        <div class="aps-form-line" style="height:7vh;">
           <div
             class="aps-form-label"
-            style="width:150px;height: 35px;line-height: inherit;"
+            style="width:11vw;height:7vh;line-height: inherit;"
           >{{$t('admin.email')}}</div>
-          <span class="aps-input-container">
-            <v-text-field class="aps-input-active" v-model="user.username" single-line hide-details></v-text-field>
+          <span class="aps-form-input-container">
+            <v-text-field
+              class="aps-input-active"
+              v-model="user.username"
+              :error="emailError"
+              :outline="emailError"
+              single-line
+              hide-details
+            ></v-text-field>
           </span>
         </div>
-        <div class="aps-form-line" style="height:150px;margin-top:20px;">
+        <div class="aps-form-line" style="height:7vh;">
+          <div
+            class="aps-form-label"
+            style="width:11vw;height:7vh;line-height: inherit;"
+          >{{$t('admin.password')}}</div>
+          <span class="aps-form-input-container">
+            <v-text-field
+              class="aps-input-active aps-input-password"
+              v-model="user.password"
+              :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+              :type="showPassword ? 'text' : 'password'"
+              @click:append="showPassword = !showPassword"
+              single-line
+              hide-details
+            ></v-text-field>
+          </span>
+        </div>
+        <div class="aps-form-line" style="height:32vh;margin-top:2vh;">
           <list-picker
             :choice="user.roles"
             :source="roles"
@@ -98,11 +130,18 @@ export default {
   },
   data: () => ({
     loadingSave: false,
-    roles: []
+    roles: [],
+    showPassword: false,
+    firstNameError: false,
+    lastNameError: false,
+    emailError: false
   }),
   computed: {
     title() {
       return this.$route.params.user ? this.$t('admin.edituser') : this.$t('admin.createuser')
+    },
+    editMode() {
+      return this.$route.params.user !== undefined
     }
   },
   beforeMount: function () {
@@ -119,6 +158,9 @@ export default {
   },
   methods: {
     save() {
+      if (!this.validateUser()) {
+        return;
+      }
       this.loadingSave = true
       if (this.user.code) {
         api.saveUser(this, this.user).then((data) => {
@@ -135,10 +177,20 @@ export default {
     cancel() {
       this.loadingSave = false
       this.$router.push({ name: 'users' })
+    },
+    validateUser() {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      this.emailError = !re.test(this.user.username);
+      this.lastNameError = this.user.lastName === null || this.user.lastName === '';
+      this.firstNameError = this.user.firstName === null || this.user.firstName === '';
+      return !(this.lastNameError || this.firstNameError || this.emailError);
     }
   }
 }
 </script>
-<style scoped>
 
+<style scoped>
+.aps-input-password {
+  width: 197px;
+}
 </style>

@@ -109,7 +109,7 @@
             >
               <td class="regular_cell">
                 <input
-                  v-model="propItem.key"
+                  v-model="propItem.name"
                   type="text"
                   @blur="propChanged(index, $event)"
                   v-bind:class="{ 'aps-input-active': propItem.editing , 'aps-simple-input': true }"
@@ -183,11 +183,7 @@
             <v-radio label="Properties" value="properties"></v-radio>
           </v-radio-group>
           <div class="aps-dialog-actions">
-            <v-btn
-              :loading="loadingDownload"
-              class="upload-btn"
-              @click="downloadAppProps"
-            >Download</v-btn>
+            <v-btn :loading="loadingDownload" class="upload-btn" @click="downloadAppProps">Download</v-btn>
             <v-btn class="aps-primary-btn" @click="cancelFileDownload">cancel</v-btn>
           </div>
         </div>
@@ -260,13 +256,13 @@ export default {
                   context.appProperties.splice(i, 1)
                 }
                 context.$store.dispatch('notification/open', {
-                  message: context.$i18n.t('props.notifications.delete.success', { target: target.key }),
+                  message: context.$i18n.t('props.notifications.delete.success', { target: target.name }),
                   status: 'success'
                 })
                 context.loadEnvs()
               }).catch(function (error) {
                 context.$store.dispatch('notification/open', {
-                  message: context.$i18n.t('props.notifications.delete.error', { target: target.key, error: error }),
+                  message: context.$i18n.t('props.notifications.delete.error', { target: target.name, error: error }),
                   status: 'error'
                 })
               })
@@ -308,6 +304,7 @@ export default {
       this.filteredAppProperties = []
       api.getProperties(this, this.selectedEnv, this.selectedApp).then((result) => {
         if (result.data != null) {
+          result.data.sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }))
           result.data.forEach((entry) => {
             tableUtils.enhanceEditable(entry)
             this.appProperties.push(entry)
@@ -366,7 +363,7 @@ export default {
         return
       }
       Vue.set(this.appProperties[realIndex], 'hasChanges', tableUtils.hasChanges(this.appProperties[realIndex]))
-      if (target && (this.appProperties[realIndex].key === target ||
+      if (target && (this.appProperties[realIndex].name === target ||
         this.appProperties[realIndex].value === target)) {
         return
       }
@@ -385,7 +382,7 @@ export default {
     },
     deleteAppProperty(item) {
       this.$store.dispatch('dialog/open', {
-        message: this.$i18n.t('generic.confirm_delete', { target: item.key }),
+        message: this.$i18n.t('generic.confirm_delete', { target: item.name }),
         caller: this.$router.currentRoute.name + '/' + DELETE_PROP,
         target: item
       })
@@ -432,7 +429,7 @@ export default {
     addAppProperty() {
       this.filteredAppProperties = []
       this.appProperties.unshift({
-        key: '',
+        name: '',
         value: '',
         editing: true
       })
@@ -500,7 +497,7 @@ export default {
     triggerAppPropsfiltering(event) {
       if (event !== undefined) {
         this.filteredAppProperties = this.appProperties.filter((value) => {
-          return value.key.toLowerCase().includes(event.toLowerCase()) ||
+          return value.name.toLowerCase().includes(event.toLowerCase()) ||
             value.value.toLowerCase().includes(event.toLowerCase())
         })
       }

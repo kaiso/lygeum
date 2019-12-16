@@ -60,12 +60,48 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
+    <v-navigation-drawer
+      v-model="profileDrawer"
+      absolute
+      dark
+      right
+      temporary
+    >
+      <v-list class="pa-1">
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-btn
+              icon
+              @click.stop="profileDrawer=!profileDrawer"
+            >
+            <v-icon>chevron_right</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ me.username }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
+        @click="doLogout">
+        <v-list-tile-action>
+          <v-icon>exit_to_app</v-icon>
+        </v-list-tile-action>
+
+        <v-list-tile-content>
+          <v-list-tile-title>{{ $t("actions.logout.button") }}</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
     <v-toolbar app fixed clipped-left>
       <v-toolbar-side-icon v-show="!drawerDisabled" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title style="width:20%;">Lygeum</v-toolbar-title>
       <div style="width:100%;">
         <v-toolbar-title style="margin:auto;width:200px">{{title}}</v-toolbar-title>
       </div>
+       <v-btn icon v-if="loggedIn" @click.stop="profileDrawer=!profileDrawer">
+        <v-icon>account_circle</v-icon>
+      </v-btn>
     </v-toolbar>
     <v-content>
       <v-container fluid fill-height>
@@ -81,17 +117,31 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { logout } from '@/js/api/auth.js'
 export default {
   name: 'aps-layout',
+  data: () => ({
+    profileDrawer: null
+  }),
   props: {
     drawer: { type: Boolean, default: true },
     source: String,
     title: { type: String, default: 'Lygeum' },
     drawerDisabled: { type: Boolean, default: false }
   },
+  computed: {
+    ...mapState({
+      loggedIn: state => state.session.user !== null,
+      me: state => state.session.user || {}
+    })
+  },
   methods: {
     route: function (url) {
       this.$router.push({ path: `${url}` })
+    },
+    doLogout: function() {
+      logout(this)
     }
   }
 }
