@@ -65,8 +65,9 @@ public class PropertiesController extends LygeumRestController {
 			@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application) {
 		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
-		return ResponseEntity.ok(propertiesManager.findPropertiesByEnvironmentAndApplication(environment, application)
-				.parallelStream().map(PropertyMapper::map).collect(Collectors.toList()));
+		List<PropertyResource> result = propertiesManager.findPropertiesByEnvironmentAndApplication(environment, application)
+				.parallelStream().map(PropertyMapper::map).collect(Collectors.toList());
+		return ResponseEntity.ok(result);
 	}
 	
 	@RequestMapping(path = "/properties/{code}", method = RequestMethod.DELETE)
@@ -102,7 +103,7 @@ public class PropertiesController extends LygeumRestController {
 		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
 		Map<String, String> properties = propertiesManager
 				.findPropertiesByEnvironmentAndApplication(environment, application).stream()
-				.collect(HashMap::new, (m,v)->m.put(v.getKey(), Optional.ofNullable(v.getValue()).orElse("")), HashMap::putAll);
+				.collect(HashMap::new, (m,v)->m.put(v.getName(), Optional.ofNullable(v.getValue()).orElse("")), HashMap::putAll);
 		String result;
 		String contentDisposition;
 		try {

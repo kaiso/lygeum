@@ -51,7 +51,7 @@ subprojects {
 	      implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-properties:2.9.0'
 	      implementation 'org.springframework.boot:spring-boot-starter-web'
 	      implementation  group: 'org.springframework', name: 'spring-tx'
-	      implementation 'com.h2database:h2:1.4.197'
+	      implementation 'com.h2database:h2:1.4.200'
 	      implementation  group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
 	      implementation  group: 'org.hibernate', name: 'hibernate-core'
 	      implementation  group: 'org.springframework.data', name: 'spring-data-commons'

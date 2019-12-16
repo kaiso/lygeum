@@ -40,8 +40,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NamedQuery(name = "PropertyEntity.findByEnvironmentAndApplicationNamed", query = "select p from PropertyEntity p left join fetch p.values q left join q.environment e on e.code=?1 where p.application.code=?2")
 public class PropertyEntity extends BaseEntity {
     
-	@Column(name = "KEY", unique = true)
-	private String key;
+	@Column(name = "name", unique = true)
+	private String name;
 
 	private String description;
 
@@ -57,12 +57,12 @@ public class PropertyEntity extends BaseEntity {
 	/**
 	 * @param key the key to set
 	 */
-	public void setKey(String key) {
-		this.key = key;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getKey() {
-		return key;
+	public String getName() {
+		return name;
 	}
 
 	public String getValue() {
@@ -100,7 +100,7 @@ public class PropertyEntity extends BaseEntity {
 
 		private String code;
 		private String description;
-		private String key;
+		private String name;
 		private String value;
 		private EnvironmentEntity environment;
 		private ApplicationEntity application;
@@ -115,8 +115,8 @@ public class PropertyEntity extends BaseEntity {
 			return this;
 		}
 
-		public PropertyEntityBuilder withKey(String key) {
-			this.key = key;
+		public PropertyEntityBuilder withName(String name) {
+			this.name = name;
 			return this;
 		}
 
@@ -138,7 +138,7 @@ public class PropertyEntity extends BaseEntity {
 		public PropertyEntity build() {
 			PropertyEntity e = new PropertyEntity();
 			e.setCode(code);
-			e.setKey(key);
+			e.setName(name);
 			e.setDescription(description);
 			List<PropertyValueEntity> values = new ArrayList<>();
 			if (StringUtils.hasText(value)) {
@@ -162,7 +162,7 @@ public class PropertyEntity extends BaseEntity {
 		int result = super.hashCode();
 		result = prime * result + ((application == null) ? 0 : application.hashCode());
 		result = prime * result + ((values == null) ? 0 : values.hashCode());
-		result = prime * result + ((key == null) ? 0 : key.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -181,10 +181,10 @@ public class PropertyEntity extends BaseEntity {
 		} else if (!application.equals(other.application)) {
 			return false;
 		}
-		if (key == null) {
-			if (other.key != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!key.equals(other.key)) {
+		} else if (!name.equals(other.name)) {
 			return false;
 		}
 		return true;

@@ -16,7 +16,7 @@ bootJar {
 		attributes(
 		['Specification-Title': 'Lygeum server',
 		'Specification-Version': version,
-		'Implementation-Title': 'APOPHIS',
+		'Implementation-Title': 'LYGEUM',
 		'Implementation-Version': version,
 		'Implementation-Vendor' :'Kais OMRI [kais.omri.int@gmail.com]',
 		'Implementation-Timestamp': new Date().format('yyyy-MM-dd HH:mm:ssZ')])

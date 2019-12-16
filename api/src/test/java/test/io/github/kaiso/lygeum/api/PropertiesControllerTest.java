@@ -97,7 +97,7 @@ public class PropertiesControllerTest {
 			{
 				propertiesManager.findPropertiesByEnvironmentAndApplication(anyString, anyString);
 				Collection<PropertyEntity> res = new ArrayList<>();
-				res.add(PropertyEntity.builder().withKey("author").withValue("Kais OMRI")
+				res.add(PropertyEntity.builder().withName("author").withValue("Kais OMRI")
 						.withEnvironment(new EnvironmentEntity("prod", "production")).build());
 				result = res;
 			}
@@ -129,7 +129,7 @@ public class PropertiesControllerTest {
 				result = Optional.of(new ApplicationEntity("application", null));
 			}
 		};
-		PropertyResource r = PropertyResource.builder().withCode("code01").withKey("app.name").withValue("lygeum")
+		PropertyResource r = PropertyResource.builder().withCode("code01").withName("app.name").withValue("lygeum")
 				.build();
 		List<PropertyResource> list = new ArrayList<>();
 		list.add(r);
@@ -160,7 +160,7 @@ public class PropertiesControllerTest {
 			{
 				propertiesManager.findPropertiesByEnvironmentAndApplication(anyString, anyString);
 				Collection<PropertyEntity> res = new ArrayList<>();
-				res.add(PropertyEntity.builder().withKey("author").withValue("Kais OMRI")
+				res.add(PropertyEntity.builder().withName("author").withValue("Kais OMRI")
 						.withEnvironment(new EnvironmentEntity("prod", "production")).build());
 				result = res;
 			}
@@ -189,9 +189,9 @@ public class PropertiesControllerTest {
 			{
 				propertiesManager.findPropertiesByEnvironmentAndApplication(anyString, anyString);
 				Collection<PropertyEntity> res = new ArrayList<>();
-				res.add(PropertyEntity.builder().withKey("author").withValue("Kais OMRI")
+				res.add(PropertyEntity.builder().withName("author").withValue("Kais OMRI")
 						.withEnvironment(new EnvironmentEntity("prod", "production")).build());
-				res.add(PropertyEntity.builder().withKey("launch.date").withValue("2018")
+				res.add(PropertyEntity.builder().withName("launch.date").withValue("2018")
 						.withEnvironment(new EnvironmentEntity("prod", "production")).build());
 				result = res;
 			}

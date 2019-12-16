@@ -12,7 +12,7 @@ public class PropertyResource {
 
 	private String code;
 	@NotBlank
-	private String key;
+	private String name;
 	private String description;
 	private String value;
 
@@ -25,11 +25,11 @@ public class PropertyResource {
 		super();
 	}
 
-	private PropertyResource(String code, String key, String description, String value, String appCode,
+	private PropertyResource(String code, String name, String description, String value, String appCode,
 			String envCode) {
 		super();
 		this.code = code;
-		this.key = key;
+		this.name = name;
 		this.description = description;
 		this.value = value;
 		this.appCode = appCode;
@@ -60,12 +60,12 @@ public class PropertyResource {
 		this.envCode = envCode;
 	}
 
-	public String getKey() {
-		return key;
+	public String getName() {
+		return name;
 	}
 
-	public void setKey(String key) {
-		this.key = key;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
@@ -91,7 +91,7 @@ public class PropertyResource {
 	public static class PropertyResourceBuilder {
 
 		private String code;
-		private String key;
+		private String name;
 		private String description;
 		private String value;
 		private String appCode;
@@ -112,8 +112,8 @@ public class PropertyResource {
 			return this;
 		}
 
-		public PropertyResourceBuilder withKey(String key) {
-			this.key = key;
+		public PropertyResourceBuilder withName(String name) {
+			this.name =  name;
 			return this;
 		}
 
@@ -128,7 +128,7 @@ public class PropertyResource {
 		}
 
 		public PropertyResource build() {
-			return new PropertyResource(code, key, description, value, appCode, envCode);
+			return new PropertyResource(code, name, description, value, appCode, envCode);
 		}
 
 	}
