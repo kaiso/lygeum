@@ -228,13 +228,13 @@ public class StorageServiceImpl implements StorageService {
 		() -> new IllegalArgumentException("application can not be found with code " + application));
 
 	list.addAll(propertyRepository.findByEnvironmentAndApplicationNamed(environment, application).map(p -> {
-	    if (props.containsKey(p.getKey())) {
+	    if (props.containsKey(p.getName())) {
 		p.getValues().forEach(v -> {
 		    if (v.getEnvironment().equals(env)) {
-			v.setValue(props.get(p.getKey()));
+			v.setValue(props.get(p.getName()));
 		    }
 		});
-		props.remove(p.getKey());
+		props.remove(p.getName());
 	    } else {
 		p.getValues().forEach(v -> {
 		    if (v.getEnvironment().equals(env)) {
@@ -246,7 +246,7 @@ public class StorageServiceImpl implements StorageService {
 	}).collect(Collectors.toList()));
 
 	props.forEach((k, v) -> list.add(
-		PropertyEntity.builder().withKey(k).withValue(v).withApplication(app).withEnvironment(env).build()));
+		PropertyEntity.builder().withName(k).withValue(v).withApplication(app).withEnvironment(env).build()));
 	propertyRepository.saveAll(list);
     }
 

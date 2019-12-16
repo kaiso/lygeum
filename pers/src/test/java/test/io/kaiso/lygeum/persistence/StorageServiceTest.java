@@ -137,11 +137,11 @@ public class StorageServiceTest extends BasePersistenceTest {
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(3, result.size());
 		assertEquals("value",
-				result.stream().filter(p -> p.getKey().equals("key")).collect(Collectors.toList()).get(0).getValue());
+				result.stream().filter(p -> p.getName().equals("key")).collect(Collectors.toList()).get(0).getValue());
 		assertEquals(null,
-				result.stream().filter(p -> p.getKey().equals("key-1")).collect(Collectors.toList()).get(0).getValue());
+				result.stream().filter(p -> p.getName().equals("key-1")).collect(Collectors.toList()).get(0).getValue());
 		assertEquals(null,
-				result.stream().filter(p -> p.getKey().equals("key-2")).collect(Collectors.toList()).get(0).getValue());
+				result.stream().filter(p -> p.getName().equals("key-2")).collect(Collectors.toList()).get(0).getValue());
 	}
 	
 	@Test
@@ -149,14 +149,14 @@ public class StorageServiceTest extends BasePersistenceTest {
 		Collection<PropertyEntity> result = storageService
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
-		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getKey());
+		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
 		assertEquals("value", result.stream().collect(Collectors.toList()).get(0).getValues().get(0).getValue());
 		Map<String, String> props = new HashMap<>();
 		props.put("key-spec", "value-spec");
 		storageService.storeProperties(createdEnv.getCode(), createdApp.getCode(), props);
 		result = storageService.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(2, result.size());
-		List<String> keyvaluecouples = result.stream().map(p -> p.getKey()+p.getValue()).collect(Collectors.toList());
+		List<String> keyvaluecouples = result.stream().map(p -> p.getName()+p.getValue()).collect(Collectors.toList());
 		assertTrue(keyvaluecouples.containsAll(Arrays.asList("keynull","key-specvalue-spec")));
 	}
 	
@@ -165,7 +165,7 @@ public class StorageServiceTest extends BasePersistenceTest {
 		Collection<PropertyEntity> result = storageService
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
-		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getKey());
+		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
 		assertEquals("value", result.stream().collect(Collectors.toList()).get(0).getValues().get(0).getValue());
 		EnvironmentEntity env = new EnvironmentEntity();
 		env.setName("ENVONE");
@@ -178,13 +178,13 @@ public class StorageServiceTest extends BasePersistenceTest {
 		//old env does not change
 		result = storageService.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
-		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getKey());
+		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
 		assertEquals("value", result.stream().collect(Collectors.toList()).get(0).getValues().get(0).getValue());
 
 		//new env with different value
 		result = storageService.findPropertiesByEnvironmentAndApplication(newEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
-		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getKey());
+		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
 		assertEquals("value-spec", result.stream().collect(Collectors.toList()).get(0).getValues().get(0).getValue());
 		
 		
@@ -195,14 +195,14 @@ public class StorageServiceTest extends BasePersistenceTest {
 		Collection<PropertyEntity> result = storageService
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 
-		PropertyEntity toUpdate = PropertyEntity.builder().withKey("new-key").withValue("new-value")
+		PropertyEntity toUpdate = PropertyEntity.builder().withName("new-key").withValue("new-value")
 				.withApplication(createdApp).withCode(result.iterator().next().getCode())
 				.withDesciption("update description").withEnvironment(createdEnv).build();
 
 		storageService.updateProperties(Collections.singletonList(toUpdate));
 		result = storageService.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
-		assertEquals("new-key", result.stream().collect(Collectors.toList()).get(0).getKey());
+		assertEquals("new-key", result.stream().collect(Collectors.toList()).get(0).getName());
 		assertEquals("new-value", result.stream().collect(Collectors.toList()).get(0).getValues().get(0).getValue());
 	}
 }
