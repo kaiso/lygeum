@@ -48,8 +48,18 @@ export function login(context, creds, redirect) {
   })
  })
 }
-// To log out, we just need to remove the token
-export function logout() {
+export function logout(context) {
+  client.call(
+    context,
+    'get',
+    'auth/logout'
+  ).then(function (response) {
+    console.log('redirecting ', response)
+    context.$router.push({ path: '/auth/login' })
+  }).catch (function (error) {
+    console.log('failed to logout', error)
+  })
   sessionStorage.removeItem('access_token')
   localStorage.removeItem('refresh_token')
+  context.$store.dispatch('session/logout', {})
 }

@@ -18,7 +18,6 @@ export default {
   call(context, method, uri, data, headers, params, responseType = 'json') {
     let defaultHeaders = this.getAuthHeader()
     let concreteHeaders = { ...headers, ...defaultHeaders }
-    console.log('data ', data)
     return new Promise(function (resolve, reject) {
       context.$http({
         'method': method,

@@ -14,18 +14,31 @@
    * limitations under the License.
    */
 
-import Vue from 'vue'
-import Vuex from 'vuex'
-import dialog from './modules/dialog'
-import notification from './modules/notification'
-import session from './modules/session'
+const state = {
+  user: null
+}
 
-Vue.use(Vuex)
-
-export default new Vuex.Store({
-  modules: {
-    dialog,
-    notification,
-    session
+const actions = {
+  login ({ commit, state }, payload) {
+    commit('login', { payload })
+  },
+  logout ({ commit, state }, payload) {
+    commit('logout', { payload })
   }
-})
+}
+
+const mutations = {
+  login (state, { payload }) {
+    state.user = payload.user
+  },
+  logout (state, { payload }) {
+    state.user = null
+  }
+}
+
+export default {
+  namespaced: true,
+  state,
+  actions,
+  mutations
+}
