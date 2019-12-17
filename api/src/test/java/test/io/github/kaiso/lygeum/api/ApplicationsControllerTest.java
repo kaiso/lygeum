@@ -44,6 +44,7 @@ import io.github.kaiso.lygeum.api.ApplicationsController;
 import io.github.kaiso.lygeum.api.handler.GlobalControllerExceptionHandler;
 import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
 import io.github.kaiso.lygeum.core.manager.ApplicationsManager;
+import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
@@ -57,189 +58,189 @@ import test.io.github.kaiso.lygeum.api.util.PrintUtils;
 @SpringJUnitConfig
 public class ApplicationsControllerTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(ApplicationsControllerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationsControllerTest.class);
 
-	@BeforeAll
-	public static void applySpringIntegration() {
-		try {
-			new FakeBeanFactory();
-		} catch (Exception e) {
+    @BeforeAll
+    public static void applySpringIntegration() {
+	try {
+	    new FakeBeanFactory();
+	} catch (Exception e) {
 
-			logger.error("can not instanciate FakeBeanFactory ", e);
-		}
+	    logger.error("can not instanciate FakeBeanFactory ", e);
 	}
+    }
 
-	@BeforeEach
-	public void setup() {
-		mockMvc = MockMvcBuilders.standaloneSetup(new ApplicationsController(applicationsManager))
-				.setControllerAdvice(new GlobalControllerExceptionHandler()).build();
-	}
+    @BeforeEach
+    public void setup() {
+	mockMvc = MockMvcBuilders.standaloneSetup(new ApplicationsController(applicationsManager))
+		.setControllerAdvice(new GlobalControllerExceptionHandler()).build();
+    }
 
-	@Mocked
-	private ApplicationsManager applicationsManager;
+    @Mocked
+    private ApplicationsManager applicationsManager;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Test
-	// @WithMockUser(authorities = { "PROD_READ" })
-	public void should_return_all_applications() throws Exception {
-		List<ApplicationEntity> apps = new ArrayList<>();
-		ApplicationEntity entity = new ApplicationEntity("APP01", "PRODUCTION");
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_APP_PREFIX + "PROD_READ" })
+    public void should_return_all_applications() throws Exception {
+	List<ApplicationEntity> apps = new ArrayList<>();
+	ApplicationEntity entity = new ApplicationEntity("APP01", "PRODUCTION");
 
-		apps.add(entity);
-		new Expectations() {
-			{
-				applicationsManager.findAll();
-				result = apps;
+	apps.add(entity);
+	new Expectations() {
+	    {
+		applicationsManager.findAll();
+		result = apps;
 
-			}
-		};
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/lygeum/api/applications")
-				.accept(MediaType.APPLICATION_JSON);
+	    }
+	};
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/lygeum/api/applications")
+		.accept(MediaType.APPLICATION_JSON);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				JSONAssert.assertEquals(PrintUtils.json(apps), result.getResponse().getContentAsString(), false);
-			}
-		};
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
+		JSONAssert.assertEquals(PrintUtils.json(apps), result.getResponse().getContentAsString(), false);
+	    }
+	};
 
-	}
+    }
 
-	@Test
-	@WithMockUser(authorities = { "PRODUCTION_UPDATE" })
-	public void should_update_application() throws Exception {
-		ApplicationEntity entity = new ApplicationEntity("code01", "production");
-		new Expectations() {
-			{
-				applicationsManager.findByCode(anyString);
-				result = Optional.ofNullable(entity);
-			}
-		};
-		String content = PrintUtils.json(entity);
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/lygeum/api/applications/" + entity.getCode())
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_APP_PREFIX + "PRODUCTION_UPDATE" })
+    public void should_update_application() throws Exception {
+	ApplicationEntity entity = new ApplicationEntity("code01", "production");
+	new Expectations() {
+	    {
+		applicationsManager.findByCode(anyString);
+		result = Optional.ofNullable(entity);
+	    }
+	};
+	String content = PrintUtils.json(entity);
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/lygeum/api/applications/" + entity.getCode())
+		.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				ApplicationEntity calledEntity;
-				applicationsManager.update(calledEntity = withCapture());
-				assertEquals(entity, calledEntity);
-			}
-		};
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
+		ApplicationEntity calledEntity;
+		applicationsManager.update(calledEntity = withCapture());
+		assertEquals(entity, calledEntity);
+	    }
+	};
 
-	}
+    }
 
-	@Test
-	@WithMockUser(authorities = { "PRODUCTION_UPDATE" })
-	public void should_fail_update_when_application_not_found() throws Exception {
-		ApplicationEntity entity = new ApplicationEntity("code01", "production");
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_APP_PREFIX + "PRODUCTION_UPDATE" })
+    public void should_fail_update_when_application_not_found() throws Exception {
+	ApplicationEntity entity = new ApplicationEntity("code01", "production");
 
-		new Expectations() {
-			{
-				applicationsManager.findByCode(anyString);
-				result = Optional.ofNullable(null);
-			}
-		};
-		String content = PrintUtils.json(entity);
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/lygeum/api/applications/" + entity.getCode())
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
+	new Expectations() {
+	    {
+		applicationsManager.findByCode(anyString);
+		result = Optional.ofNullable(null);
+	    }
+	};
+	String content = PrintUtils.json(entity);
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/lygeum/api/applications/" + entity.getCode())
+		.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is4xxClientError());
-			}
-		};
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is4xxClientError());
+	    }
+	};
 
-	}
+    }
 
-	@Test
-	@WithMockUser(authorities = { "ALL_APP_CREATE" })
-	public void should_create_application() throws Exception {
-		ApplicationEntity entity = new ApplicationEntity("code01", "production");
-		new Expectations() {
-			{
-				applicationsManager.create(entity);
-				result = entity;
-			}
-		};
-		String content = PrintUtils.json(entity);
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/lygeum/api/applications/")
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "ALL_APP_CREATE" })
+    public void should_create_application() throws Exception {
+	ApplicationEntity entity = new ApplicationEntity("code01", "production");
+	new Expectations() {
+	    {
+		applicationsManager.create(entity);
+		result = entity;
+	    }
+	};
+	String content = PrintUtils.json(entity);
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/lygeum/api/applications/")
+		.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				MockMvcResultMatchers.jsonPath("$.code", Matchers.equalTo("code01")).match(result);
-				MockMvcResultMatchers.jsonPath("$.name", Matchers.equalTo("production")).match(result);
-			}
-		};
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
+		MockMvcResultMatchers.jsonPath("$.code", Matchers.equalTo("code01")).match(result);
+		MockMvcResultMatchers.jsonPath("$.name", Matchers.equalTo("production")).match(result);
+	    }
+	};
 
-	}
+    }
 
-	@Test
-	@WithMockUser(authorities = { "ALL_APP_DELETE" })
-	public void should_delete_application() throws Exception {
-		ApplicationEntity entity = new ApplicationEntity("code01", "production");
-		new Expectations() {
-			{
-				applicationsManager.findByCode(anyString);
-				result = Optional.ofNullable(entity);
-			}
-		};
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/lygeum/api/applications/" + entity.getCode())
-				.accept(MediaType.APPLICATION_JSON);
+    @Test
+    @WithMockUser(authorities = { "ROLE_ALL_APP_DELETE" })
+    public void should_delete_application() throws Exception {
+	ApplicationEntity entity = new ApplicationEntity("code01", "production");
+	new Expectations() {
+	    {
+		applicationsManager.findByCode(anyString);
+		result = Optional.ofNullable(entity);
+	    }
+	};
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/lygeum/api/applications/" + entity.getCode())
+		.accept(MediaType.APPLICATION_JSON);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				ApplicationEntity calledEntity;
-				applicationsManager.delete(calledEntity = withCapture());
-				assertEquals(entity, calledEntity);
-			}
-		};
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
+		ApplicationEntity calledEntity;
+		applicationsManager.delete(calledEntity = withCapture());
+		assertEquals(entity, calledEntity);
+	    }
+	};
 
-	}
+    }
 
-	@Test
-	@WithMockUser(authorities = { "ALL_APP_DELETE" })
-	public void should_fail_delete_when_application_not_found() throws Exception {
+    @Test
+    @WithMockUser(authorities = { "ROLE_ALL_APP_DELETE" })
+    public void should_fail_delete_when_application_not_found() throws Exception {
 
-		new Expectations() {
-			{
-				applicationsManager.findByCode(anyString);
-				result = Optional.ofNullable(null);
-			}
-		};
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/lygeum/api/applications/code22")
-				.accept(MediaType.APPLICATION_JSON);
+	new Expectations() {
+	    {
+		applicationsManager.findByCode(anyString);
+		result = Optional.ofNullable(null);
+	    }
+	};
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/lygeum/api/applications/code22")
+		.accept(MediaType.APPLICATION_JSON);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is4xxClientError());
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is4xxClientError());
 
-			}
-		};
+	    }
+	};
 
-	}
+    }
 
 }

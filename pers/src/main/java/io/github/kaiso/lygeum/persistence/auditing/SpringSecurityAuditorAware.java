@@ -17,11 +17,11 @@ package io.github.kaiso.lygeum.persistence.auditing;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Component;
+
+import io.github.kaiso.lygeum.core.security.SecurityContextHolder;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -30,14 +30,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringSecurityAuditorAware implements AuditorAware<String> {
 
-	public Optional<String> getCurrentAuditor() {
+    private SecurityContextHolder securityContextHolder;
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    @Autowired
+    public SpringSecurityAuditorAware(SecurityContextHolder securityContextHolder) {
+	super();
+	this.securityContextHolder = securityContextHolder;
+    }
 
-		if (authentication == null || !authentication.isAuthenticated()) {
-			return Optional.empty();
-		}
-
-		return Optional.of(((OAuth2Authentication)authentication).getUserAuthentication().getName());
-	}
+    public Optional<String> getCurrentAuditor() {
+	return Optional.of(securityContextHolder.getCurrentUser().getUsername());
+    }
 }

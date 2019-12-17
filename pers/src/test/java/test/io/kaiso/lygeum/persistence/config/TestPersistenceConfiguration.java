@@ -22,6 +22,8 @@ import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,6 +31,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
+import io.github.kaiso.lygeum.core.entities.User;
+import io.github.kaiso.lygeum.core.security.SecurityContextHolder;
 import io.github.kaiso.lygeum.persistence.config.LygeumPersistenceConfig;
 
 /**
@@ -38,35 +42,50 @@ import io.github.kaiso.lygeum.persistence.config.LygeumPersistenceConfig;
 
 @Configuration
 @ComponentScan(basePackages = { "io.github.kaiso.lygeum.persistence.service",
-		"io.github.kaiso.lygeum.persistence.auditing" })
+	"io.github.kaiso.lygeum.persistence.auditing" })
 @Import(LygeumPersistenceConfig.class)
 public class TestPersistenceConfiguration {
 
-	private static final Logger logger = LoggerFactory.getLogger(TestPersistenceConfiguration.class);
-	
-	
-	
+    private static final Logger logger = LoggerFactory.getLogger(TestPersistenceConfiguration.class);
 
-	@Bean
-	@Primary()
-	public DataSource dataSource() {
-		logger.debug("creating dataSource");
-		return DataSourceBuilder.create().username("lygeum").url("jdbc:h2:tcp://localhost:9135/~/lygeum/test")
-				.type(JdbcDataSource.class).driverClassName("org.h2.Driver").build();
-//		return DataSourceBuilder.create().url("jdbc:h2:mem:lygeumtestdb;;DB_CLOSE_DELAY=-1").type(JdbcDataSource.class)
-//				.driverClassName("org.h2.Driver").build();
-	}
+    @Bean
+    public ApplicationArguments applicationArguments() {
+	return new DefaultApplicationArguments(new String[] { "" });
+    }
 
-	@Bean
-	@Primary
-	public Properties jpaProperties() {
-		Properties props = new Properties();
-		props.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-		props.put("hibernate.format_sql", "true");
-		props.put("hibernate.show_sql", "true");
-		props.put("hibernate.hbm2ddl.auto", "create");
-		props.put("hibernate.generate_statistics", "true");
-		return props;
-	}
+    @Bean
+    public SecurityContextHolder securityContextHolder() {
+	return new SecurityContextHolder() {
+
+	    @Override
+	    public User getCurrentUser() {
+		User user = new User();
+		user.setUsername("lygeum-test-user");
+		return user;
+	    }
+	};
+    }
+
+    @Bean
+    @Primary()
+    public DataSource dataSource() {
+	logger.debug("creating dataSource");
+//	return DataSourceBuilder.create().username("lygeum").url("jdbc:h2:tcp://localhost:9135/~/lygeum/test")
+//		.type(JdbcDataSource.class).driverClassName("org.h2.Driver").build();
+	return DataSourceBuilder.create().url("jdbc:h2:mem:lygeumtestdb;;DB_CLOSE_DELAY=-1").type(JdbcDataSource.class)
+		.driverClassName("org.h2.Driver").build();
+    }
+
+    @Bean
+    @Primary
+    public Properties jpaProperties() {
+	Properties props = new Properties();
+	props.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+	props.put("hibernate.format_sql", "true");
+	props.put("hibernate.show_sql", "true");
+	props.put("hibernate.hbm2ddl.auto", "create");
+	props.put("hibernate.generate_statistics", "true");
+	return props;
+    }
 
 }

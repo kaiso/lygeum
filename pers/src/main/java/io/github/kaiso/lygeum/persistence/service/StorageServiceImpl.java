@@ -34,6 +34,7 @@ import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
 import io.github.kaiso.lygeum.core.entities.Client;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
+import io.github.kaiso.lygeum.core.entities.PropertyValueEntity;
 import io.github.kaiso.lygeum.core.entities.Role;
 import io.github.kaiso.lygeum.core.entities.User;
 import io.github.kaiso.lygeum.core.spi.StorageService;
@@ -229,11 +230,9 @@ public class StorageServiceImpl implements StorageService {
 
 	list.addAll(propertyRepository.findByEnvironmentAndApplicationNamed(environment, application).map(p -> {
 	    if (props.containsKey(p.getName())) {
-		p.getValues().forEach(v -> {
-		    if (v.getEnvironment().equals(env)) {
-			v.setValue(props.get(p.getName()));
-		    }
-		});
+		p.getValues().add(
+			PropertyValueEntity.builder().withProperty(p).withEnvironment(env)
+				.withValue(props.get(p.getName())).build());
 		props.remove(p.getName());
 	    } else {
 		p.getValues().forEach(v -> {

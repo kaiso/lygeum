@@ -20,48 +20,48 @@ import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 @RestController
 public class ApplicationsController extends LygeumRestController {
 
-	private ApplicationsManager applicationsManager;
+    private ApplicationsManager applicationsManager;
 
-	@Autowired
-	public ApplicationsController(ApplicationsManager applicationsManager) {
-		this.applicationsManager = applicationsManager;
-	}
+    @Autowired
+    public ApplicationsController(ApplicationsManager applicationsManager) {
+	this.applicationsManager = applicationsManager;
+    }
 
-	@RequestMapping(path = "/applications", method = RequestMethod.GET)
-	public ResponseEntity<List<ApplicationEntity>> fetchAllApplications() {
-		return ResponseEntity.ok(applicationsManager.findAll());
-	}
+    @RequestMapping(path = "/applications", method = RequestMethod.GET)
+    public ResponseEntity<List<ApplicationEntity>> fetchAllApplications() {
+	return ResponseEntity.ok(applicationsManager.findAll());
+    }
 
-	@RequestMapping(path = "/applications/{code}", method = RequestMethod.PUT)
-	public ResponseEntity<String> updateApplication(@RequestBody(required = true) ApplicationEntity app,
-			@PathVariable(required = true, name = "code") String code) {
-		ApplicationEntity application = applicationsManager.findByCode(code)
-				.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + code));
-		AuthorizationManager.preAuthorize(null, application.getName(), AuthorizationAction.UPDATE);
+    @RequestMapping(path = "/applications/{code}", method = RequestMethod.PUT)
+    public ResponseEntity<String> updateApplication(@RequestBody(required = true) ApplicationEntity app,
+	    @PathVariable(required = true, name = "code") String code) {
+	ApplicationEntity application = applicationsManager.findByCode(code)
+		.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + code));
+	AuthorizationManager.preAuthorize(application.getName(), null, AuthorizationAction.UPDATE);
 
-		applicationsManager.update(app);
+	applicationsManager.update(app);
 
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Application successfully updated");
-	}
+	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Application successfully updated");
+    }
 
-	@RequestMapping(path = "/applications", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApplicationEntity> createApplication(@RequestBody(required = true) ApplicationEntity app) {
-		AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_APP_CREATE);
+    @RequestMapping(path = "/applications", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApplicationEntity> createApplication(@RequestBody(required = true) ApplicationEntity app) {
+	AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_APP_CREATE);
 
-		ApplicationEntity application = applicationsManager.create(app);
+	ApplicationEntity application = applicationsManager.create(app);
 
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(application);
-	}
+	return ResponseEntity.status(HttpStatus.NO_CONTENT).body(application);
+    }
 
-	@RequestMapping(path = "/applications/{code}", method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteApplication(@PathVariable(required = true, name = "code") String code) {
-		ApplicationEntity application = applicationsManager.findByCode(code)
-				.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + code));
-		AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_APP_DELETE);
+    @RequestMapping(path = "/applications/{code}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteApplication(@PathVariable(required = true, name = "code") String code) {
+	ApplicationEntity application = applicationsManager.findByCode(code)
+		.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + code));
+	AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_APP_DELETE);
 
-		applicationsManager.delete(application);
+	applicationsManager.delete(application);
 
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Application successfully deleted");
-	}
+	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Application successfully deleted");
+    }
 
 }

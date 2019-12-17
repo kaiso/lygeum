@@ -51,6 +51,7 @@ subprojects {
 	      implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-properties:2.9.0'
 	      implementation 'org.springframework.boot:spring-boot-starter-web'
 	      implementation  group: 'org.springframework', name: 'spring-tx'
+	      implementation  group: 'org.springframework.security', name: 'spring-security-core'
 	      implementation 'com.h2database:h2:1.4.200'
 	      implementation  group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
 	      implementation  group: 'org.hibernate', name: 'hibernate-core'
@@ -64,7 +65,7 @@ subprojects {
 	      implementation  group: 'org.glassfish', name: 'javax.el', version: "${project.'javax.el.version'}"
 	      
 	      //Test dependencies
-          testImplementation 'org.jmockit:jmockit:1.47'    
+          testImplementation 'org.jmockit:jmockit:1.47'
 	      testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
           testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
           testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.3.2'
@@ -78,8 +79,9 @@ subprojects {
         
 	    test.doFirst {
 	       def jmockitPath = "${classpath.find { it.name.contains("jmockit") }.absolutePath}"
-	       println "jmockit path ${jmockitPath}" 
-	       jvmArgs "-javaagent:${jmockitPath}"
+	       def jmockitAgent = "-javaagent:${jmockitPath}"
+	       println "Append to jvm args: ${jmockitAgent}" 
+	       jvmArgs "${jmockitAgent}"
            useJUnitPlatform()
         }
       }

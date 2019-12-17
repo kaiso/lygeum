@@ -42,6 +42,7 @@ import io.github.kaiso.lygeum.api.EnvironmentsController;
 import io.github.kaiso.lygeum.api.handler.GlobalControllerExceptionHandler;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.manager.EnvironmentsManager;
+import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
@@ -55,178 +56,180 @@ import test.io.github.kaiso.lygeum.api.util.PrintUtils;
 @SpringJUnitConfig
 public class EnvironmentsControllerTest {
 
-	@BeforeAll
-	public static void applySpringIntegration() {
-		new FakeBeanFactory();
-	}
+    @BeforeAll
+    public static void applySpringIntegration() {
+	new FakeBeanFactory();
+    }
 
-	@BeforeEach
-	public void setup() {
-		mockMvc = MockMvcBuilders.standaloneSetup(new EnvironmentsController(environmentsManager))
-				.setControllerAdvice(new GlobalControllerExceptionHandler()).build();
-	}
+    @BeforeEach
+    public void setup() {
+	mockMvc = MockMvcBuilders.standaloneSetup(new EnvironmentsController(environmentsManager))
+		.setControllerAdvice(new GlobalControllerExceptionHandler()).build();
+    }
 
-	@Mocked
-	private EnvironmentsManager environmentsManager;
+    @Mocked
+    private EnvironmentsManager environmentsManager;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Test
-	@WithMockUser(authorities = { "PROD_READ" })
-	public void should_return_all_environments() throws Exception {
-		List<EnvironmentEntity> envs = new ArrayList<>();
-		EnvironmentEntity entity = new EnvironmentEntity("ENV01", "PRODUCTION");
-		envs.add(entity);
-		new Expectations() {
-			{
-				environmentsManager.findAll();
-				result = envs;
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_READ" })
+    public void should_return_all_environments() throws Exception {
+	List<EnvironmentEntity> envs = new ArrayList<>();
+	EnvironmentEntity entity = new EnvironmentEntity("ENV01", "PRODUCTION");
+	envs.add(entity);
+	new Expectations() {
+	    {
+		environmentsManager.findAll();
+		result = envs;
 
-			}
-		};
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/lygeum/api/environments")
-				.accept(MediaType.APPLICATION_JSON);
+	    }
+	};
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/lygeum/api/environments")
+		.accept(MediaType.APPLICATION_JSON);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				JSONAssert.assertEquals(PrintUtils.json(envs), result.getResponse().getContentAsString(), false);
-			}
-		};
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
+		JSONAssert.assertEquals(PrintUtils.json(envs), result.getResponse().getContentAsString(), false);
+	    }
+	};
 
-	}
+    }
 
-	@Test
-	@WithMockUser(authorities = { "PRODUCTION_UPDATE" })
-	public void should_update_environment() throws Exception {
-		EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
-		new Expectations() {
-			{
-				environmentsManager.findByCode(anyString);
-				result = Optional.ofNullable(entity);
-			}
-		};
-		String content = PrintUtils.json(entity);
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/lygeum/api/environments/" + entity.getCode())
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PRODUCTION_UPDATE" })
+    public void should_update_environment() throws Exception {
+	EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
+	new Expectations() {
+	    {
+		environmentsManager.findByCode(anyString);
+		result = Optional.ofNullable(entity);
+	    }
+	};
+	String content = PrintUtils.json(entity);
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/lygeum/api/environments/" + entity.getCode())
+		.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				EnvironmentEntity calledEntity;
-				environmentsManager.update(calledEntity = withCapture());
-				assertEquals(entity, calledEntity);
-			}
-		};
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
+		EnvironmentEntity calledEntity;
+		environmentsManager.update(calledEntity = withCapture());
+		assertEquals(entity, calledEntity);
+	    }
+	};
 
-	}
-	@Test
-	@WithMockUser(authorities = { "PRODUCTION_UPDATE" })
-	public void should_fail_update_when_environment_not_found() throws Exception {
-		EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
-		new Expectations() {
-			{
-				environmentsManager.findByCode(anyString);
-				result = Optional.ofNullable(null);
-			}
-		};
-		String content = PrintUtils.json(entity);
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/lygeum/api/environments/" + entity.getCode())
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
-		
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
-		
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is4xxClientError());
-			}
-		};
-		
-	}
+    }
 
-	@Test
-	@WithMockUser(authorities = { "ALL_ENV_CREATE" })
-	public void should_create_environment() throws Exception {
-		EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
-		new Expectations() {
-			{
-				environmentsManager.create(entity);
-				result = entity;
-			}
-		};
-		String content = PrintUtils.json(entity);
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/lygeum/api/environments/")
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PRODUCTION_UPDATE" })
+    public void should_fail_update_when_environment_not_found() throws Exception {
+	EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
+	new Expectations() {
+	    {
+		environmentsManager.findByCode(anyString);
+		result = Optional.ofNullable(null);
+	    }
+	};
+	String content = PrintUtils.json(entity);
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/lygeum/api/environments/" + entity.getCode())
+		.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				MockMvcResultMatchers.jsonPath("$.code", Matchers.equalTo("code01")).match(result);
-				MockMvcResultMatchers.jsonPath("$.name", Matchers.equalTo("production")).match(result);
-			}
-		};
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is4xxClientError());
+	    }
+	};
 
-	}
-	
-	@Test
-	@WithMockUser(authorities = { "ALL_ENV_DELETE" })
-	public void should_delete_environment() throws Exception {
-		EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
-		new Expectations() {
-			{
-				environmentsManager.findByCode(anyString);
-				result = Optional.ofNullable(entity);
-			}
-		};
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/lygeum/api/environments/" + entity.getCode())
-				.accept(MediaType.APPLICATION_JSON);
+    }
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "ALL_ENV_CREATE" })
+    public void should_create_environment() throws Exception {
+	EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
+	new Expectations() {
+	    {
+		environmentsManager.create(entity);
+		result = entity;
+	    }
+	};
+	String content = PrintUtils.json(entity);
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/lygeum/api/environments/")
+		.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
 
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				EnvironmentEntity calledEntity;
-				environmentsManager.delete(calledEntity = withCapture());
-				assertEquals(entity, calledEntity);
-			}
-		};
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
 
-	}
-	@Test
-	@WithMockUser(authorities = { "ALL_ENV_DELETE" })
-	public void should_fail_delete_when_environment_not_found() throws Exception {
-		
-		new Expectations() {
-			{
-				environmentsManager.findByCode(anyString);
-				result = Optional.ofNullable(null);
-			}
-		};
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/lygeum/api/environments/code22")
-				.accept(MediaType.APPLICATION_JSON);
-		
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		PrintUtils.printResponse(result);
-		
-		new Verifications() {
-			{
-				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is4xxClientError());
-				
-			}
-		};
-		
-	}
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
+		MockMvcResultMatchers.jsonPath("$.code", Matchers.equalTo("code01")).match(result);
+		MockMvcResultMatchers.jsonPath("$.name", Matchers.equalTo("production")).match(result);
+	    }
+	};
+
+    }
+
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "ALL_ENV_DELETE" })
+    public void should_delete_environment() throws Exception {
+	EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
+	new Expectations() {
+	    {
+		environmentsManager.findByCode(anyString);
+		result = Optional.ofNullable(entity);
+	    }
+	};
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/lygeum/api/environments/" + entity.getCode())
+		.accept(MediaType.APPLICATION_JSON);
+
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
+
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
+		EnvironmentEntity calledEntity;
+		environmentsManager.delete(calledEntity = withCapture());
+		assertEquals(entity, calledEntity);
+	    }
+	};
+
+    }
+
+    @Test
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "ALL_ENV_DELETE" })
+    public void should_fail_delete_when_environment_not_found() throws Exception {
+
+	new Expectations() {
+	    {
+		environmentsManager.findByCode(anyString);
+		result = Optional.ofNullable(null);
+	    }
+	};
+	RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/lygeum/api/environments/code22")
+		.accept(MediaType.APPLICATION_JSON);
+
+	MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+	PrintUtils.printResponse(result);
+
+	new Verifications() {
+	    {
+		assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is4xxClientError());
+
+	    }
+	};
+
+    }
 
 }

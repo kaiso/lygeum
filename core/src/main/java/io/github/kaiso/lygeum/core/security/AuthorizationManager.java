@@ -34,6 +34,8 @@ public final class AuthorizationManager {
     public static final String ROLE_ADMIN = "LYGEUM_ADMIN";
     public static final String ROLE_OPERATOR = "LYGEUM_OPERATOR";
     public static final String ROLE_PREFIX = "ROLE_";
+    public static final String ROLE_ENV_PREFIX = ROLE_PREFIX + "ENV_";
+    public static final String ROLE_APP_PREFIX = ROLE_PREFIX + "APP_";
 
     private AuthorizationManager() {
 	super();
@@ -52,14 +54,21 @@ public final class AuthorizationManager {
 	    return;
 	}
 
-	if ((action == AuthorizationAction.READ || action == AuthorizationAction.UPDATE)
-		&& environment != null
-		&& authorities.contains(new SimpleGrantedAuthority(
-			AuthorizationManager.ROLE_PREFIX + environment.toUpperCase() + "_" + action))
-		&& application != null
-		&& authorities.contains(new SimpleGrantedAuthority(
-			AuthorizationManager.ROLE_PREFIX + application.toUpperCase() + "_" + action))) {
-	    return;
+	if (action == AuthorizationAction.READ || action == AuthorizationAction.UPDATE) {
+	    boolean granted = true;
+	    if (environment != null
+		    && !authorities.contains(new SimpleGrantedAuthority(
+			    AuthorizationManager.ROLE_ENV_PREFIX + environment.toUpperCase() + "_" + action))) {
+		granted = false;
+	    }
+	    if (granted && application != null
+		    && !authorities.contains(new SimpleGrantedAuthority(
+			    AuthorizationManager.ROLE_APP_PREFIX + application.toUpperCase() + "_" + action))) {
+		granted = false;
+	    }
+	    if (granted) {
+		return;
+	    }
 	}
 
 	throw new ResourceAccessDeniedException();

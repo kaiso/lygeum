@@ -16,7 +16,9 @@
 package io.github.kaiso.lygeum.core.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,7 +49,7 @@ public class PropertyEntity extends BaseEntity {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
-	private List<PropertyValueEntity> values;
+	private Set<PropertyValueEntity> values;
 
 	@JsonIgnore
 	@ManyToOne(optional = false, cascade = CascadeType.REFRESH)
@@ -66,21 +68,21 @@ public class PropertyEntity extends BaseEntity {
 	}
 
 	public String getValue() {
-		return getValues().isEmpty() ? null : getValues().get(0).getValue();
+		return getValues().isEmpty() ? null : getValues().iterator().next().getValue();
 	}
 
 	public void setValue(String value) {
 		getValues().add(PropertyValueEntity.builder().withProperty(this).withValue(value).build());
 	}
 
-	public List<PropertyValueEntity> getValues() {
+	public Set<PropertyValueEntity> getValues() {
 		if (values == null) {
-			values = new ArrayList<>();
+			values = new HashSet<>();
 		}
 		return values;
 	}
 
-	public void setValues(List<PropertyValueEntity> environment) {
+	public void setValues(Set<PropertyValueEntity> environment) {
 		this.values = environment;
 	}
 
@@ -140,7 +142,7 @@ public class PropertyEntity extends BaseEntity {
 			e.setCode(code);
 			e.setName(name);
 			e.setDescription(description);
-			List<PropertyValueEntity> values = new ArrayList<>();
+			Set<PropertyValueEntity> values = new HashSet<>();
 			if (StringUtils.hasText(value)) {
 				if (environment == null || !StringUtils.hasText(environment.getCode())) {
 					throw new IllegalArgumentException(
