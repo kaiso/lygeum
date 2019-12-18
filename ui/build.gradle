@@ -1,6 +1,16 @@
+
+apply plugin: 'base'
+
 buildscript {
     project.ext.'nodeDir' = "${this.properties['projectDir']}/.node"
     ext.execPath = "$System.env.PATH" + System.getProperty("path.separator") + "/usr/local/bin/"
+}
+
+gradle.startParameter.taskRequests.each { tr -> 
+    if ( tr instanceof org.gradle.internal.DefaultTaskExecutionRequest ) {
+         println "task requests: $tr.args"
+         ext.args = tr.args
+    }
 }
 
 
@@ -9,8 +19,6 @@ if (project.hasProperty('front.skip')) {
    project.tasks.all { task -> task.enabled = false }
 }
         
-apply plugin: 'base'
-
 clean.doFirst {
   println 'cleaning lygeum-ui project'
 }
@@ -30,6 +38,13 @@ task installPackages(type:Exec) {
    commandLine 'sh', '-c', 'npm install'
 }
 
+task runTests(type:Exec) {
+   doFirst {
+	   println 'launching ui tests...'
+   }
+   environment "PATH", execPath
+   commandLine 'sh', '-c', 'npm run test'
+}
 
 task buildPackage(type:Exec) {
    doFirst {
@@ -39,5 +54,10 @@ task buildPackage(type:Exec) {
    environment "PATH", execPath
    commandLine 'sh', '-c', 'npm run build'
 }
-buildPackage.dependsOn installPackages
+
+runTests.dependsOn installPackages
+buildPackage.dependsOn runTests
 build.dependsOn buildPackage
+buildPackage.onlyIf{ ext.args.contains("build") || ext.args.contains("assemble") }
+
+
