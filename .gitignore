@@ -11,4 +11,5 @@ bin/
 docs/sources/node_modules/
 ui/node_modules/
 ui/dist/
+ui/test/unit/coverage/
 pers/data
