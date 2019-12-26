@@ -39,4 +39,6 @@ public interface UsersManager extends UserDetailsService{
     public Optional<User> findUserByCode(String code);
 
     public User createUser(User user);
+
+    public void deleteUserByCode(String code);
 }

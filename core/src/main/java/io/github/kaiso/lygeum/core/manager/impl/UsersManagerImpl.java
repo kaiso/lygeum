@@ -72,11 +72,12 @@ public class UsersManagerImpl implements UsersManager {
     public User saveUser(User user) {
 	User existingUser = findUserByCode(user.getCode())
 		.orElseThrow(() -> new IllegalArgumentException("User can not be found with code" + user.getCode()));
-	existingUser.setFirstName(user.getFirstName());
-	existingUser.setLastName(user.getFirstName());
-	existingUser.setUsername(user.getUsername());
+	
+	user.setCreatedBy(existingUser.getCreatedBy().get());
+	user.setCreatedDate(existingUser.getCreatedDate().get());
+	user.setId(existingUser.getId());
 	if (!StringUtils.isEmpty(user.getPassword())) {
-	    existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+	    user.setPassword(passwordEncoder.encode(user.getPassword()));
 	}
 
 	return storageService.saveUser(user);
@@ -90,6 +91,11 @@ public class UsersManagerImpl implements UsersManager {
     @Override
     public Optional<User> findUserByCode(String code) {
 	return storageService.findUserByCode(code);
+    }
+
+    @Override
+    public void deleteUserByCode(String code) {
+         storageService.deleteUserByCode(code);	
     }
 
 }
