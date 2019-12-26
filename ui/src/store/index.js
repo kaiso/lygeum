@@ -18,14 +18,12 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import dialog from './modules/dialog'
 import notification from './modules/notification'
-import session from './modules/session'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
     dialog,
-    notification,
-    session
+    notification
   }
 })

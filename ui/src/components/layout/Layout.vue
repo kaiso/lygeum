@@ -23,7 +23,7 @@
       app
     >
       <v-list dense>
-        <v-list-tile @click="route('/')">
+        <v-list-tile @click="route('dashboard')">
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
           </v-list-tile-action>
@@ -32,7 +32,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile @click="route('/configurations')">
+        <v-list-tile @click="route('configurations')">
           <v-list-tile-action>
             <v-icon>settings_applications</v-icon>
           </v-list-tile-action>
@@ -41,7 +41,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile @click="route('/administration')">
+        <v-list-tile @click="route('administration')">
           <v-list-tile-action>
             <v-icon>chrome_reader_mode</v-icon>
           </v-list-tile-action>
@@ -50,7 +50,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile @click="route('/settings')">
+        <v-list-tile @click="route('settings')">
           <v-list-tile-action>
             <v-icon>build</v-icon>
           </v-list-tile-action>
@@ -81,16 +81,23 @@
             <v-list-tile-title>{{ me.username }}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile @click="route('account', {'user': me })">
+            <v-list-tile-action>
+              <v-icon>home_work</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t("account.myaccount") }}</v-list-tile-title>
+            </v-list-tile-content>
+         </v-list-tile>
         <v-list-tile
         @click="doLogout">
-        <v-list-tile-action>
-          <v-icon>exit_to_app</v-icon>
-        </v-list-tile-action>
-
-        <v-list-tile-content>
-          <v-list-tile-title>{{ $t("actions.logout.button") }}</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+          <v-list-tile-action>
+            <v-icon>exit_to_app</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t("actions.logout.button") }}</v-list-tile-title>
+          </v-list-tile-content>
+         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar app fixed clipped-left>
@@ -117,12 +124,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import { logout } from '@/js/api/auth.js'
+import { getMe } from '@/js/api/api'
 export default {
   name: 'aps-layout',
   data: () => ({
-    profileDrawer: null
+    profileDrawer: null,
+    me: {},
+    loggedIn: false
   }),
   props: {
     drawer: { type: Boolean, default: true },
@@ -130,15 +139,24 @@ export default {
     title: { type: String, default: 'Lygeum' },
     drawerDisabled: { type: Boolean, default: false }
   },
-  computed: {
-    ...mapState({
-      loggedIn: state => state.session.user !== null,
-      me: state => state.session.user || {}
-    })
+  beforeMount: function () {
+    let context = this
+    if (!context.$storage.has('user')) {
+      getMe(context).then(function (response) {
+        context.$storage.set('user', response.data, { ttl: 30 * 60 * 60 * 24 * 1000 })
+        context.me = response.data
+        context.loggedIn = true
+      }).catch(function (error) {
+        return error
+      })
+    } else {
+      context.me = context.$storage.get('user')
+      context.loggedIn = true
+    }
   },
   methods: {
-    route: function (url) {
-      this.$router.push({ path: `${url}` })
+    route: function (name, params = {}) {
+      this.$router.push({ name: name, params: params })
     },
     doLogout: function() {
       logout(this)

@@ -145,15 +145,15 @@ export default {
   },
   methods: {
     loadEnvs() {
-      this.loadingEnvs = true
-      this.envs = []
       let context = this
-      this.filteredEnvs = []
-      api.getAllEnvs(this).then(result => {
+      context.loadingEnvs = true
+      context.envs = []
+      context.filteredEnvs = []
+      api.getAllEnvs(context).then(result => {
         if (result.data != null) {
           result.data.forEach(element => {
             tableUtils.enhanceEditable(element)
-            this.envs.push(element)
+            context.envs.push(element)
           })
         }
       }).catch(error => {
@@ -162,7 +162,7 @@ export default {
           status: 'error'
         })
       }).finally(() => {
-        this.loadingEnvs = false
+        context.loadingEnvs = false
       })
     },
     hasUnsavedChanges() {

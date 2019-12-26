@@ -26,6 +26,7 @@ import Users from '@/components/admin/Users'
 import UserEdit from '@/components/admin/UserEdit'
 import Login from '@/components/auth/Login'
 import Wizard from '@/components/start/Wizard'
+import Account from '@/components/account/Account'
 
 Vue.use(Router)
 
@@ -33,12 +34,12 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Dashboard',
+      name: 'dashboard',
       component: Dashboard
     },
     {
       path: '/settings',
-      name: 'Settings',
+      name: 'settings',
       component: Settings
     },
     {
@@ -86,6 +87,12 @@ export default new Router({
       path: '/firstrun',
       name: 'firstrun',
       component: Wizard
+    },
+    {
+      path: '/account',
+      name: 'account',
+      component: Account,
+      props: true
     }
   ]
 })
