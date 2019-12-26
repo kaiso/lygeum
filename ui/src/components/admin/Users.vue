@@ -74,6 +74,9 @@ import * as api from '@/js/api/api'
 import debounce from '@/js/util/debounce'
 import Layout from '@/components/layout/Layout'
 import ListPicker from '@/components/common/ListPicker'
+import { mapState } from 'vuex';
+import { CONST_ACTIONS } from '@/js/util/constants';
+const DELETE_USER = 'deleteUser';
 
 let search = debounce(function (target, param) {
   target.getDataFromApi(param).then((data) => {
@@ -83,7 +86,7 @@ let search = debounce(function (target, param) {
 }, 1000)
 
 export default {
-  name: 'settings-component',
+  name: 'users-component',
   components: { 'aps-layout': Layout,
     'list-picker': ListPicker },
   data: () => ({
@@ -104,6 +107,11 @@ export default {
       { i18nKey: 'admin.lastName', text: '3', value: 'lastName' }
     ]
   }),
+  computed: {
+    ...mapState({
+      mainDialogOpen: state => state.dialog.open
+    })
+  },
   watch: {
     pagination: {
       handler() {
@@ -113,6 +121,41 @@ export default {
         })
       },
       deep: true
+    },
+    mainDialogOpen(val) {
+      if (val) {
+        return;
+      }
+      let caller = this.$store.state.dialog.caller;
+      let consumed = false;
+      switch (caller) {
+        case this.$router.currentRoute.name + '/' + DELETE_USER:
+          if (this.$store.state.dialog.action === CONST_ACTIONS.CONFIRM) {
+            let context = this
+            let target = this.$store.state.dialog.target
+            api.deleteUser(this, target).then(function (result) {
+              context.$store.dispatch('notification/open', {
+                message: context.$i18n.t('admin.notifications.users.delete.success', { target: target.name }),
+                status: 'success'
+              })
+              context.loadAll()
+            }).catch(function (error) {
+              context.$store.dispatch('notification/open', {
+                message: context.$i18n.t('admin.notifications.users.delete.error', { target: target.name, error: error }),
+                status: 'error'
+              })
+            })
+          }
+          consumed = true;
+          break;
+        default:
+          break;
+      }
+      if (consumed) {
+        this.$store.dispatch('dialog/consume', {
+          caller: this.$router.currentRoute.name + '/' + DELETE_USER
+        });
+      }
     }
   },
   mounted() {
@@ -125,7 +168,6 @@ export default {
       this.getDataFromApi().then((data) => {
         this.users = data.items
         this.totalUsers = data.total
-        console.log('load all from users', data.items)
       })
     },
     addUser() {
@@ -168,16 +210,26 @@ export default {
             items = items.slice((page - 1) * rowsPerPage, page * rowsPerPage)
           }
 
-          this.loading = false
+          context.loading = false
           resolve({
             items,
             total
           })
+        }).catch(function (error) {
+          context.loading = false
+          reject(error)
         })
       })
     },
-    editItem (item) {
+    editItem(item) {
       this.$router.push({ name: 'useredit', params: { 'user': item } })
+    },
+    deleteItem(item) {
+      this.$store.dispatch('dialog/open', {
+        message: this.$i18n.t('generic.confirm_delete', { target: item.name }),
+        caller: this.$router.currentRoute.name + '/' + DELETE_USER,
+        target: item
+      });
     }
   }
 }

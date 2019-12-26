@@ -119,6 +119,7 @@
 </template>
 <script>
 import * as api from '@/js/api/api'
+import { validateEmail } from '@/js/util/validator'
 import Layout from '@/components/layout/Layout'
 import ListPicker from '@/components/common/ListPicker'
 
@@ -179,11 +180,10 @@ export default {
       this.$router.push({ name: 'users' })
     },
     validateUser() {
-      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      this.emailError = !re.test(this.user.username);
-      this.lastNameError = this.user.lastName === null || this.user.lastName === '';
-      this.firstNameError = this.user.firstName === null || this.user.firstName === '';
-      return !(this.lastNameError || this.firstNameError || this.emailError);
+      this.emailError = !validateEmail(this.user.username)
+      this.lastNameError = this.user.lastName === null || this.user.lastName === ''
+      this.firstNameError = this.user.firstName === null || this.user.firstName === ''
+      return !(this.lastNameError || this.firstNameError || this.emailError)
     }
   }
 }
