@@ -9,7 +9,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const env = process.env.NODE_ENV === 'testing'
@@ -51,7 +51,19 @@ const webpackConfig = merge(baseWebpackConfig, {
           enforce: true
         }
       }
-    }
+    },
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        chunkFilter: (chunk) => {
+          if (chunk.name === 'vendor') {
+            return false;
+          }
+          return true;
+        },
+        parallel: 4
+      })
+    ]
   },
   output: {
     path: config.build.assetsRoot,
@@ -63,11 +75,6 @@ const webpackConfig = merge(baseWebpackConfig, {
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
-    }),
-    new UglifyJsPlugin({
-      cache: true,
-      sourceMap: config.build.productionSourceMap,
-      parallel: true
     }),
     // extract css into its own file
     new MiniCssExtractPlugin({
