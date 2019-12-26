@@ -21,6 +21,9 @@ const messages = {
   auth: {
     login: {
       error: 'Failed to login, cause: [<i>{error}</i>]'
+    },
+    access: {
+      error: 'You are not authorized to access this resource.'
     }
   },
   wizard: {
@@ -157,9 +160,23 @@ const messages = {
         load: {
           error: 'Failed to load roles, cause: [<i>{error}</i>]'
         }
+      },
+      users: {
+        delete: {
+          success: 'User <b>{target}</b> has been deleted successfully',
+          error: 'Failed to delete user <b>{target}</b>, cause: [<i>{error}</i>]'
+        }
+      }
+    }
+  },
+  account: {
+    account: 'Account',
+    myaccount: 'My account',
+    notifications: {
+      save: {
+        success: 'My account has been successfully saved'
       }
     }
   }
-
 }
 export default messages
