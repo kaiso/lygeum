@@ -132,4 +132,6 @@ public interface StorageService {
 
 	Optional<User> findUserByCode(String code);
 
+	void deleteUserByCode(String code);
+
 }

@@ -322,4 +322,10 @@ public class StorageServiceImpl implements StorageService {
 	return userRepository.findByCode(code);
     }
 
+    @Override
+    public void deleteUserByCode(String code) {
+	userRepository.delete(userRepository.findByCode(code)
+		.orElseThrow(() -> new EntityNotFoundException("Can not find user with code " + code)));	
+    }
+
 }

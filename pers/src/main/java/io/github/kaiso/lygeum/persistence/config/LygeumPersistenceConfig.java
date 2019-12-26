@@ -48,8 +48,9 @@ public class LygeumPersistenceConfig {
 
     @Bean
     public DataSource dataSource() throws Exception {
+	String home = System.getProperty("user.home");
 	JdbcDataSource dataSource = DataSourceBuilder.create().username("lygeum").password("")
-		.url("jdbc:h2:file:~/lygeum/lygeumdb;AUTO_SERVER=TRUE").type(JdbcDataSource.class)
+		.url("jdbc:h2:file:" + home + "/.lygeum/lygeumdb;AUTO_SERVER=TRUE").type(JdbcDataSource.class)
 		.driverClassName("org.h2.Driver").build();
 	new LygeumStorageInitializer(dataSource, applicationArguments).run();
 	return dataSource;

@@ -66,5 +66,16 @@ public class AdminController extends LygeumRestController {
 	user.setCode(code);
 	return ResponseEntity.of(Optional.of(usersManager.saveUser(user)));
     }
+    
+    @RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+    @RequestMapping(path = "/admin/users/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteUser(@PathVariable("id") String code) {
+	
+	if (StringUtils.isEmpty(code)) {
+	    throw new IllegalArgumentException("User code can not be null");
+	}
+	usersManager.deleteUserByCode(code);
+	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Environment successfully deleted");
+    }
 
 }
