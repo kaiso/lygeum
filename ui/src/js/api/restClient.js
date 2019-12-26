@@ -16,7 +16,7 @@
 
 export default {
   call(context, method, uri, data, headers, params, responseType = 'json') {
-    let defaultHeaders = this.getAuthHeader()
+    let defaultHeaders = this.getAuthHeader(context)
     let concreteHeaders = { ...headers, ...defaultHeaders }
     return new Promise(function (resolve, reject) {
       context.$http({
@@ -30,21 +30,25 @@ export default {
         console.log('REST Client Response ==> ', JSON.stringify(response))
         resolve(response)
       }).catch(function (error) {
-        if (error.response &&
-          error.response.data.error_description &&
-          error.response.data.error_description.startsWith('Invalid access token')) {
+        if (error.response && error.response.status === 401) {
+          context.$storage.remove('user')
+          context.$storage.remove('access_token')
+          context.$storage.remove('refresh_token')
           context.$router.push({ path: '/auth/login' })
-          resolve('authentication required')
+        } else if (error.response && error.response.status === 403) {
+          context.$store.dispatch('notification/open', {
+            message: context.$i18n.t('auth.access.error', { error: error }),
+            status: 'error'
+          })
         } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log('REST Client Error ==>  ', error.message, '\nDetails: ', error.response)
-          reject(error.response ? `status: ${error.response.data.status}, message: ${error.response.data.message}` : error)
+          console.log('REST Client Error ==>  ', error.response.status, '\nDetails: ', JSON.stringify(error.response.data))
         }
+        reject(error)
       })
     })
   },
-  getAuthHeader() {
-    let accessToken = sessionStorage.getItem('access_token')
+  getAuthHeader(context) {
+    let accessToken = context.$storage.get('access_token')
     if (typeof accessToken !== 'undefined') {
       return {
         'Authorization': 'Bearer ' + accessToken
