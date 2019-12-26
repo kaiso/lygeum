@@ -186,10 +186,27 @@ export function createUser(context, user) {
   )
 }
 
+export function deleteUser(context, user) {
+  return client.call(
+    context,
+    'delete',
+    `/api/admin/users/${user.code}`
+  )
+}
+
 export function getMe(context) {
   return client.call(
     context,
     'get',
-    `/api/account/me`
+    `/api/accounts/me`
+  )
+}
+
+export function updateMe(context, user) {
+  return client.call(
+    context,
+    'put',
+    `/api/accounts/${user.code}`,
+    user
   )
 }

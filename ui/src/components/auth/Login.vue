@@ -55,7 +55,6 @@
 
 <script>
 import * as auth from '@/js/api/auth.js'
-import { getMe } from '@/js/api/api'
 import Layout from '@/components/layout/Layout'
 export default {
   components: { 'aps-layout': Layout },
@@ -75,9 +74,6 @@ export default {
       context.loading = true
       auth.login(context, context.credentials, '../').then(function (response) {
         context.loading = false
-        getMe(context).then(function (response) {
-          context.$store.dispatch('session/login', { user: response.data })
-        })
       }).catch(error => {
         context.loading = false
         context.$store.dispatch('notification/open', {

@@ -35,8 +35,8 @@ export function login(context, creds, redirect) {
     qs.stringify(data),
     { 'content-type': 'application/x-www-form-urlencoded' }
   ).then(function (response) {
-    sessionStorage.setItem('access_token', response.data.access_token)
-    localStorage.setItem('refresh_token', response.data.refresh_token)
+    context.$storage.set('access_token', response.data.access_token, { ttl: 30 * 60 * 60 * 24 * 1000 })
+    context.$storage.set('refresh_token', response.data.refresh_token, { ttl: 0 })
     // Redirect to a specified route
     if (redirect) {
       context.$router.push({ path: `${redirect}` })
@@ -54,12 +54,11 @@ export function logout(context) {
     'get',
     'auth/logout'
   ).then(function (response) {
-    console.log('redirecting ', response)
     context.$router.push({ path: '/auth/login' })
   }).catch (function (error) {
     console.log('failed to logout', error)
   })
-  sessionStorage.removeItem('access_token')
-  localStorage.removeItem('refresh_token')
-  context.$store.dispatch('session/logout', {})
+  context.$storage.remove('user')
+  context.$storage.remove('access_token')
+  context.$storage.remove('refresh_token')
 }

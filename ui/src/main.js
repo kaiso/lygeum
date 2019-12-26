@@ -23,6 +23,7 @@ import VueI18n from 'vue-i18n'
 import messages from './i18n'
 import axios from 'axios'
 import config from './lygeum-config.json'
+import { Vue2Storage } from 'vue2-storage'
 import 'vuetify/dist/vuetify.min.css'
 
 Vue.use(Vuetify, {
@@ -49,6 +50,12 @@ const i18n = new VueI18n({
   locale: 'en-US',
   fallbackLocale: 'en-US',
   messages
+})
+
+Vue.use(Vue2Storage, {
+  prefix: 'lygeum_',
+  driver: 'local',
+  ttl: 60 * 60 * 24 * 1000 // 24 hours
 })
 
 Vue.config.productionTip = false
