@@ -15,14 +15,14 @@
    */
 
 <template>
-  <aps-layout :title="$tc('admin.user', 2)">
+  <aps-layout :title="$tc('admin.client', 2)">
     <v-layout slot="mainContent" column wrap style="height:100%">
       <v-system-bar window class="system-toolbar">
         <v-tooltip bottom>
-          <v-btn icon slot="activator" @click="addUser()" style="cursor: pointer;">
+          <v-btn icon slot="activator" @click="addClient()" style="cursor: pointer;">
             <v-icon>add_box</v-icon>
           </v-btn>
-          <span>{{$t('admin.adduser')}}</span>
+          <span>{{$t('admin.addClient')}}</span>
         </v-tooltip>
         <v-tooltip bottom>
           <v-btn icon slot="activator" @click="loadAll()" style="cursor: pointer;">
@@ -36,8 +36,8 @@
             style="height:27px;"
             class="aps-input-active"
             append-icon="search"
-            @input="triggerUserSearch(userSearch)"
-            v-model="userSearch"
+            @input="triggerClientSearch(clientSearch)"
+            v-model="clientSearch"
             single-line
             hide-details
           ></v-text-field>
@@ -49,16 +49,15 @@
       <div style="margin-top:5px;">
         <v-data-table
           :headers="headers"
-          :items="filteredUsers"
+          :items="filteredClients"
           :pagination.sync="pagination"
-          :total-items="totalUsers"
+          :total-items="totalClients"
           :no-data-text="this.$t('generic.nodata')"
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
-            <td>{{ props.item.username }}</td>
-            <td>{{ props.item.firstName }}</td>
-            <td>{{ props.item.lastName }}</td>
+            <td>{{ props.item.name }}</td>
+            <td>{{ props.item.code }}</td>
             <td class="justify-center layout px-0">
               <v-icon style="cursor:pointer;" @click="editItem(props.item)">edit</v-icon>
               <v-icon style="cursor:pointer;" @click="deleteItem(props.item)">delete</v-icon>
@@ -76,43 +75,42 @@ import Layout from '@/components/layout/Layout'
 import ListPicker from '@/components/common/ListPicker'
 import { mapState } from 'vuex';
 import { CONST_ACTIONS } from '@/js/util/constants';
-const DELETE_USER = 'deleteUser';
+const DELETE_CLIENT = 'deleteClient';
 
-const filterUsers = (context, pattern) => {
+const filterClients = (context, pattern) => {
   context.loading = true
   debounce(() => {
     if (pattern) {
-      context.filteredUsers = context.users.filter((value) => {
+      context.filteredClients = context.clients.filter((value) => {
         return value.username.toLowerCase().includes(pattern.toLowerCase())
       })
     } else {
-      context.filteredUsers = context.users
+      context.filteredClients = context.clients
     }
     context.loading = false
   }, 1000)()
 }
 
 export default {
-  name: 'users-component',
+  name: 'clients-component',
   components: { 'aps-layout': Layout,
     'list-picker': ListPicker },
   data: () => ({
-    totalUsers: 0,
-    users: [],
-    filteredUsers: [],
-    userSearch: '',
+    totalClients: 0,
+    clients: [],
+    filteredClients: [],
+    clientSearch: '',
     loading: true,
     pagination: {},
     headers: [
       {
-        i18nKey: 'admin.email',
+        i18nKey: 'admin.clientname',
         text: '1',
         align: 'left',
         sortable: false,
-        value: 'username'
+        value: 'name'
       },
-      { i18nKey: 'admin.firstName', text: '2', value: 'firstName' },
-      { i18nKey: 'admin.lastName', text: '3', value: 'lastName' }
+      { i18nKey: 'admin.clientcode', text: '2', value: 'firstName' }
     ]
   }),
   computed: {
@@ -134,19 +132,19 @@ export default {
       let caller = this.$store.state.dialog.caller;
       let consumed = false;
       switch (caller) {
-        case this.$router.currentRoute.name + '/' + DELETE_USER:
+        case this.$router.currentRoute.name + '/' + DELETE_CLIENT:
           if (this.$store.state.dialog.action === CONST_ACTIONS.CONFIRM) {
             let context = this
             let target = this.$store.state.dialog.target
             api.deleteUser(this, target).then(function (result) {
               context.$store.dispatch('notification/open', {
-                message: context.$i18n.t('admin.notifications.users.delete.success', { target: target.name }),
+                message: context.$i18n.t('admin.notifications.clients.delete.success', { target: target.name }),
                 status: 'success'
               })
               context.loadAll()
             }).catch(function (error) {
               context.$store.dispatch('notification/open', {
-                message: context.$i18n.t('admin.notifications.users.delete.error', { target: target.name, error: error }),
+                message: context.$i18n.t('admin.notifications.clients.delete.error', { target: target.name, error: error }),
                 status: 'error'
               })
             })
@@ -158,7 +156,7 @@ export default {
       }
       if (consumed) {
         this.$store.dispatch('dialog/consume', {
-          caller: this.$router.currentRoute.name + '/' + DELETE_USER
+          caller: this.$router.currentRoute.name + '/' + DELETE_CLIENT
         });
       }
     }
@@ -171,26 +169,26 @@ export default {
   methods: {
     loadAll() {
       this.getDataFromApi().then((data) => {
-        this.users = data.items
-        this.totalUsers = data.total
-        filterUsers(this, this.userSearch)
+        this.clients = data.items
+        this.totalClients = data.total
+        filterClients(this, this.clientSearch)
       })
     },
-    addUser() {
+    addClient() {
       let newuser = {
         roles: []
       }
       this.$router.push({ name: 'useredit', params: { 'user': newuser } })
     },
-    triggerUserSearch(param) {
-      filterUsers(this, this.userSearch)
+    triggerClientSearch(param) {
+      filterClients(this, this.clientSearch)
     },
     getDataFromApi(pattern) {
       this.loading = true
       let context = this
       return new Promise((resolve, reject) => {
         const { sortBy, descending, page, rowsPerPage } = this.pagination
-        api.getUsers(context).then((result) => {
+        api.getclients(context).then((result) => {
           let items = result.data
           const total = items.length
 
@@ -232,7 +230,7 @@ export default {
     deleteItem(item) {
       this.$store.dispatch('dialog/open', {
         message: this.$i18n.t('generic.confirm_delete', { target: item.name }),
-        caller: this.$router.currentRoute.name + '/' + DELETE_USER,
+        caller: this.$router.currentRoute.name + '/' + DELETE_CLIENT,
         target: item
       });
     }

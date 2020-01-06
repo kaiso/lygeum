@@ -27,6 +27,7 @@ import UserEdit from '@/components/admin/UserEdit'
 import Login from '@/components/auth/Login'
 import Wizard from '@/components/start/Wizard'
 import Account from '@/components/account/Account'
+import Password from '@/components/account/Password'
 
 Vue.use(Router)
 
@@ -92,6 +93,12 @@ export default new Router({
       path: '/account',
       name: 'account',
       component: Account,
+      props: true
+    },
+    {
+      path: '/password',
+      name: 'password',
+      component: Password,
       props: true
     }
   ]

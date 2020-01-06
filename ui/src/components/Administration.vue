@@ -34,11 +34,11 @@
           <v-avatar color="brown lighten-3" size="100" @click.stop="route('/config/applications')"
           style="cursor:pointer;">
           <v-btn icon @click="''">
-            <v-icon dark size="70">how_to_reg</v-icon>
+            <v-icon dark size="70">devices</v-icon>
           </v-btn>
           </v-avatar>
         </v-flex>
-        <label>{{$tc('admin.role',2)}} </label>
+        <label>{{$tc('admin.client',2)}} </label>
       </v-flex>
     </v-layout>
 </v-container>

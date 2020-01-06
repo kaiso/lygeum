@@ -13,4 +13,5 @@
     <include file="migration/v0.0.1/8-environment.sql"/>
     <include file="migration/v0.0.1/9-property.sql"/>
     <include file="migration/v0.0.1/10-property_value.sql"/>
+    <include file="migration/v0.0.1/11-client.sql"/>
 </databaseChangeLog>

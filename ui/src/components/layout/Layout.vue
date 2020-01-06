@@ -89,6 +89,14 @@
               <v-list-tile-title>{{ $t("account.myaccount") }}</v-list-tile-title>
             </v-list-tile-content>
          </v-list-tile>
+        <v-list-tile @click="route('password', {'user': me })">
+            <v-list-tile-action>
+              <v-icon>vpn_key</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t("account.password.update") }}</v-list-tile-title>
+            </v-list-tile-content>
+         </v-list-tile>
         <v-list-tile
         @click="doLogout">
           <v-list-tile-action>

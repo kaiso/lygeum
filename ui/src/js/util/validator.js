@@ -18,3 +18,7 @@ const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9
 export function validateEmail(email) {
   return email === 'lygeum' || re.test(email)
 }
+
+export function validatePassword(pass, confirm) {
+  return pass !== null && confirm === pass
+}

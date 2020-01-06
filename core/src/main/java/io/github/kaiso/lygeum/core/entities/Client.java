@@ -15,7 +15,6 @@
 */
 package io.github.kaiso.lygeum.core.entities;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,22 +27,30 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
-import io.github.kaiso.lygeum.core.security.AuthorizationAction;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Kais OMRI (kaiso)
  *
  */
 @Entity
-@Table(name="LGM_CLIENT")
+@Table(name = "LGM_CLIENT")
 public class Client extends BaseEntity implements ClientDetails {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5255223827480202386L;
-	private String secret;
-	private String scopeList;
+	public static final ObjectMapper mapper = new ObjectMapper();
+
+	private String name;
+	private String resourceIds;
+	private String clientSecret;
+	private String scope;
+	private String authorizedGrantTypes;
+	private String webServerRedirectUri;
+	private String authorities;
+	private Integer accessTokenValidity;
+	private Integer refreshTokenValidity;
+	private String additionalInformation;
+	private String autoapprove;
 
 	/*
 	 * (non-Javadoc)
@@ -55,6 +62,10 @@ public class Client extends BaseEntity implements ClientDetails {
 		return getCode();
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -63,7 +74,13 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public Set<String> getResourceIds() {
-		return null;
+		Set<String> resourceIdsList = new HashSet<>();
+		if (resourceIds != null) {
+			for (String scope : resourceIds.split(",")) {
+				resourceIdsList.add(scope);
+			}
+		}
+		return resourceIdsList;
 	}
 
 	/*
@@ -74,7 +91,7 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public boolean isSecretRequired() {
-		return false;
+		return true;
 	}
 
 	/*
@@ -85,7 +102,7 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public String getClientSecret() {
-		return secret;
+		return clientSecret;
 	}
 
 	/*
@@ -95,7 +112,7 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public boolean isScoped() {
-		return false;
+		return scope != null;
 	}
 
 	/*
@@ -106,8 +123,8 @@ public class Client extends BaseEntity implements ClientDetails {
 	@Override
 	public Set<String> getScope() {
 		Set<String> scopes = new HashSet<>();
-		if (scopeList != null) {
-			for (String scope : scopeList.split(",")) {
+		if (scope != null) {
+			for (String scope : scope.split(",")) {
 				scopes.add(scope);
 			}
 		}
@@ -123,8 +140,11 @@ public class Client extends BaseEntity implements ClientDetails {
 	@Override
 	public Set<String> getAuthorizedGrantTypes() {
 		Set<String> grantTypes = new HashSet<>();
-		grantTypes.add("passoword");
-		grantTypes.add("client_secret");
+		if (authorizedGrantTypes != null) {
+			for (String type : authorizedGrantTypes.split(",")) {
+				grantTypes.add(type);
+			}
+		}
 		return grantTypes;
 	}
 
@@ -136,7 +156,13 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public Set<String> getRegisteredRedirectUri() {
-		return null;
+		Set<String> uris = new HashSet<>();
+		if (webServerRedirectUri != null) {
+			for (String uri : webServerRedirectUri.split(",")) {
+				uris.add(uri);
+			}
+		}
+		return uris;
 	}
 
 	/*
@@ -147,7 +173,13 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
-		return null;
+		Set<GrantedAuthority> uris = new HashSet<>();
+		if (authorities != null) {
+			for (String role : authorities.split(",")) {
+				uris.add(new SimpleGrantedAuthority(role));
+			}
+		}
+		return uris;
 	}
 
 	/*
@@ -158,7 +190,7 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public Integer getAccessTokenValiditySeconds() {
-		return Integer.MAX_VALUE;
+		return accessTokenValidity;
 	}
 
 	/*
@@ -169,7 +201,7 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public Integer getRefreshTokenValiditySeconds() {
-		return Integer.MAX_VALUE;
+		return refreshTokenValidity;
 	}
 
 	/*
@@ -181,7 +213,7 @@ public class Client extends BaseEntity implements ClientDetails {
 	 */
 	@Override
 	public boolean isAutoApprove(String scope) {
-		return false;
+		return autoapprove != null && autoapprove.contains(scope);
 	}
 
 	/*
@@ -190,9 +222,14 @@ public class Client extends BaseEntity implements ClientDetails {
 	 * @see org.springframework.security.oauth2.provider.ClientDetails#
 	 * getAdditionalInformation()
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> getAdditionalInformation() {
-		return null;
+		try {
+			return additionalInformation != null ? mapper.readValue(additionalInformation, Map.class) : null;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

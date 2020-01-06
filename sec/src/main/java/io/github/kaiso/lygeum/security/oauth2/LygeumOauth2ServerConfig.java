@@ -39,31 +39,31 @@ import io.github.kaiso.lygeum.core.security.LygeumPasswordEncoder;
 @Configuration
 public class LygeumOauth2ServerConfig {
 
-    private UsersManager usersManager;
-    private LygeumPasswordEncoder encoder;
+	private UsersManager usersManager;
+	private LygeumPasswordEncoder encoder;
 
-    @Autowired
-    public LygeumOauth2ServerConfig(UsersManager usersManager, LygeumPasswordEncoder encoder) {
-	super();
-	this.usersManager = usersManager;
-	this.encoder = encoder;
-    }
+	@Autowired
+	public LygeumOauth2ServerConfig(UsersManager usersManager, LygeumPasswordEncoder encoder) {
+		super();
+		this.usersManager = usersManager;
+		this.encoder = encoder;
+	}
 
-    @Bean(name = "lygeumServerAuthenticationManager")
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-	DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-	authProvider.setUserDetailsService(usersManager);
-	authProvider.setPasswordEncoder(encoder);
-	return new ProviderManager(Arrays.asList(authProvider));
-    }
+	@Bean(name = "lygeumServerAuthenticationManager")
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(usersManager);
+		authProvider.setPasswordEncoder(encoder);
+		return new ProviderManager(Arrays.asList(authProvider));
+	}
 
-    @Bean
-    @Primary
-    public AuthorizationServerTokenServices lygeumServerTokenServices() {
-	final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-	defaultTokenServices.setTokenStore(new InMemoryTokenStore());
-	defaultTokenServices.setSupportRefreshToken(true);
-	return defaultTokenServices;
-    }
+	@Bean
+	@Primary
+	public AuthorizationServerTokenServices lygeumServerTokenServices() {
+		final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+		defaultTokenServices.setTokenStore(new InMemoryTokenStore());
+		defaultTokenServices.setSupportRefreshToken(true);
+		return defaultTokenServices;
+	}
 
 }

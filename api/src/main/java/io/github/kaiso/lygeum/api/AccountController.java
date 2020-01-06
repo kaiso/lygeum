@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.kaiso.lygeum.api.resources.PasswordResource;
 import io.github.kaiso.lygeum.core.entities.User;
 import io.github.kaiso.lygeum.core.manager.UsersManager;
 import io.github.kaiso.lygeum.core.security.SecurityContextHolder;
@@ -50,6 +51,24 @@ public class AccountController extends LygeumRestController {
 		
 		user.setPassword(null);
 
+		usersManager.saveUser(user);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User successfully updated");
+	}
+	
+	
+	@RequestMapping(path = "/accounts/{code}/password", method = RequestMethod.PUT)
+	public ResponseEntity<String> updatePassword(@RequestBody PasswordResource password, @PathVariable String code) {
+		
+		if (!securityContextHolder.getCurrentUser().getCode().equals(code)) {
+			throw new IllegalArgumentException(
+					"can not update user code {}, the user to update must correspond to connected user");
+		}
+		
+		if(password.getNewPassword() == null || !password.getNewPassword().equals(password.getConfirmPassword())) {
+			throw new IllegalArgumentException("Password mismatch");
+		}
+		User user = securityContextHolder.getCurrentUser();
+		user.setPassword(password.getNewPassword());
 		usersManager.saveUser(user);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User successfully updated");
 	}

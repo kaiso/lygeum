@@ -146,12 +146,17 @@ const messages = {
     id: 'ID',
     user: 'User | Users',
     role: 'Role | Roles',
+    client: 'Client | Clients',
+    clientname: 'Client name',
+    clientcode: 'Client id',
     email: 'Email',
     password: 'Password',
     firstName: 'First Name',
     lastName: 'Last Name',
     adduser: 'Add user',
+    addclient: 'Add client',
     edituser: 'Edit user',
+    editclient: 'Edit Client',
     createuser: 'Create user',
     assignedroles: 'Assigned roles',
     availableroles: 'Available roles',
@@ -166,6 +171,12 @@ const messages = {
           success: 'User <b>{target}</b> has been deleted successfully',
           error: 'Failed to delete user <b>{target}</b>, cause: [<i>{error}</i>]'
         }
+      },
+      clients: {
+        delete: {
+          success: 'Client <b>{target}</b> has been deleted successfully',
+          error: 'Failed to delete client <b>{target}</b>, cause: [<i>{error}</i>]'
+        }
       }
     }
   },
@@ -174,8 +185,17 @@ const messages = {
     myaccount: 'My account',
     notifications: {
       save: {
-        success: 'My account has been successfully saved'
+        success: 'Your account has been successfully saved'
+      },
+      password: {
+        success: 'Your password has been successfully updated'
       }
+    },
+    password: {
+      update: 'Update Password',
+      old: 'Old Password',
+      new: 'New Password',
+      confirm: 'Confirm Password'
     }
   }
 }

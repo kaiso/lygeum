@@ -36,66 +36,71 @@ import io.github.kaiso.lygeum.core.spi.StorageService;
 @Service
 public class UsersManagerImpl implements UsersManager {
 
-    private StorageService storageService;
+	private StorageService storageService;
 
-    private LygeumPasswordEncoder passwordEncoder;
+	private LygeumPasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UsersManagerImpl(StorageService storageService, LygeumPasswordEncoder passwordEncoder) {
-	this.storageService = storageService;
-	this.passwordEncoder = passwordEncoder;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.springframework.security.core.userdetails.UserDetailsService#
-     * loadUserByUsername(java.lang.String)
-     */
-    @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-	return storageService.findUserByUsername(username)
-		.orElseThrow(() -> new UsernameNotFoundException("user not found with name " + username));
-    }
-
-    @Override
-    public List<Role> findAllRoles() {
-	return storageService.findAllRoles();
-    }
-
-    @Override
-    public User createUser(User user) {
-	return storageService.saveUser(user);
-    }
-
-    @Override
-    public User saveUser(User user) {
-	User existingUser = findUserByCode(user.getCode())
-		.orElseThrow(() -> new IllegalArgumentException("User can not be found with code" + user.getCode()));
-	
-	user.setCreatedBy(existingUser.getCreatedBy().get());
-	user.setCreatedDate(existingUser.getCreatedDate().get());
-	user.setId(existingUser.getId());
-	if (!StringUtils.isEmpty(user.getPassword())) {
-	    user.setPassword(passwordEncoder.encode(user.getPassword()));
+	@Autowired
+	public UsersManagerImpl(StorageService storageService, LygeumPasswordEncoder passwordEncoder) {
+		this.storageService = storageService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
-	return storageService.saveUser(user);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.security.core.userdetails.UserDetailsService#
+	 * loadUserByUsername(java.lang.String)
+	 */
+	@Override
+	public User loadUserByUsername(String username) throws UsernameNotFoundException {
+		return storageService.findUserByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("user not found with name " + username));
+	}
 
-    @Override
-    public List<User> findAllUsers() {
-	return storageService.findAllUsers();
-    }
+	@Override
+	public List<Role> findAllRoles() {
+		return storageService.findAllRoles();
+	}
 
-    @Override
-    public Optional<User> findUserByCode(String code) {
-	return storageService.findUserByCode(code);
-    }
+	@Override
+	public User createUser(User user) {
+		if (!StringUtils.isEmpty(user.getPassword())) {
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+		}
+		return storageService.saveUser(user);
+	}
 
-    @Override
-    public void deleteUserByCode(String code) {
-         storageService.deleteUserByCode(code);	
-    }
+	@Override
+	public User saveUser(User user) {
+		User existingUser = findUserByCode(user.getCode())
+				.orElseThrow(() -> new IllegalArgumentException("User can not be found with code" + user.getCode()));
+
+		user.setCreatedBy(existingUser.getCreatedBy().get());
+		user.setCreatedDate(existingUser.getCreatedDate().get());
+		user.setId(existingUser.getId());
+		if (!StringUtils.isEmpty(user.getPassword())) {
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+		} else {
+			user.setPassword(existingUser.getPassword());
+		}
+
+		return storageService.saveUser(user);
+	}
+
+	@Override
+	public List<User> findAllUsers() {
+		return storageService.findAllUsers();
+	}
+
+	@Override
+	public Optional<User> findUserByCode(String code) {
+		return storageService.findUserByCode(code);
+	}
+
+	@Override
+	public void deleteUserByCode(String code) {
+		storageService.deleteUserByCode(code);
+	}
 
 }

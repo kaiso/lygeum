@@ -210,3 +210,12 @@ export function updateMe(context, user) {
     user
   )
 }
+
+export function updatePassword(context, code, password) {
+  return client.call(
+    context,
+    'put',
+    `/api/accounts/${code}/password`,
+    password
+  )
+}

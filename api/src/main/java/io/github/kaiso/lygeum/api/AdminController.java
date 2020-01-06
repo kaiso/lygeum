@@ -24,58 +24,99 @@ import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 @RestController
 public class AdminController extends LygeumRestController {
 
-    private UsersManager usersManager;
+	private UsersManager usersManager;
 
-    @Autowired
-    public AdminController(UsersManager usersManager) {
-	this.usersManager = usersManager;
-    }
-
-    @RolesAllowed(AuthorizationManager.ROLE_ADMIN)
-    @RequestMapping(path = "/admin/roles", method = RequestMethod.GET)
-    public ResponseEntity<List<Role>> fetchAllRoles() {
-	return ResponseEntity.ok(usersManager.findAllRoles());
-    }
-
-    @RolesAllowed(AuthorizationManager.ROLE_ADMIN)
-    @RequestMapping(path = "/admin/users", method = RequestMethod.GET)
-    public ResponseEntity<List<User>> fetchAllUsers() {
-	return ResponseEntity.ok(usersManager.findAllUsers());
-    }
-
-    @RolesAllowed(AuthorizationManager.ROLE_ADMIN)
-    @RequestMapping(path = "/admin/users", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-	if (user == null) {
-	    throw new IllegalArgumentException("User resource can not be null");
+	@Autowired
+	public AdminController(UsersManager usersManager) {
+		this.usersManager = usersManager;
 	}
-	return ResponseEntity.of(Optional.of(usersManager.createUser(user)));
-    }
 
-    @RolesAllowed(AuthorizationManager.ROLE_ADMIN)
-    @RequestMapping(path = "/admin/users/{id}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable("id") String code) {
-	if (user == null) {
-	    throw new IllegalArgumentException("User resource can not be null");
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/roles", method = RequestMethod.GET)
+	public ResponseEntity<List<Role>> fetchAllRoles() {
+		return ResponseEntity.ok(usersManager.findAllRoles());
 	}
-	if (StringUtils.isEmpty(code)) {
-	    throw new IllegalArgumentException("User code can not be null");
+
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/users", method = RequestMethod.GET)
+	public ResponseEntity<List<User>> fetchAllUsers() {
+		return ResponseEntity.ok(usersManager.findAllUsers());
 	}
-	user.setCode(code);
-	return ResponseEntity.of(Optional.of(usersManager.saveUser(user)));
-    }
-    
-    @RolesAllowed(AuthorizationManager.ROLE_ADMIN)
-    @RequestMapping(path = "/admin/users/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<String> deleteUser(@PathVariable("id") String code) {
+
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/users", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<User> createUser(@RequestBody User user) {
+		if (user == null) {
+			throw new IllegalArgumentException("User resource can not be null");
+		}
+		return ResponseEntity.of(Optional.of(usersManager.createUser(user)));
+	}
+
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/users/{id}", method = RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable("id") String code) {
+		if (user == null) {
+			throw new IllegalArgumentException("User resource can not be null");
+		}
+		if (StringUtils.isEmpty(code)) {
+			throw new IllegalArgumentException("User code can not be null");
+		}
+		user.setCode(code);
+		return ResponseEntity.of(Optional.of(usersManager.saveUser(user)));
+	}
+
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/users/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deleteUser(@PathVariable("id") String code) {
+
+		if (StringUtils.isEmpty(code)) {
+			throw new IllegalArgumentException("User code can not be null");
+		}
+		usersManager.deleteUserByCode(code);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Environment successfully deleted");
+	}
 	
-	if (StringUtils.isEmpty(code)) {
-	    throw new IllegalArgumentException("User code can not be null");
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/clients", method = RequestMethod.GET)
+	public ResponseEntity<List<User>> fetchAllClients() {
+		return ResponseEntity.ok(usersManager.findAllUsers());
 	}
-	usersManager.deleteUserByCode(code);
-	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Environment successfully deleted");
-    }
+	
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/clients", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<User> createClient(@RequestBody User user) {
+		if (user == null) {
+			throw new IllegalArgumentException("User resource can not be null");
+		}
+		return ResponseEntity.of(Optional.of(usersManager.createUser(user)));
+	}
+	
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/clients/{id}", method = RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<User> updateClient(@RequestBody User user, @PathVariable("id") String code) {
+		if (user == null) {
+			throw new IllegalArgumentException("User resource can not be null");
+		}
+		if (StringUtils.isEmpty(code)) {
+			throw new IllegalArgumentException("User code can not be null");
+		}
+		user.setCode(code);
+		return ResponseEntity.of(Optional.of(usersManager.saveUser(user)));
+	}
+	
+	@RolesAllowed(AuthorizationManager.ROLE_ADMIN)
+	@RequestMapping(path = "/admin/clients/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deleteClient(@PathVariable("id") String code) {
+		
+		if (StringUtils.isEmpty(code)) {
+			throw new IllegalArgumentException("User code can not be null");
+		}
+		usersManager.deleteUserByCode(code);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Environment successfully deleted");
+	}
 
 }
