@@ -17,8 +17,6 @@ package io.github.kaiso.lygeum.security.oauth2;
 
 import java.util.Arrays;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -48,17 +46,22 @@ public class LygeumOauth2ServerAuthorizationServer extends AuthorizationServerCo
 	@Autowired
 	@Qualifier("lygeumServerTokenServices")
 	private AuthorizationServerTokenServices tokenServices;
-	
+
 	@Autowired
-	private ClientDetailsService clientDetailsService;
-	
+	private ClientDetailsService clientsManager;
 
 	private AuthorizationServerEndpointsConfigurer endpoints;
 
-
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.and();
+		@SuppressWarnings("rawtypes")
+		ClientDetailsServiceBuilder<?> builder = new ClientDetailsServiceBuilder() {
+			@Override
+			protected ClientDetailsService performBuild() {
+				return clientsManager;
+			}
+		};
+		clients.setBuilder(builder);
 	}
 
 	@Override

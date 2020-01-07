@@ -16,6 +16,7 @@
 package io.github.kaiso.lygeum.core.manager.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ import io.github.kaiso.lygeum.core.spi.StorageService;
  *
  */
 @Service
+@Primary
 public class ClientsManagerImpl implements ClientsManager {
 
 	private StorageService storageService;
