@@ -324,4 +324,26 @@ public class StorageServiceImpl implements StorageService {
 				.orElseThrow(() -> new EntityNotFoundException("Can not find user with code " + code)));
 	}
 
+	@Override
+	public List<Client> findAllClients() {
+		return clientRepository.findAll();
+	}
+	
+	@Override
+	public void deleteClientByCode(String code) {
+		clientRepository.delete(clientRepository.findByCode(code)
+				.orElseThrow(() -> new EntityNotFoundException("Can not find user with code " + code)));
+	}
+	
+	@Override
+	public Client saveClient(Client client) {
+		if (!CollectionUtils.isEmpty(client.getRoles())) {
+			List<String> codes = client.getRoles().stream().map(r -> r.getCode()).collect(Collectors.toList());
+			client.setRoles(
+					roleRepository.streamAll().filter(r -> codes.contains(r.getCode())).collect(Collectors.toList()));
+		}
+		return clientRepository.save(client);
+	}
+
+
 }

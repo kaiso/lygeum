@@ -22,6 +22,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+
+import io.github.kaiso.lygeum.core.system.GlobalConstants;
 
 @Configuration
 @EnableResourceServer
@@ -34,5 +37,13 @@ public class LygeumWebSecurityConfig extends ResourceServerConfigurerAdapter {
 		.authorizeRequests().antMatchers(HttpMethod.OPTIONS).anonymous().and().authorizeRequests().anyRequest()
 		.authenticated();
     }
+
+	@Override
+	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+		resources.resourceId(GlobalConstants.LYGEUM_RESOURCE_SERVER_ID);
+		super.configure(resources);
+	}
+    
+    
 
 }

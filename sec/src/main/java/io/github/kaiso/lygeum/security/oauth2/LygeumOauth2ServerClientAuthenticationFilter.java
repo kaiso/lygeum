@@ -40,6 +40,7 @@ import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.common.exceptions.BadClientCredentialsException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -100,6 +101,11 @@ public class LygeumOauth2ServerClientAuthenticationFilter implements Filter {
 			response.getWriter().write(JSONUtils
 					.writeObjectAsJson(OAuth2Exception.create(OAuth2Exception.INVALID_CLIENT, e.getMessage())));
 			return;
+		} catch (BadClientCredentialsException e) {
+			((HttpServletResponse) response).setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.getWriter().write(JSONUtils
+					.writeObjectAsJson(OAuth2Exception.create(OAuth2Exception.INVALID_REQUEST, e.getMessage())));
+			return;
 		}
 
 		authorizationRequest.setScope(getScope((HttpServletRequest) request));
@@ -116,8 +122,13 @@ public class LygeumOauth2ServerClientAuthenticationFilter implements Filter {
 	}
 
 	private ClientDetails authenticate(AuthorizationRequest authorizationRequest) {
-		return Optional.ofNullable(clientDetailsService.loadClientByClientId(authorizationRequest.getClientId()))
-				.orElseThrow();
+		ClientDetails client = clientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
+		if (client.isSecretRequired()
+				&& !Optional.ofNullable(authorizationRequest.getRequestParameters().get("client_secret")).orElse("")
+						.equals(client.getClientSecret())) {
+			throw new BadClientCredentialsException();
+		}
+		return client;
 	}
 
 	protected Authentication createAnonymousAuthentication(HttpServletRequest request) {
@@ -133,6 +144,7 @@ public class LygeumOauth2ServerClientAuthenticationFilter implements Filter {
 		if (clientId != null) {
 			Map<String, String> map = getSingleValueMap(request);
 			map.put(OAuth2Utils.CLIENT_ID, clientId);
+			map.put("client_secret", request.getParameter("client_secret"));
 			return oAuth2RequestFactory.createAuthorizationRequest(map);
 		}
 		return null;

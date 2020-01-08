@@ -15,20 +15,32 @@
 */
 package io.github.kaiso.lygeum.core.entities;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.kaiso.lygeum.core.security.AuthorizationAction;
+import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -42,32 +54,34 @@ public class Client extends BaseEntity implements ClientDetails {
 	public static final ObjectMapper mapper = new ObjectMapper();
 
 	private String name;
-	
+
 	@Column(name = "resource_ids")
 	private String resourceIds;
-	
+
 	@Column(name = "client_secret")
 	private String clientSecret;
-	
+
 	private String scope;
-	
+
 	@Column(name = "authorized_grant_types")
 	private String authorizedGrantTypes;
-	
+
 	@Column(name = "web_server_redirect_uri")
 	private String webServerRedirectUri;
-	
-	private String authorities;
-	
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "LGM_CLIENT_ROLE", joinColumns = @JoinColumn(name = "client_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private List<Role> roles = new ArrayList<>();
+
 	@Column(name = "access_token_validity")
 	private Integer accessTokenValidity;
-	
+
 	@Column(name = "refresh_token_validity")
 	private Integer refreshTokenValidity;
-	
+
 	@Column(name = "additional_information")
 	private String additionalInformation;
-	
+
 	private String autoapprove;
 
 	/*
@@ -99,6 +113,12 @@ public class Client extends BaseEntity implements ClientDetails {
 			}
 		}
 		return resourceIdsList;
+	}
+	
+	public void setResourceIds(Set<String> uris) {
+		if (uris != null) {
+			resourceIds = uris.stream().collect(Collectors.joining(","));
+		}
 	}
 
 	/*
@@ -149,6 +169,12 @@ public class Client extends BaseEntity implements ClientDetails {
 		return scopes;
 	}
 
+	public void setScope(Set<String> scopes) {
+		if (scopes != null) {
+			scope = scopes.stream().collect(Collectors.joining(","));
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -164,6 +190,12 @@ public class Client extends BaseEntity implements ClientDetails {
 			}
 		}
 		return grantTypes;
+	}
+
+	public void setAuthorizedGrantTypes(Set<String> authorizedTypes) {
+		if (authorizedTypes != null) {
+			authorizedGrantTypes = authorizedTypes.stream().collect(Collectors.joining(","));
+		}
 	}
 
 	/*
@@ -183,6 +215,12 @@ public class Client extends BaseEntity implements ClientDetails {
 		return uris;
 	}
 
+	public void setRegisteredRedirectUri(Set<String> uris) {
+		if (uris != null) {
+			webServerRedirectUri = uris.stream().collect(Collectors.joining(","));
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -190,14 +228,17 @@ public class Client extends BaseEntity implements ClientDetails {
 	 * org.springframework.security.oauth2.provider.ClientDetails#getAuthorities()
 	 */
 	@Override
+	@JsonIgnore
 	public Collection<GrantedAuthority> getAuthorities() {
-		Set<GrantedAuthority> uris = new HashSet<>();
-		if (authorities != null) {
-			for (String role : authorities.split(",")) {
-				uris.add(new SimpleGrantedAuthority(role));
+		Set<GrantedAuthority> authorities = new HashSet<>();
+		roles.stream().forEach(r -> {
+			authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + r.getCode()));
+			if (r.getCode().endsWith(AuthorizationAction.UPDATE.toString())) {
+				authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX
+						+ r.getCode().substring(0, r.getCode().length() - 6) + AuthorizationAction.READ.toString()));
 			}
-		}
-		return uris;
+		});
+		return authorities;
 	}
 
 	/*
@@ -248,6 +289,14 @@ public class Client extends BaseEntity implements ClientDetails {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
 	}
 
 }

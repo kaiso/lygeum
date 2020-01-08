@@ -35,6 +35,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -91,17 +92,17 @@ public class User extends BaseEntity implements UserDetails {
      * org.springframework.security.core.userdetails.UserDetails#getAuthorities()
      */
     @Override
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-	Set<GrantedAuthority> authorities = new HashSet<>();
-	roles.stream().forEach(r -> {
-	    authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + r.getCode()));
-	    if (r.getCode().endsWith(AuthorizationAction.UPDATE.toString())) {
-		authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX +
-			r.getCode().substring(0, r.getCode().length() - 6) + AuthorizationAction.READ.toString()));
-	    }
-	});
-	return authorities;
+		Set<GrantedAuthority> authorities = new HashSet<>();
+		roles.stream().forEach(r -> {
+			authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + r.getCode()));
+			if (r.getCode().endsWith(AuthorizationAction.UPDATE.toString())) {
+				authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX
+						+ r.getCode().substring(0, r.getCode().length() - 6) + AuthorizationAction.READ.toString()));
+			}
+		});
+		return authorities;
     }
 
     public void setUsername(String username) {

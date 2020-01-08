@@ -134,4 +134,10 @@ public interface StorageService {
 
 	void deleteUserByCode(String code);
 
+	List<Client> findAllClients();
+
+	void deleteClientByCode(String code);
+
+	Client saveClient(Client client);
+
 }

@@ -15,7 +15,11 @@
 */
 package io.github.kaiso.lygeum.core.manager;
 
+import java.util.List;
+
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+
+import io.github.kaiso.lygeum.core.entities.Client;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -23,4 +27,11 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
  */
 public interface ClientsManager extends ClientDetailsService {
 
+	List<Client> findAll();
+
+	void deleteByCode(String code);
+
+	Client create(Client client);
+
+	Client save(Client client);
 }

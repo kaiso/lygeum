@@ -15,6 +15,8 @@
 */
 package io.github.kaiso.lygeum.core.manager.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
@@ -49,6 +51,26 @@ public class ClientsManagerImpl implements ClientsManager {
 	public Client loadClientByClientId(String clientId) throws ClientRegistrationException {
 		return storageService.findClientById(clientId)
 				.orElseThrow(() -> new ClientRegistrationException("client not found with id" + clientId));
+	}
+
+	@Override
+	public List<Client> findAll() {
+		return storageService.findAllClients();
+	}
+
+	@Override
+	public void deleteByCode(String code) {
+		storageService.deleteClientByCode(code);
+	}
+
+	@Override
+	public Client create(Client client) {
+		return storageService.saveClient(client);
+	}
+
+	@Override
+	public Client save(Client client) {
+		return storageService.saveClient(client);
 	}
 
 }
