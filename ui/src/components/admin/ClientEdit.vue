@@ -25,7 +25,7 @@
           <span class="aps-form-input-container">
             <v-text-field
               class="aps-input-active"
-              v-model="user.code"
+              v-model="client.code"
               disabled
               single-line
               hide-details
@@ -36,13 +36,13 @@
           <div
             class="aps-form-label"
             style="width:11vw;height:7vh;line-height: inherit;"
-          >{{$t('admin.firstName')}}</div>
+          >{{$t('admin.clientname')}}</div>
           <span class="aps-form-input-container">
             <v-text-field
               class="aps-input-active"
-              v-model="user.firstName"
-              :error="firstNameError"
-              :outline="firstNameError"
+              v-model="client.name"
+              :error="nameError"
+              :outline="nameError"
               single-line
               hide-details
             ></v-text-field>
@@ -52,43 +52,11 @@
           <div
             class="aps-form-label"
             style="width:11vw;height:7vh;line-height: inherit;"
-          >{{$t('admin.lastName')}}</div>
-          <span class="aps-form-input-container">
-            <v-text-field
-              class="aps-input-active"
-              v-model="user.lastName"
-              single-line
-              hide-details
-              :error="lastNameError"
-              :outline="lastNameError"
-            ></v-text-field>
-          </span>
-        </div>
-        <div class="aps-form-line" style="height:7vh;">
-          <div
-            class="aps-form-label"
-            style="width:11vw;height:7vh;line-height: inherit;"
-          >{{$t('admin.email')}}</div>
-          <span class="aps-form-input-container">
-            <v-text-field
-              class="aps-input-active"
-              v-model="user.username"
-              :error="emailError"
-              :outline="emailError"
-              single-line
-              hide-details
-            ></v-text-field>
-          </span>
-        </div>
-        <div class="aps-form-line" style="height:7vh;">
-          <div
-            class="aps-form-label"
-            style="width:11vw;height:7vh;line-height: inherit;"
-          >{{$t('admin.password')}}</div>
+          >{{$t('admin.clientsecret')}}</div>
           <span class="aps-form-input-container">
             <v-text-field
               class="aps-input-active aps-input-password"
-              v-model="user.password"
+              v-model="client.clientSecret"
               :append-icon="showPassword ? 'visibility' : 'visibility_off'"
               :type="showPassword ? 'text' : 'password'"
               @click:append="showPassword = !showPassword"
@@ -96,13 +64,16 @@
               hide-details
             ></v-text-field>
           </span>
+          <v-btn flat icon color="white" @click="renewSecret">
+            <v-icon>autorenew</v-icon>
+          </v-btn>
         </div>
         <div class="aps-form-line" style="height:32vh;margin-top:2vh;">
           <list-picker
-            :choice="user.roles"
+            :choice="client.roles"
             :source="roles"
-            :sourceLabel="this.$t('admin.availableroles')"
-            :choiceLabel="this.$t('admin.assignedroles')"
+            :sourceLabel="this.$t('admin.availableauthorities')"
+            :choiceLabel="this.$t('admin.assignedauthorities')"
           ></list-picker>
         </div>
         <div class="aps-buttons-container-line">
@@ -119,36 +90,35 @@
 </template>
 <script>
 import * as api from '@/js/api/api'
-import { validateEmail } from '@/js/util/validator'
+import { generateSecret } from '@/js/util/crypto'
 import Layout from '@/components/layout/Layout'
 import ListPicker from '@/components/common/ListPicker'
 
 export default {
-  name: 'useredit-component',
+  name: 'clientedit-component',
   components: { 'aps-layout': Layout, 'list-picker': ListPicker },
   props: {
-    'user': Object
+    'client': Object
   },
   data: () => ({
     loadingSave: false,
     roles: [],
     showPassword: false,
-    firstNameError: false,
-    lastNameError: false,
-    emailError: false
+    nameError: false
   }),
   computed: {
     title() {
-      return this.$route.params.user ? this.$t('admin.edituser') : this.$t('admin.createuser')
+      return this.$route.params.client ? this.$t('admin.editclient') : this.$t('admin.createclient')
     },
     editMode() {
-      return this.$route.params.user !== undefined
+      let createMode = !(this.$route.params.client)
+      return !createMode
     }
   },
   beforeMount: function () {
-    let userRoles = this.user.roles.map(r => r.name)
+    let clientRoles = this.client.roles.map(r => r.name)
     api.getRoles(this).then((result) => {
-      this.roles = result.data.filter(r => !userRoles.includes(r.name))
+      this.roles = result.data.filter(r => !clientRoles.includes(r.name))
     }).catch(error => {
       this.$store.dispatch('notification/open', {
         message: this.$i18n.t('admin.notifications.roles.load.error', { error: error }),
@@ -158,31 +128,32 @@ export default {
   },
   methods: {
     save() {
-      if (!this.validateUser()) {
+      if (!this.validateclient()) {
         return;
       }
       this.loadingSave = true
-      if (this.user.code) {
-        api.saveUser(this, this.user).then((data) => {
+      if (this.client.code) {
+        api.saveClient(this, this.client).then((data) => {
           this.loadingSave = false
-          this.$router.push({ name: 'users' })
+          this.$router.push({ name: 'clients' })
         })
       } else {
-        api.createUser(this, this.user).then((data) => {
+        api.createClient(this, this.client).then((data) => {
           this.loadingSave = false
-          this.$router.push({ name: 'users' })
+          this.$router.push({ name: 'clients' })
         })
       }
     },
     cancel() {
       this.loadingSave = false
-      this.$router.push({ name: 'users' })
+      this.$router.push({ name: 'clients' })
     },
-    validateUser() {
-      this.emailError = !validateEmail(this.user.username)
-      this.lastNameError = !(this.user.lastName)
-      this.firstNameError = !(this.user.firstName)
-      return !(this.lastNameError || this.firstNameError || this.emailError)
+    validateclient() {
+      this.nameError = !(this.client.name)
+      return !(this.nameError)
+    },
+    renewSecret() {
+      this.client.clientSecret = generateSecret()
     }
   }
 }

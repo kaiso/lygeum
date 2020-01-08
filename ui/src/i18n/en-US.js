@@ -149,6 +149,7 @@ const messages = {
     client: 'Client | Clients',
     clientname: 'Client name',
     clientcode: 'Client id',
+    clientsecret: 'Client secret',
     email: 'Email',
     password: 'Password',
     firstName: 'First Name',
@@ -160,6 +161,8 @@ const messages = {
     createuser: 'Create user',
     assignedroles: 'Assigned roles',
     availableroles: 'Available roles',
+    assignedauthorities: 'Assigned authorities',
+    availableauthorities: 'Available authorities',
     notifications: {
       roles: {
         load: {

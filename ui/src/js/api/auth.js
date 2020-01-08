@@ -25,7 +25,8 @@ export function login(context, creds, redirect) {
     'scope': 'openid',
     'username': creds.username,
     'password': creds.password,
-    'client_id': 'ui'
+    'client_id': 'ui',
+    'client_secret': 'lygeumok'
   }
   return new Promise(function(resolve, reject) {
   client.call(

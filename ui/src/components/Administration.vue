@@ -31,7 +31,7 @@
       </v-flex>
       <v-flex xs6>
         <v-flex xs12>
-          <v-avatar color="brown lighten-3" size="100" @click.stop="route('/config/applications')"
+          <v-avatar color="brown lighten-3" size="100" @click.stop="route('/admin/clients')"
           style="cursor:pointer;">
           <v-btn icon @click="''">
             <v-icon dark size="70">devices</v-icon>

@@ -22,7 +22,7 @@
           <v-btn icon slot="activator" @click="addClient()" style="cursor: pointer;">
             <v-icon>add_box</v-icon>
           </v-btn>
-          <span>{{$t('admin.addClient')}}</span>
+          <span>{{$t('admin.addclient')}}</span>
         </v-tooltip>
         <v-tooltip bottom>
           <v-btn icon slot="activator" @click="loadAll()" style="cursor: pointer;">
@@ -70,6 +70,7 @@
 </template>
 <script>
 import * as api from '@/js/api/api'
+import { generateSecret } from '@/js/util/crypto'
 import debounce from '@/js/util/debounce'
 import Layout from '@/components/layout/Layout'
 import ListPicker from '@/components/common/ListPicker'
@@ -82,7 +83,7 @@ const filterClients = (context, pattern) => {
   debounce(() => {
     if (pattern) {
       context.filteredClients = context.clients.filter((value) => {
-        return value.username.toLowerCase().includes(pattern.toLowerCase())
+        return value.name.toLowerCase().includes(pattern.toLowerCase())
       })
     } else {
       context.filteredClients = context.clients
@@ -136,7 +137,7 @@ export default {
           if (this.$store.state.dialog.action === CONST_ACTIONS.CONFIRM) {
             let context = this
             let target = this.$store.state.dialog.target
-            api.deleteUser(this, target).then(function (result) {
+            api.deleteClient(this, target).then(function (result) {
               context.$store.dispatch('notification/open', {
                 message: context.$i18n.t('admin.notifications.clients.delete.success', { target: target.name }),
                 status: 'success'
@@ -175,10 +176,12 @@ export default {
       })
     },
     addClient() {
-      let newuser = {
-        roles: []
+      const secret = generateSecret()
+      const newclient = {
+        roles: [],
+        clientSecret: secret
       }
-      this.$router.push({ name: 'useredit', params: { 'user': newuser } })
+      this.$router.push({ name: 'clientedit', params: { 'client': newclient } })
     },
     triggerClientSearch(param) {
       filterClients(this, this.clientSearch)
@@ -188,7 +191,7 @@ export default {
       let context = this
       return new Promise((resolve, reject) => {
         const { sortBy, descending, page, rowsPerPage } = this.pagination
-        api.getclients(context).then((result) => {
+        api.getClients(context).then((result) => {
           let items = result.data
           const total = items.length
 
@@ -225,7 +228,7 @@ export default {
       })
     },
     editItem(item) {
-      this.$router.push({ name: 'useredit', params: { 'user': item } })
+      this.$router.push({ name: 'clientedit', params: { 'client': item } })
     },
     deleteItem(item) {
       this.$store.dispatch('dialog/open', {

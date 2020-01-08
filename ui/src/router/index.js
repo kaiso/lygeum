@@ -23,7 +23,9 @@ import Properties from '@/components/config/Properties'
 import Environments from '@/components/config/Environments'
 import Applications from '@/components/config/Applications'
 import Users from '@/components/admin/Users'
+import Clients from '@/components/admin/Clients'
 import UserEdit from '@/components/admin/UserEdit'
+import ClientEdit from '@/components/admin/ClientEdit'
 import Login from '@/components/auth/Login'
 import Wizard from '@/components/start/Wizard'
 import Account from '@/components/account/Account'
@@ -74,9 +76,20 @@ export default new Router({
       component: Users
     },
     {
+      path: '/admin/clients',
+      name: 'clients',
+      component: Clients
+    },
+    {
       path: '/admin/usere',
       name: 'useredit',
       component: UserEdit,
+      props: true
+    },
+    {
+      path: '/admin/cliente',
+      name: 'clientedit',
+      component: ClientEdit,
       props: true
     },
     {

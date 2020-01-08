@@ -194,6 +194,40 @@ export function deleteUser(context, user) {
   )
 }
 
+export function getClients(context) {
+  return client.call(
+    context,
+    'get',
+    '/api/admin/clients'
+  )
+}
+
+export function saveClient(context, arg) {
+  return client.call(
+    context,
+    'put',
+    `/api/admin/clients/${arg.code}`,
+    arg
+  )
+}
+
+export function createClient(context, arg) {
+  return client.call(
+    context,
+    'post',
+    `/api/admin/clients`,
+    arg
+  )
+}
+
+export function deleteClient(context, arg) {
+  return client.call(
+    context,
+    'delete',
+    `/api/admin/clients/${arg.code}`
+  )
+}
+
 export function getMe(context) {
   return client.call(
     context,
