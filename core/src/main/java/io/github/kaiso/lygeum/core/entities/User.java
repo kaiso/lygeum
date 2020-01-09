@@ -50,140 +50,137 @@ import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 @Table(name = "LGM_USER")
 public class User extends BaseEntity implements UserDetails {
 
-    private static final long serialVersionUID = -6167244441433289698L;
-    @NotNull
-    private String username;
-    @Column(name="first_name")
-    @NotNull
-    private String firstName;
-    @Column(name="last_name")
-    private String lastName;
-    
-    @JsonProperty(access = Access.WRITE_ONLY)
-    private String password;
+	private static final long serialVersionUID = -6167244441433289698L;
+	@NotNull
+	private String username;
+	@Column(name = "first_name")
+	@NotNull
+	private String firstName;
+	@Column(name = "last_name")
+	private String lastName;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {
-	    CascadeType.PERSIST,
-	    CascadeType.MERGE
-    })
-    @JoinTable(name = "LGM_USER_ROLE", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles = new ArrayList<>();
+	@JsonProperty(access = Access.WRITE_ONLY)
+	private String password;
 
-    public String getFirstName() {
-	return firstName;
-    }
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "LGM_USER_ROLE", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private List<Role> roles = new ArrayList<>();
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public String getLastName() {
-	return lastName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.springframework.security.core.userdetails.UserDetails#getAuthorities()
-     */
-    @Override
-    @JsonIgnore
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.security.core.userdetails.UserDetails#getAuthorities()
+	 */
+	@Override
+	@JsonIgnore
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Set<GrantedAuthority> authorities = new HashSet<>();
 		roles.stream().forEach(r -> {
 			authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + r.getCode()));
 			if (r.getCode().endsWith(AuthorizationAction.UPDATE.toString())) {
-				authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX
-						+ r.getCode().substring(0, r.getCode().length() - 6) + AuthorizationAction.READ.toString()));
+				authorities.add(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + r.getCode()
+						.replace(AuthorizationAction.UPDATE.toString(), AuthorizationAction.READ.toString())));
 			}
 		});
 		return authorities;
-    }
+	}
 
-    public void setUsername(String username) {
-	this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public List<Role> getRoles() {
-	return roles;
-    }
+	public List<Role> getRoles() {
+		return roles;
+	}
 
-    public void setRoles(List<Role> roles) {
-	this.roles = roles;
-    }
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
 
-    public void setPassword(String password) {
-	this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.springframework.security.core.userdetails.UserDetails#getPassword()
-     */
-    @Override
-    public String getPassword() {
-	return password;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.security.core.userdetails.UserDetails#getPassword()
+	 */
+	@Override
+	public String getPassword() {
+		return password;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.springframework.security.core.userdetails.UserDetails#getUsername()
-     */
-    @Override
-    public String getUsername() {
-	return username;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.security.core.userdetails.UserDetails#getUsername()
+	 */
+	@Override
+	public String getUsername() {
+		return username;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.springframework.security.core.userdetails.UserDetails#isAccountNonExpired
-     * ()
-     */
-    @Override
-    public boolean isAccountNonExpired() {
-	return true;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.security.core.userdetails.UserDetails#isAccountNonExpired
+	 * ()
+	 */
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.springframework.security.core.userdetails.UserDetails#isAccountNonLocked(
-     * )
-     */
-    @Override
-    public boolean isAccountNonLocked() {
-	return true;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.security.core.userdetails.UserDetails#isAccountNonLocked(
+	 * )
+	 */
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.springframework.security.core.userdetails.UserDetails#
-     * isCredentialsNonExpired()
-     */
-    @Override
-    public boolean isCredentialsNonExpired() {
-	return true;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.security.core.userdetails.UserDetails#
+	 * isCredentialsNonExpired()
+	 */
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.springframework.security.core.userdetails.UserDetails#isEnabled()
-     */
-    @Override
-    public boolean isEnabled() {
-	return true;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.security.core.userdetails.UserDetails#isEnabled()
+	 */
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 
 }

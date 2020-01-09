@@ -16,6 +16,7 @@
 package io.github.kaiso.lygeum.persistence.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import io.github.kaiso.lygeum.core.entities.PropertyEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyValueEntity;
 import io.github.kaiso.lygeum.core.entities.Role;
 import io.github.kaiso.lygeum.core.entities.User;
+import io.github.kaiso.lygeum.core.security.AuthorizationAction;
 import io.github.kaiso.lygeum.core.spi.StorageService;
 import io.github.kaiso.lygeum.persistence.repositories.ApplicationRepository;
 import io.github.kaiso.lygeum.persistence.repositories.ClientRepository;
@@ -120,7 +122,9 @@ public class StorageServiceImpl implements StorageService {
 	 */
 	@Override
 	public ApplicationEntity createApplication(ApplicationEntity app) {
-		return applicationRepository.save(app);
+		ApplicationEntity save = applicationRepository.save(app);
+		roleRepository.saveAll(getRolesFor("application", save.getCode(), save.getName()));
+		return save;
 	}
 
 	/*
@@ -134,6 +138,8 @@ public class StorageServiceImpl implements StorageService {
 	public void deleteApplication(ApplicationEntity app) {
 		propertyRepository
 				.deleteAll(propertyRepository.findByApplicationCode(app.getCode()).collect(Collectors.toList()));
+		roleRepository.deleteRolesByCode(getRolesFor("application", app.getCode(), app.getName()).stream()
+				.map(Role::getCode).collect(Collectors.toList()).toArray(new String[2]));
 		applicationRepository.delete(app);
 	}
 
@@ -181,7 +187,9 @@ public class StorageServiceImpl implements StorageService {
 	 */
 	@Override
 	public EnvironmentEntity createEnvironment(EnvironmentEntity env) {
-		return environmentRepository.save(env);
+		EnvironmentEntity save = environmentRepository.save(env);
+		roleRepository.saveAll(getRolesFor("environment", save.getCode(), save.getName()));
+		return save;
 	}
 
 	/*
@@ -193,6 +201,8 @@ public class StorageServiceImpl implements StorageService {
 	 */
 	@Override
 	public void deleteEnvironment(EnvironmentEntity env) {
+		roleRepository.deleteRolesByCode(getRolesFor("environment", env.getCode(), env.getName()).stream()
+				.map(Role::getCode).collect(Collectors.toList()).toArray(new String[2]));
 		environmentRepository.delete(env);
 	}
 
@@ -328,13 +338,13 @@ public class StorageServiceImpl implements StorageService {
 	public List<Client> findAllClients() {
 		return clientRepository.findAll();
 	}
-	
+
 	@Override
 	public void deleteClientByCode(String code) {
 		clientRepository.delete(clientRepository.findByCode(code)
 				.orElseThrow(() -> new EntityNotFoundException("Can not find user with code " + code)));
 	}
-	
+
 	@Override
 	public Client saveClient(Client client) {
 		if (!CollectionUtils.isEmpty(client.getRoles())) {
@@ -345,5 +355,12 @@ public class StorageServiceImpl implements StorageService {
 		return clientRepository.save(client);
 	}
 
+	private List<Role> getRolesFor(String type, String code, String name) {
+		return Arrays.asList(
+				Role.builder().withCode(code + "_" + AuthorizationAction.READ).withForceNew(true)
+						.withName("Read " + type + " " + name).build(),
+				Role.builder().withCode(code + "_" + AuthorizationAction.UPDATE).withForceNew(true)
+						.withName("Update " + type + " " + name).build());
+	}
 
 }

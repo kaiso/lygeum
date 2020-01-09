@@ -92,8 +92,8 @@ public class PropertiesControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_READ",
-	    AuthorizationManager.ROLE_APP_PREFIX + "APPLICATION_READ" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_READ",
+	    AuthorizationManager.ROLE_PREFIX + "APPLICATION_READ" })
     public void should_return_properties() throws Exception {
 	new Expectations() {
 	    {
@@ -121,8 +121,8 @@ public class PropertiesControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_UPDATE",
-	    AuthorizationManager.ROLE_APP_PREFIX + "APPLICATION_UPDATE" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_UPDATE",
+	    AuthorizationManager.ROLE_PREFIX + "APPLICATION_UPDATE" })
     public void should_update_properties() throws Exception {
 	new Expectations() {
 	    {
@@ -157,8 +157,8 @@ public class PropertiesControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_READ",
-	    AuthorizationManager.ROLE_APP_PREFIX + "APPLICATION_READ" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_READ",
+	    AuthorizationManager.ROLE_PREFIX + "APPLICATION_READ" })
     public void should_download_properties_layout() throws Exception {
 	new Expectations() {
 	    {
@@ -187,8 +187,8 @@ public class PropertiesControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_READ",
-	    AuthorizationManager.ROLE_APP_PREFIX + "APPLICATION_READ" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_READ",
+	    AuthorizationManager.ROLE_PREFIX + "APPLICATION_READ" })
     public void should_download_yaml_layout() throws Exception {
 	new Expectations() {
 	    {
@@ -218,8 +218,8 @@ public class PropertiesControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_READ",
-	    AuthorizationManager.ROLE_APP_PREFIX + "APPLICATION_READ" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_READ",
+	    AuthorizationManager.ROLE_PREFIX + "APPLICATION_READ" })
     public void should_download_error_on_invalid_layout() throws Exception {
 	new Expectations() {
 	    {
@@ -241,8 +241,8 @@ public class PropertiesControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_UPDATE",
-	    AuthorizationManager.ROLE_APP_PREFIX + "APPLICATION_UPDATE" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_UPDATE",
+	    AuthorizationManager.ROLE_PREFIX + "APPLICATION_UPDATE" })
     public void should_upload_error_on_invalid_mime() throws Exception {
 	new Expectations() {
 	    {
@@ -264,8 +264,8 @@ public class PropertiesControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_UPDATE",
-	    AuthorizationManager.ROLE_APP_PREFIX + "APPLICATION_UPDATE" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_UPDATE",
+	    AuthorizationManager.ROLE_PREFIX + "APPLICATION_UPDATE" })
     public void should_upload_properties_layout() throws Exception {
 	new Expectations() {
 	    {
@@ -288,8 +288,8 @@ public class PropertiesControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_UPDATE",
-	    AuthorizationManager.ROLE_APP_PREFIX + "APPLICATION_UPDATE" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_UPDATE",
+	    AuthorizationManager.ROLE_PREFIX + "APPLICATION_UPDATE" })
     public void should_upload_yaml_layout() throws Exception {
 
 	new Expectations() {

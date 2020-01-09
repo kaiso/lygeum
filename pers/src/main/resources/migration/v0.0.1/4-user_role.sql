@@ -12,7 +12,7 @@ create table lgm_user_role (
     CONSTRAINT lgm_user_role_fk_user FOREIGN KEY(user_id)
         REFERENCES lgm_user(id),
     CONSTRAINT lgm_user_role_fk_role FOREIGN KEY(role_id)
-        REFERENCES lgm_role(id)
+        REFERENCES lgm_role(id) ON DELETE CASCADE
 );
 
 insert into lgm_user_role values ('SETUP', SYSDATE, 'SETUP', SYSDATE, 1, 1);

@@ -31,48 +31,43 @@ import io.github.kaiso.lygeum.core.security.exception.UnauthorizedException;
  */
 public final class AuthorizationManager {
 
-    public static final String ROLE_ADMIN = "LYGEUM_ADMIN";
-    public static final String ROLE_OPERATOR = "LYGEUM_OPERATOR";
-    public static final String ROLE_PREFIX = "ROLE_";
-    public static final String ROLE_ENV_PREFIX = ROLE_PREFIX + "ENV_";
-    public static final String ROLE_APP_PREFIX = ROLE_PREFIX + "APP_";
+	public static final String ROLE_ADMIN = "LYGEUM_ADMIN";
+	public static final String ROLE_OPERATOR = "LYGEUM_OPERATOR";
+	public static final String ROLE_PREFIX = "ROLE_";
 
-    private AuthorizationManager() {
-	super();
-    }
-
-    public static void preAuthorize(String application, String environment, AuthorizationAction action) {
-	if (SecurityContextHolder.getContext().getAuthentication() == null) {
-	    throw new UnauthorizedException("No valid authentication found");
-	}
-	Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication()
-		.getAuthorities();
-	if (authorities.contains(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + ROLE_ADMIN))
-		|| authorities.contains(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + ROLE_OPERATOR))
-		|| authorities
-			.contains(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + action.toString()))) {
-	    return;
+	private AuthorizationManager() {
+		super();
 	}
 
-	if (action == AuthorizationAction.READ || action == AuthorizationAction.UPDATE) {
-	    boolean granted = true;
-	    if (environment != null
-		    && !authorities.contains(new SimpleGrantedAuthority(
-			    AuthorizationManager.ROLE_ENV_PREFIX + environment.toUpperCase() + "_" + action))) {
-		granted = false;
-	    }
-	    if (granted && application != null
-		    && !authorities.contains(new SimpleGrantedAuthority(
-			    AuthorizationManager.ROLE_APP_PREFIX + application.toUpperCase() + "_" + action))) {
-		granted = false;
-	    }
-	    if (granted) {
-		return;
-	    }
+	public static void preAuthorize(String application, String environment, AuthorizationAction action) {
+		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+			throw new UnauthorizedException("No valid authentication found");
+		}
+		Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication()
+				.getAuthorities();
+		if (authorities.contains(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + ROLE_ADMIN))
+				|| authorities.contains(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + ROLE_OPERATOR))
+				|| authorities
+						.contains(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + action.toString()))) {
+			return;
+		}
+
+		if (action == AuthorizationAction.READ || action == AuthorizationAction.UPDATE) {
+			boolean granted = true;
+			if (environment != null && !authorities.contains(new SimpleGrantedAuthority(
+					AuthorizationManager.ROLE_PREFIX + environment.toUpperCase() + "_" + action))) {
+				granted = false;
+			}
+			if (granted && application != null && !authorities.contains(new SimpleGrantedAuthority(
+					AuthorizationManager.ROLE_PREFIX + application.toUpperCase() + "_" + action))) {
+				granted = false;
+			}
+			if (granted) {
+				return;
+			}
+		}
+
+		throw new ResourceAccessDeniedException();
 	}
-
-	throw new ResourceAccessDeniedException();
-
-    }
 
 }

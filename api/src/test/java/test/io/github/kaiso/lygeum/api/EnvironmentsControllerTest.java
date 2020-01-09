@@ -73,7 +73,7 @@ public class EnvironmentsControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PROD_READ" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_READ" })
     public void should_return_all_environments() throws Exception {
 	List<EnvironmentEntity> envs = new ArrayList<>();
 	EnvironmentEntity entity = new EnvironmentEntity("ENV01", "PRODUCTION");
@@ -101,7 +101,7 @@ public class EnvironmentsControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PRODUCTION_UPDATE" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PRODUCTION_UPDATE" })
     public void should_update_environment() throws Exception {
 	EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
 	new Expectations() {
@@ -129,7 +129,7 @@ public class EnvironmentsControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_ENV_PREFIX + "PRODUCTION_UPDATE" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PRODUCTION_UPDATE" })
     public void should_fail_update_when_environment_not_found() throws Exception {
 	EnvironmentEntity entity = new EnvironmentEntity("code01", "production");
 	new Expectations() {

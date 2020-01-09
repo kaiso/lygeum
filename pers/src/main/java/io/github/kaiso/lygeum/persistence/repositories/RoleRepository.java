@@ -17,8 +17,10 @@ package io.github.kaiso.lygeum.persistence.repositories;
 
 import java.util.stream.Stream;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import io.github.kaiso.lygeum.core.entities.Role;
@@ -28,10 +30,13 @@ import io.github.kaiso.lygeum.core.entities.Role;
  *
  */
 @Repository
-public interface RoleRepository
-	extends PagingAndSortingRepository<Role, Long>, BaseJpaRepository<Role> {
+public interface RoleRepository extends PagingAndSortingRepository<Role, Long>, BaseJpaRepository<Role> {
 
-    @Query("SELECT p FROM Role p")
-    Stream<Role> streamAll();
+	@Query("SELECT p FROM Role p")
+	Stream<Role> streamAll();
+
+	@Modifying
+	@Query(value = "DELETE FROM Role p WHERE p.code IN (:codes)")
+	void deleteRolesByCode(@Param("codes") String... codes);
 
 }

@@ -12,5 +12,5 @@ create table lgm_client_role (
     CONSTRAINT lgm_client_role_fk_user FOREIGN KEY(client_id)
         REFERENCES lgm_client(id),
     CONSTRAINT lgm_client_role_fk_role FOREIGN KEY(role_id)
-        REFERENCES lgm_role(id)
+        REFERENCES lgm_role(id) ON DELETE CASCADE
 );

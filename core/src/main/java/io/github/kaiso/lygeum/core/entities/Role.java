@@ -26,23 +26,63 @@ import javax.persistence.Table;
 @Table(name = "LGM_ROLE")
 public class Role extends BaseEntity {
 
-    private String name;
-    private String description;
+	private String name;
+	private String description;
 
-    public String getName() {
-	return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getDescription() {
-	return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public static RoleBuilder builder() {
+		return new Role.RoleBuilder();
+	}
+
+	public static class RoleBuilder {
+		private String code;
+		private String name;
+		private String description;
+		private boolean forceNew = false;
+
+		public RoleBuilder withCode(String code) {
+			this.code = code;
+			return this;
+		}
+
+		public RoleBuilder withName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public RoleBuilder withDescription(String description) {
+			this.description = description;
+			return this;
+		}
+		
+		public RoleBuilder withForceNew(boolean forceNew) {
+			this.forceNew = forceNew;
+			return this;
+		}
+
+		public Role build() {
+			Role role = new Role();
+			role.setCode(code);
+			role.setName(name);
+			role.setDescription(description);
+			role.setForceNew(forceNew);
+			return role;
+		}
+	}
 
 }

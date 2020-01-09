@@ -87,7 +87,7 @@ public class LygeumPersistenceConfig {
 	Properties props = new Properties();
 	props.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 	props.put("hibernate.showSql", "true");
-	props.put("hibernate.hbm2ddl.auto", "update");
+	props.put("hibernate.hbm2ddl.auto", "validate");
 	return props;
     }
 

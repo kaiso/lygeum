@@ -19,7 +19,7 @@ Configuration:
           ref: STDOUT
       -
         name: org.springframework.security
-        level: trace
+        level: warn
       -
         name: liquibase
         level: error

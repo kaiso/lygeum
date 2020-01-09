@@ -1,6 +1,7 @@
 package io.github.kaiso.lygeum.api;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,14 @@ public class EnvironmentsController extends LygeumRestController {
 
 	@RequestMapping(path = "/environments", method = RequestMethod.GET)
 	public ResponseEntity<List<EnvironmentEntity>> fetchAllEnvironments() {
-		return ResponseEntity.ok(environmentsManager.findAll());
+		return ResponseEntity.ok(environmentsManager.findAll().stream().filter(e -> {
+			try {
+				AuthorizationManager.preAuthorize(null, e.getCode(), AuthorizationAction.READ);
+				return true;
+			} catch (Exception e1) {
+				return false;
+			}
+		}).collect(Collectors.toList()));
 	}
 
 	@RequestMapping(path = "/environments/{code}", method = RequestMethod.PUT)
