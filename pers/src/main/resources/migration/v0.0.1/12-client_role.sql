@@ -10,7 +10,7 @@ create table lgm_client_role (
     role_id BIGINT,
     CONSTRAINT lgm_client_role_pk PRIMARY KEY(client_id,role_id),
     CONSTRAINT lgm_client_role_fk_user FOREIGN KEY(client_id)
-        REFERENCES lgm_client(id),
+        REFERENCES lgm_client(id) ON DELETE CASCADE,
     CONSTRAINT lgm_client_role_fk_role FOREIGN KEY(role_id)
         REFERENCES lgm_role(id) ON DELETE CASCADE
 );

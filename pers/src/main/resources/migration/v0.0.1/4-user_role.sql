@@ -10,10 +10,10 @@ create table lgm_user_role (
     role_id BIGINT,
     CONSTRAINT lgm_user_role_pk PRIMARY KEY(user_id,role_id),
     CONSTRAINT lgm_user_role_fk_user FOREIGN KEY(user_id)
-        REFERENCES lgm_user(id),
+        REFERENCES lgm_user(id) ON DELETE CASCADE,
     CONSTRAINT lgm_user_role_fk_role FOREIGN KEY(role_id)
         REFERENCES lgm_role(id) ON DELETE CASCADE
 );
 
-insert into lgm_user_role values ('SETUP', SYSDATE, 'SETUP', SYSDATE, 1, 1);
+insert into lgm_user_role values ('SETUP', CURRENT_TIMESTAMP, 'SETUP', CURRENT_TIMESTAMP, 1, 1);
 commit;

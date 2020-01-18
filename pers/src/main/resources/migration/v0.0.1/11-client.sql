@@ -26,5 +26,5 @@ INSERT INTO lgm_client
     refresh_token_validity, additional_information, autoapprove, resource_ids,
     createdBy, createdDate, lastModifiedBy, lastModifiedDate)
 VALUES
-    (1, 'ui', 'ui', 'lygeumok', 'openid', 'password,authorization_code,refresh_token', null, 36000, 36000, null, true, 'lygeum-server', 'SETUP', SYSDATE, 'SETUP', SYSDATE);
+    (1, 'ui', 'ui', 'lygeumok', 'openid', 'password,authorization_code,refresh_token', null, 36000, 36000, null, true, 'lygeum-server', 'SETUP', CURRENT_TIMESTAMP, 'SETUP', CURRENT_TIMESTAMP);
 commit;

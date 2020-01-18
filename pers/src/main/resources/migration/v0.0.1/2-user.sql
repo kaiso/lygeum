@@ -14,5 +14,5 @@ create table lgm_user (
     password varchar(500)
 );
 
-insert into lgm_user values (1, 'LGMADMUSR01', 'SETUP', SYSDATE, 'SETUP', SYSDATE, 'lygeum', 'Lygeum', '', '$2a$04$.rgQ2uOg0EbUcO9OeGXqFuPqO87M3csr0C9HUkQTXpZYXBnogDsg2');
+insert into lgm_user values (1, 'LGMADMUSR01', 'SETUP', CURRENT_TIMESTAMP, 'SETUP', CURRENT_TIMESTAMP, 'lygeum', 'Lygeum', '', '$2a$04$.rgQ2uOg0EbUcO9OeGXqFuPqO87M3csr0C9HUkQTXpZYXBnogDsg2');
 commit;
