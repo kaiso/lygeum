@@ -1,14 +1,20 @@
 package io.github.kaiso.lygeum.api;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -65,22 +71,22 @@ public class PropertiesController extends LygeumRestController {
 			@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application) {
 		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
-		List<PropertyResource> result = propertiesManager.findPropertiesByEnvironmentAndApplication(environment, application)
-				.parallelStream().map(PropertyMapper::map).collect(Collectors.toList());
+		List<PropertyResource> result = propertiesManager
+				.findPropertiesByEnvironmentAndApplication(environment, application).parallelStream()
+				.map(PropertyMapper::map).collect(Collectors.toList());
 		return ResponseEntity.ok(result);
 	}
-	
+
 	@RequestMapping(path = "/properties/{code}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteProperty(@PathVariable(required = true, name = "code") String code) {
-	        PropertyEntity p =  propertiesManager.findByCode(code)
-	        	.orElseThrow(() -> new IllegalArgumentException("Property not found with code: " + code));
+		PropertyEntity p = propertiesManager.findByCode(code)
+				.orElseThrow(() -> new IllegalArgumentException("Property not found with code: " + code));
 		AuthorizationManager.preAuthorize(p.getApplication().getCode(), null, AuthorizationAction.UPDATE);
 
 		propertiesManager.delete(code);
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Property successfully deleted");
 	}
-
 
 	@RequestMapping(method = RequestMethod.POST, path = "/properties", produces = "application/json", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> updateProperties(@RequestParam(name = "env", required = true) String environment,
@@ -100,20 +106,30 @@ public class PropertiesController extends LygeumRestController {
 	public ResponseEntity<byte[]> download(@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application,
 			@RequestParam(name = "layout", required = true) String layout) {
+		EnvironmentEntity env = environmentsManager.findByCode(environment)
+				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + environment));
+		ApplicationEntity app = applicationsManager.findByCode(application)
+				.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + application));
 		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
 		Map<String, String> properties = propertiesManager
-				.findPropertiesByEnvironmentAndApplication(environment, application).stream()
-				.collect(HashMap::new, (m,v)->m.put(v.getName(), Optional.ofNullable(v.getValue()).orElse("")), HashMap::putAll);
+				.findPropertiesByEnvironmentAndApplication(environment, application).stream().collect(HashMap::new,
+						(m, v) -> m.put(v.getName(), Optional.ofNullable(v.getValue()).orElse("")), HashMap::putAll);
 		String result;
 		String contentDisposition;
+		String mediaType;
 		try {
-			Object obj = PropertiesConverter.convertPropertiesMapToJson(properties);
+
 			if (PropertiesLayout.PROPERTIES.toString().equalsIgnoreCase(layout)) {
-				result = PropertiesConverter.convertJsonToPropertiesString(obj);
+				result = PropertiesConverter.getPropertiesMapAsString(properties);
 				contentDisposition = "attachment; filename=config.properties";
+				result = addStandardComments(env, app, result);
+				mediaType = "text/x-java-properties";
 			} else if (PropertiesLayout.YAML.toString().equalsIgnoreCase(layout)) {
+				Object obj = PropertiesConverter.convertPropertiesMapToJson(properties);
 				result = PropertiesConverter.convertJsonToYamlString(obj);
+				result = addStandardComments(env, app, result);
 				contentDisposition = "attachment; filename=config.yaml";
+				mediaType = "application/yaml";
 			} else {
 				throw new IllegalArgumentException("invalid layout, accepted values are [PROPERTIES,YAML]");
 			}
@@ -128,7 +144,7 @@ public class PropertiesController extends LygeumRestController {
 		}
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("charset", "utf-8");
-		responseHeaders.setContentType(MediaType.valueOf("application/octet-stream"));
+		responseHeaders.set("Content-type", mediaType);
 		responseHeaders.setContentLength(output.length);
 		responseHeaders.set("Content-disposition", contentDisposition);
 
@@ -136,10 +152,15 @@ public class PropertiesController extends LygeumRestController {
 
 	}
 
+	private String addStandardComments(EnvironmentEntity env, ApplicationEntity app, String result) {
+		result = "# environment: " + env.getName() + ", application: " + app.getName() + "\n" + result;
+		result = "# date: " + ZonedDateTime.now().format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n" + result;
+		return result;
+	}
+
 	@RequestMapping(method = RequestMethod.POST, path = "/properties/upload")
 	public ResponseEntity<String> upload(@RequestParam(name = "env", required = true) String environment,
-			@RequestParam(name = "app", required = true) String application,
-			@RequestBody MultipartFile file) {
+			@RequestParam(name = "app", required = true) String application, @RequestBody MultipartFile file) {
 		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.UPDATE);
 		PropertiesMediaType mimeType = PropertiesMediaType.fromValue(file.getContentType());
 

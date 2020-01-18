@@ -55,11 +55,11 @@ public final class AuthorizationManager {
 		if (action == AuthorizationAction.READ || action == AuthorizationAction.UPDATE) {
 			boolean granted = true;
 			if (environment != null && !authorities.contains(new SimpleGrantedAuthority(
-					AuthorizationManager.ROLE_PREFIX + environment.toUpperCase() + "_" + action))) {
+					AuthorizationManager.ROLE_PREFIX + environment + "_" + action))) {
 				granted = false;
 			}
 			if (granted && application != null && !authorities.contains(new SimpleGrantedAuthority(
-					AuthorizationManager.ROLE_PREFIX + application.toUpperCase() + "_" + action))) {
+					AuthorizationManager.ROLE_PREFIX + application + "_" + action))) {
 				granted = false;
 			}
 			if (granted) {

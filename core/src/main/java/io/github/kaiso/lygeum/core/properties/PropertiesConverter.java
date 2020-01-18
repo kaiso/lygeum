@@ -19,13 +19,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.javaprop.JavaPropsFactory;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
 /**
@@ -34,19 +32,19 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
  */
 public final class PropertiesConverter {
 
+	private static final JavaPropsMapper javaPropsMapper = new JavaPropsMapper();
+	private static final YAMLMapper yamlMapper = new YAMLMapper();
+
 	private PropertiesConverter() {
 		super();
 	}
 
 	public static String convertJsonToPropertiesString(Object obj) throws JsonProcessingException {
-		JavaPropsMapper mapper = new JavaPropsMapper();
-		return new String(mapper.writeValueAsBytes(obj));
+		return new String(javaPropsMapper.writeValueAsBytes(obj));
 	}
 
 	public static String convertJsonToYamlString(Object obj) throws JsonProcessingException {
-		YAMLMapper mapper = new YAMLMapper();
-		return new String(mapper.writeValueAsBytes(obj));
-
+		return new String(yamlMapper.writeValueAsBytes(obj));
 	}
 
 	public static String getPropertiesAsString(Properties prop) throws IOException {
@@ -56,8 +54,7 @@ public final class PropertiesConverter {
 	}
 
 	public static Properties convertYamlStringToProperties(String yamlString) throws IOException {
-		ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
-		Object json = yamlReader.readValue(yamlString, Object.class);
+		Object json = yamlMapper.readValue(yamlString, Object.class);
 		Properties props = new Properties();
 		props.load(new ByteArrayInputStream(convertJsonToPropertiesString(json).getBytes()));
 		return props;
@@ -65,10 +62,15 @@ public final class PropertiesConverter {
 	}
 
 	public static Object convertPropertiesMapToJson(Map<String, String> properties) throws IOException {
-		ObjectMapper objectMapper = new ObjectMapper(new JavaPropsFactory());
-		Properties props = new Properties();
-		props.putAll(properties);
-		return objectMapper.readValue(getPropertiesAsString(props), Object.class);
+		return javaPropsMapper.readValue(getPropertiesMapAsString(properties), Object.class);
+	}
+
+	public static String getPropertiesMapAsString(Map<String, String> properties) {
+		StringBuilder sb = new StringBuilder();
+		properties.entrySet().stream()
+				.sorted((Entry<String, String> e1, Entry<String, String> e2) -> e1.getKey().compareTo(e2.getKey()))
+				.forEach(e -> sb.append("\n").append(e.getKey()).append("=").append(e.getValue()));
+		return sb.toString();
 	}
 
 }
