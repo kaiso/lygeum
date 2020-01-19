@@ -200,6 +200,13 @@ const messages = {
       new: 'New Password',
       confirm: 'Confirm Password'
     }
+  },
+  settings: {
+    version: 'Version',
+    info: 'Information',
+    system: 'System',
+    datasource: 'Datasource',
+    general: 'General'
   }
 }
 export default messages

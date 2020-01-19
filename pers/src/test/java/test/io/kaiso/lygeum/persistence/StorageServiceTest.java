@@ -55,7 +55,6 @@ public class StorageServiceTest extends BasePersistenceTest {
 
 	@BeforeEach
 	public void setUp() {
-		super.setUp();
 		ApplicationEntity app = new ApplicationEntity();
 		app.setDescription("application 1");
 		app.setName("APPONE");
@@ -122,7 +121,6 @@ public class StorageServiceTest extends BasePersistenceTest {
 		assertEquals("new_name", app.get().getName());
 	}
 
-	
 	@Test
 	public void should_find_properties_without_values() {
 		EnvironmentEntity env = new EnvironmentEntity();
@@ -138,37 +136,40 @@ public class StorageServiceTest extends BasePersistenceTest {
 		assertEquals(3, result.size());
 		assertEquals("value",
 				result.stream().filter(p -> p.getName().equals("key")).collect(Collectors.toList()).get(0).getValue());
-		assertEquals(null,
-				result.stream().filter(p -> p.getName().equals("key-1")).collect(Collectors.toList()).get(0).getValue());
-		assertEquals(null,
-				result.stream().filter(p -> p.getName().equals("key-2")).collect(Collectors.toList()).get(0).getValue());
+		assertEquals(null, result.stream().filter(p -> p.getName().equals("key-1")).collect(Collectors.toList()).get(0)
+				.getValue());
+		assertEquals(null, result.stream().filter(p -> p.getName().equals("key-2")).collect(Collectors.toList()).get(0)
+				.getValue());
 	}
-	
+
 	@Test
 	public void should_store_properties() {
 		Collection<PropertyEntity> result = storageService
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
 		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
-		assertEquals("value", result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
+		assertEquals("value",
+				result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
 		Map<String, String> props = new HashMap<>();
 		props.put("key-spec", "value-spec");
 		storageService.storeProperties(createdEnv.getCode(), createdApp.getCode(), props);
 		result = storageService.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(2, result.size());
-		List<String> keyvaluecouples = result.stream().map(p -> p.getName()+p.getValue()).collect(Collectors.toList());
-		assertTrue(keyvaluecouples.containsAll(Arrays.asList("keynull","key-specvalue-spec")));
+		List<String> keyvaluecouples = result.stream().map(p -> p.getName() + p.getValue())
+				.collect(Collectors.toList());
+		assertTrue(keyvaluecouples.containsAll(Arrays.asList("keynull", "key-specvalue-spec")));
 	}
-	
+
 	@Test
 	public void should_store_properties_isolated_environments() {
-		
-	        Collection<PropertyEntity> result = storageService
+
+		Collection<PropertyEntity> result = storageService
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
 		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
-		assertEquals("value", result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
-		
+		assertEquals("value",
+				result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
+
 		EnvironmentEntity env = new EnvironmentEntity();
 		env.setName("ENVONE");
 		env.setDescription("environment 1");
@@ -177,19 +178,20 @@ public class StorageServiceTest extends BasePersistenceTest {
 		props.put("key", "value-spec");
 		storageService.storeProperties(newEnv.getCode(), createdApp.getCode(), props);
 
-		//old env does not change
+		// old env does not change
 		result = storageService.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
 		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
-		assertEquals("value", result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
+		assertEquals("value",
+				result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
 
-		//new env with different value
+		// new env with different value
 		result = storageService.findPropertiesByEnvironmentAndApplication(newEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
 		assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
-		assertEquals("value-spec", result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
-		
-		
+		assertEquals("value-spec",
+				result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
+
 	}
 
 	@Test
@@ -205,6 +207,7 @@ public class StorageServiceTest extends BasePersistenceTest {
 		result = storageService.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
 		assertEquals(1, result.size());
 		assertEquals("new-key", result.stream().collect(Collectors.toList()).get(0).getName());
-		assertEquals("new-value", result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
+		assertEquals("new-value",
+				result.stream().collect(Collectors.toList()).get(0).getValues().iterator().next().getValue());
 	}
 }

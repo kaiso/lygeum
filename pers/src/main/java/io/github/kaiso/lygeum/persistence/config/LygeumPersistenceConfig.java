@@ -92,6 +92,7 @@ public class LygeumPersistenceConfig {
 	}
 
 	private DataSource createH2DataSource() {
+		System.setProperty("lygeum.db.host", "embedded");
 		String home = System.getProperty("user.home");
 		DataSource dataSource = DataSourceBuilder.create().username("lygeum").password("")
 				.url("jdbc:h2:file:" + home + "/.lygeum/lygeumdb;AUTO_SERVER=TRUE").type(JdbcDataSource.class)
@@ -109,11 +110,6 @@ public class LygeumPersistenceConfig {
 		factory.setPackagesToScan("io.github.kaiso.lygeum.core.entities");
 		factory.setDataSource(dataSource);
 		factory.setJpaProperties(jpaProperties);
-		StringBuilder sb = new StringBuilder();
-		sb.append("PersistenceUnitInfo [\n\t").append("provider: ").append(vendorAdapter.getPersistenceProvider())
-				.append("\n\t").append("datasource: ").append(dataSource).append("\n\t").append("classloader: ")
-				.append(factory.getBeanClassLoader()).append("\n\t]");
-		logger.info("Lygeum persistence info:\n{}", sb);
 		return factory;
 	}
 

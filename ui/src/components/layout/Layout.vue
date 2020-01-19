@@ -126,7 +126,7 @@
       </v-container>
     </v-content>
     <v-footer app fixed>
-      <span>&copy; Lygeum - Kais OMRI - 2019</span>
+      <span><center>&copy;  Kais OMRI 2020</center></span>
     </v-footer>
   </div>
 </template>

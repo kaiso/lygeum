@@ -20,14 +20,9 @@ import java.sql.SQLException;
 import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import io.github.kaiso.lygeum.core.context.ApplicationContextProvider;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -38,14 +33,6 @@ import io.github.kaiso.lygeum.core.context.ApplicationContextProvider;
 public class BasePersistenceTest {
 
 	private static Server server;
-
-	@Autowired
-	private ApplicationContext ctx;
-
-	@BeforeEach
-	public void setUp() {
-		ApplicationContextProvider.setApplicationContext(ctx);
-	}
 
 	@BeforeAll
 	public static void init() throws SQLException {

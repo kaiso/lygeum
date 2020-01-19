@@ -30,6 +30,7 @@ import Login from '@/components/auth/Login'
 import Wizard from '@/components/start/Wizard'
 import Account from '@/components/account/Account'
 import Password from '@/components/account/Password'
+import Info from '@/components/settings/Info'
 
 Vue.use(Router)
 
@@ -44,6 +45,11 @@ export default new Router({
       path: '/settings',
       name: 'settings',
       component: Settings
+    },
+    {
+      path: '/settings/info',
+      name: 'info',
+      component: Info
     },
     {
       path: '/configurations',

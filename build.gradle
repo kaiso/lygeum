@@ -90,28 +90,30 @@ subprojects {
 
 project(':loader') {
 	dependencies {
-	  compile project(':pers')
-	  compile project(':api')
-	  compile project(':core')
-	  compile project(':sec')
+	  implementation project(':pers')
+	  implementation project(':api')
+	  implementation project(':core')
+	  implementation project(':sec')
 	}
 }
 
 project(':api') {
 	dependencies {
-	  compile project(':core')
+	  implementation(project(':core')) {
+	     transitive true
+	  }
 	}
 }
 
 project(':sec') {
 	dependencies {
-	  compile project(':core')
+	  implementation project(':core')
 	}
 }
 
 project(':pers') {
 	dependencies {
-	  compile project(':core')
+	  implementation project(':core')
 	}
 }
 

@@ -15,33 +15,34 @@
    */
 
 <template>
-  <aps-layout>
-    <p slot="mainContent">
-      <list-picker :choice="choice" :source="source" sourceLabel="Available" choiceLabel="Roles"></list-picker>
-    </p>
+  <aps-layout :title="$t('layout.settings')">
+    <v-container slot="mainContent" grid-list-md text-xs-center style="height:100%">
+    <v-layout row wrap>
+      <v-flex xs6>
+        <v-flex xs12>
+          <v-avatar color="brown lighten-3" size="100" @click.stop="route('/settings/info')"
+          style="cursor:pointer;">
+            <v-btn icon>
+            <v-icon dark size="70">info</v-icon>
+            </v-btn>
+          </v-avatar>
+        </v-flex>
+      <label>{{$tc('settings.system', 2)}} {{$tc('settings.info', 2)}} </label>
+      </v-flex>
+    </v-layout>
+</v-container>
   </aps-layout>
 </template>
 <script>
 import Layout from '@/components/layout/Layout'
-import ListPicker from '@/components/common/ListPicker'
 export default {
   name: 'settings-component',
-  components: { 'aps-layout': Layout,
-    'list-picker': ListPicker },
-  data: () => ({
-    source: [
-      { key: 'name', label: 'label1' },
-      { key: 'name1', label: 'label1' },
-      { key: 'name2', label: 'label1' },
-      { key: 'name3', label: 'label1' },
-      { key: 'name4', label: 'label1' },
-      { key: 'name5', label: 'label1' },
-      { key: 'name6', label: 'label1' },
-      { key: 'name6', label: 'label1' },
-      { key: 'name7', label: 'label1' }
-    ],
-    choice: [{ key: 'name', label: 'label2' }]
-  })
+  components: { 'aps-layout': Layout },
+  methods: {
+    route: function (url) {
+      this.$router.push({ path: `${url}` })
+    }
+  }
 }
 </script>
 <style scoped>

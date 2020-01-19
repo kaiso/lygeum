@@ -1,19 +1,21 @@
 package io.github.kaiso.lygeum.core.context;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
-public class ApplicationContextProvider {
+@Component
+public class ApplicationContextProvider implements ApplicationContextAware {
 
 	private static ApplicationContext applicationContext;
 
-	public static void setApplicationContext(ApplicationContext applicationContext) {
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) {
 		ApplicationContextProvider.applicationContext = applicationContext;
 	}
 
-	public static EntityManager getEntityManager() {
-		return applicationContext.getAutowireCapableBeanFactory().getBean(EntityManager.class);
+	public static <T> T getBean(Class<T> clazz) {
+		return applicationContext.getAutowireCapableBeanFactory().getBean(clazz);
 	}
 
 }

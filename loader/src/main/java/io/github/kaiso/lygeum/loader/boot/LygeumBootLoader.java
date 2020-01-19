@@ -27,19 +27,17 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 
+import io.github.kaiso.lygeum.core.context.ApplicationContextProvider;
 import io.github.kaiso.lygeum.core.system.LygeumServerInfo;
 
 @SpringBootApplication(scanBasePackages = "io.github.kaiso.lygeum")
-public class LygeumBootLoader implements ApplicationRunner {
+public class LygeumBootLoader {
 
 	static {
 		URL log4j2File = LygeumBootLoader.class.getClassLoader().getResource("log4j2.yaml");
@@ -51,14 +49,6 @@ public class LygeumBootLoader implements ApplicationRunner {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(LygeumBootLoader.class);
-
-	@Autowired
-	private LygeumServerInfo serverInfo;
-
-	@Override
-	public void run(ApplicationArguments args) throws Exception {
-		logger.info("Lygeum Version: {}", serverInfo.getImplementationVersion());
-	}
 
 	public static void main(String[] args) {
 		List<String> filteredArgs = Arrays.asList(args).stream().filter(arg -> {
@@ -76,14 +66,18 @@ public class LygeumBootLoader implements ApplicationRunner {
 		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL)
 				.withZone(ZoneId.systemDefault());
 		String startupDate = formatter.format(Instant.ofEpochMilli(context.getStartupDate()));
+		LygeumServerInfo serverInfo = ApplicationContextProvider.getBean(LygeumServerInfo.class);
+		logger.info("Lygeum Version: {}", serverInfo.getImplementationVersion());
+		logger.info("\nSystem Info [{}\n]", serverInfo.getJvmInformation());
+		logger.info("\nPersistence Info [{}\n]", serverInfo.getPersistenceInfo());
 		logger.info("Lygeum ready Startup Date {}", startupDate);
 	}
 
 	private static void addInitHooks(SpringApplication app) {
-	    app.addListeners((ApplicationListener<ApplicationEnvironmentPreparedEvent>) event -> {
-	           String version = event.getEnvironment().getProperty("java.runtime.version");
-	           logger.info("Running with Java {}", version);
-	       });
+		app.addListeners((ApplicationListener<ApplicationEnvironmentPreparedEvent>) event -> {
+			String version = event.getEnvironment().getProperty("java.runtime.version");
+			logger.info("Running with Java {}", version);
+		});
 	}
 
 }

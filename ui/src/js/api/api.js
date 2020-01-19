@@ -253,3 +253,11 @@ export function updatePassword(context, code, password) {
     password
   )
 }
+
+export function getSystemInformation(context) {
+  return client.call(
+    context,
+    'get',
+    '/api/system/info'
+  )
+}
