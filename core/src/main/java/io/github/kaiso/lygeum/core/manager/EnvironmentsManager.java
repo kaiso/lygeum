@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
+import io.github.kaiso.lygeum.core.entities.PropertyEntity;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -50,5 +51,8 @@ public interface EnvironmentsManager {
 	 * @param env
 	 */
 	void delete(EnvironmentEntity env);
+	
+
+	Optional<EnvironmentEntity> findByNameOrCode(String environment);
 
 }

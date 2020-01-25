@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
+import io.github.kaiso.lygeum.core.entities.PropertyEntity;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -50,5 +51,8 @@ public interface ApplicationsManager {
 	 * @param env
 	 */
 	void delete(ApplicationEntity env);
+	
+
+	Optional<ApplicationEntity> findByNameOrCode(String application);
 
 }

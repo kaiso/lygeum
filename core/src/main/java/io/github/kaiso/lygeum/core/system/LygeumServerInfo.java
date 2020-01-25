@@ -50,8 +50,7 @@ public class LygeumServerInfo {
 		EntityManagerFactoryInfo jpaInfo = ApplicationContextProvider.getBean(EntityManagerFactoryInfo.class);
 		return new StringBuilder().append("\n\t").append("DB Vendor: ").append(System.getProperty("lygeum.db.vendor"))
 				.append("\n\t").append("Host: ").append(System.getProperty("lygeum.db.host")).append("\n\t")
-				.append("Datasource: ").append(jpaInfo.getDataSource()).append("\n\t").append("Classloader: ")
-				.append(jpaInfo.getBeanClassLoader()).toString();
+				.append("Datasource: ").append(jpaInfo.getDataSource()).toString();
 	}
 
 	public String getJvmInformation() {

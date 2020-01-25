@@ -97,4 +97,9 @@ public class EnvironmentsManagerImpl implements EnvironmentsManager {
 		storageService.deleteEnvironment(env);
 	}
 
+	@Override
+	public Optional<EnvironmentEntity> findByNameOrCode(String environment) {
+		return storageService.findEnvironmentByNameOrCode(environment);
+	}
+
 }

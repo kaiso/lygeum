@@ -140,4 +140,8 @@ public interface StorageService {
 
 	Client saveClient(Client client);
 
+	Optional<ApplicationEntity> findApplicationByNameOrCode(String application);
+
+	Optional<EnvironmentEntity> findEnvironmentByNameOrCode(String environment);
+
 }

@@ -20,5 +20,5 @@ package io.github.kaiso.lygeum.core.properties;
  *
  */
 public enum PropertiesLayout {
-	YAML, PROPERTIES
+	YAML, PROPERTIES, JSON
 }

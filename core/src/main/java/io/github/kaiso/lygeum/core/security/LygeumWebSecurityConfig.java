@@ -34,8 +34,15 @@ public class LygeumWebSecurityConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
 	http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-		.authorizeRequests().antMatchers(HttpMethod.OPTIONS).anonymous().and().authorizeRequests().anyRequest()
-		.authenticated();
+		.authorizeRequests().antMatchers(HttpMethod.OPTIONS)
+		   .anonymous()
+		   .and()
+		   .authorizeRequests()
+		   .antMatchers("/lygeum/**")
+		   .authenticated()
+		   .and()
+		   .authorizeRequests().anyRequest()
+		   .anonymous();
     }
 
 	@Override

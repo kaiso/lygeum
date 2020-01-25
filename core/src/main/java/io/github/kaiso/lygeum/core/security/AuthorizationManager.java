@@ -43,6 +43,10 @@ public final class AuthorizationManager {
 		if (SecurityContextHolder.getContext().getAuthentication() == null) {
 			throw new UnauthorizedException("No valid authentication found");
 		}
+
+		application = application != null ? application.toUpperCase() : null;
+		environment = environment != null ? environment.toUpperCase() : null;
+
 		Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
 		if (authorities.contains(new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + ROLE_ADMIN))
@@ -54,12 +58,12 @@ public final class AuthorizationManager {
 
 		if (action == AuthorizationAction.READ || action == AuthorizationAction.UPDATE) {
 			boolean granted = true;
-			if (environment != null && !authorities.contains(new SimpleGrantedAuthority(
-					AuthorizationManager.ROLE_PREFIX + environment + "_" + action))) {
+			if (environment != null && !authorities.contains(
+					new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + environment + "_" + action))) {
 				granted = false;
 			}
-			if (granted && application != null && !authorities.contains(new SimpleGrantedAuthority(
-					AuthorizationManager.ROLE_PREFIX + application + "_" + action))) {
+			if (granted && application != null && !authorities.contains(
+					new SimpleGrantedAuthority(AuthorizationManager.ROLE_PREFIX + application + "_" + action))) {
 				granted = false;
 			}
 			if (granted) {

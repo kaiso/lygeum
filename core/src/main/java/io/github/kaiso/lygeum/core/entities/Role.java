@@ -77,7 +77,7 @@ public class Role extends BaseEntity {
 
 		public Role build() {
 			Role role = new Role();
-			role.setCode(code);
+			role.setCode(code.toUpperCase());
 			role.setName(name);
 			role.setDescription(description);
 			role.setForceNew(forceNew);

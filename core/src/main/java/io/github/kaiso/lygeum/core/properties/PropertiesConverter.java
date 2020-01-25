@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
@@ -34,6 +35,7 @@ public final class PropertiesConverter {
 
 	private static final JavaPropsMapper javaPropsMapper = new JavaPropsMapper();
 	private static final YAMLMapper yamlMapper = new YAMLMapper();
+	private static final ObjectMapper mapper = new ObjectMapper();
 
 	private PropertiesConverter() {
 		super();
@@ -64,6 +66,13 @@ public final class PropertiesConverter {
 	public static Object convertPropertiesMapToJson(Map<String, String> properties) throws IOException {
 		return javaPropsMapper.readValue(getPropertiesMapAsString(properties), Object.class);
 	}
+	
+	
+	public static String convertPropertiesMapToJsonString(Map<String, String> properties) throws IOException {
+		return mapper.writeValueAsString(javaPropsMapper.readValue(getPropertiesMapAsString(properties), Object.class));
+	}
+	
+	
 
 	public static String getPropertiesMapAsString(Map<String, String> properties) {
 		StringBuilder sb = new StringBuilder();

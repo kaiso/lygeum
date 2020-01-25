@@ -99,4 +99,9 @@ public class ApplicationsManagerImpl implements ApplicationsManager {
 	  storageService.deleteApplication(app);	
 	}
 
+	@Override
+	public Optional<ApplicationEntity> findByNameOrCode(String application) {
+		return storageService.findApplicationByNameOrCode(application);
+	}
+
 }
