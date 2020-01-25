@@ -64,7 +64,12 @@ public class LygeumBootLoader {
 			filteredArgs.add("--server.port=5000");
 			port.set("5000");
 		}
-		logger.debug("Lygeum starting with options:\n {}", filteredArgs);
+		logger.debug("Lygeum starting with options:\n {}", filteredArgs.stream().map(a -> {
+			if (a.contains("db-password")) {
+				return "--db-password=*****";
+			}
+			return a;
+		}).collect(Collectors.toList()));
 		filteredArgs.add(
 				"--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration");
 		SpringApplication app = new SpringApplication(LygeumBootLoader.class);
