@@ -13,7 +13,7 @@
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-
+import './js/util/config-loader'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
@@ -22,7 +22,6 @@ import Vuetify from 'vuetify'
 import VueI18n from 'vue-i18n'
 import messages from './i18n'
 import axios from 'axios'
-import config from './lygeum-config.json'
 import { Vue2Storage } from 'vue2-storage'
 import 'vuetify/dist/vuetify.min.css'
 
@@ -41,7 +40,7 @@ Vue.use(Vuetify, {
 Vue.use(VueI18n)
 
 Vue.prototype.$http = axios.create({
-  baseURL: config.baseUrl,
+  baseURL: window.__ENV['server.url'],
   timeout: 180000,
   headers: { 'X-Lygeum-Caller': 'lygeum' }
 })

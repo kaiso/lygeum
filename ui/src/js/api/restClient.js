@@ -27,7 +27,6 @@ export default {
         'params': params,
         'responseType': responseType
       }).then(function (response) {
-        console.log('REST Client Response ==> ', JSON.stringify(response))
         resolve(response)
       }).catch(function (error) {
         if (error.response && error.response.status === 401) {
@@ -41,7 +40,7 @@ export default {
             status: 'error'
           })
         } else {
-          console.log('REST Client Error ==>  ', error.response.status, '\nDetails: ', JSON.stringify(error.response.data))
+          console.log('HTTP error ==>  ', error.response.status, '\nDetails: ', JSON.stringify(error.response.data))
         }
         reject(error)
       })
