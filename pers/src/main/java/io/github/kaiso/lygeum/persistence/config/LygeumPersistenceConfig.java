@@ -1,5 +1,6 @@
 package io.github.kaiso.lygeum.persistence.config;
 
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -41,7 +43,7 @@ public class LygeumPersistenceConfig {
 
 	private Environment environment;
 
-	private Properties jpaProperties;
+	private String dialect;
 
 	@Autowired
 	public LygeumPersistenceConfig(ApplicationArguments applicationArguments, Environment environment) {
@@ -58,21 +60,23 @@ public class LygeumPersistenceConfig {
 	@Bean
 	public DataSource dataSource() throws Exception {
 		DataSource dataSource;
-		String dbVendor = environment.getProperty("lygeum.db.vendor", "h2").toLowerCase();
-
+		String dbVendor = getApplicationArgument("db-vendor","h2").get();
 		switch (dbVendor) {
 		case "h2":
 			dataSource = createH2DataSource();
-			initJpaProperties("org.hibernate.dialect.H2Dialect");
+			dialect = "org.hibernate.dialect.H2Dialect";
 			break;
 		case "postgres":
 			dataSource = createPostgresDataSource();
-			initJpaProperties("org.hibernate.dialect.PostgreSQL82Dialect");
+			dialect = "org.hibernate.dialect.PostgreSQL82Dialect";
 			break;
 		default:
 			throw new BootstrapMethodError(
 					"Failed to initialize Lygeum datasource, db vendor must be among(h2, postgres)");
 		}
+
+		System.setProperty("lygeum.db.vendor", dbVendor);
+
 		new LygeumStorageInitializer(dataSource, applicationArguments).run();
 		return dataSource;
 	}
@@ -82,12 +86,14 @@ public class LygeumPersistenceConfig {
 		configuration.setPoolName("lygeum-db-pool");
 		configuration.setMaximumPoolSize(20);
 		configuration.setMinimumIdle(5);
-		String host = environment.getRequiredProperty("lygeum.db.host");
-		String port = environment.getProperty("lygeum.db.port", "5432");
-		String database = environment.getProperty("lygeum.db.database", "lygeum");
+		String host = getApplicationArgument("db-host", null).orElseThrow(() -> new IllegalStateException("missing lygeum.db.host argument"));
+        System.setProperty("lygeum.db.host", host);
+		String port = getApplicationArgument("db-port", "5432").get();
+		String database = getApplicationArgument("db-database", "lygeum").get();
 		configuration.setJdbcUrl("jdbc:postgresql://" + host + ":" + port + "/" + database);
-		configuration.setUsername(environment.getProperty("lygeum.db.user", "postgres"));
-		configuration.setPassword(environment.getProperty("lygeum.db.password", "postgres"));
+		configuration.setSchema(getApplicationArgument("db-schema", "public").get());
+		configuration.setUsername(getApplicationArgument("db-user", "postgres").get());
+		configuration.setPassword(getApplicationArgument("db-password", "postgres").get());
 		return new HikariDataSource(configuration);
 	}
 
@@ -101,7 +107,8 @@ public class LygeumPersistenceConfig {
 	}
 
 	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
+			Properties jpaProperties) {
 
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setGenerateDdl(false);
@@ -113,8 +120,10 @@ public class LygeumPersistenceConfig {
 		return factory;
 	}
 
-	private Properties initJpaProperties(String dialect) {
-		jpaProperties = new Properties();
+	@Bean
+	@DependsOn("dataSource")
+	public Properties jpaProperties() {
+		Properties jpaProperties = new Properties();
 		jpaProperties.put("hibernate.dialect", dialect);
 		jpaProperties.put("hibernate.showSql", "true");
 		jpaProperties.put("hibernate.hbm2ddl.auto", "validate");
@@ -129,4 +138,11 @@ public class LygeumPersistenceConfig {
 		return txManager;
 	}
 
+	private Optional<String> getApplicationArgument(String key, String defaultValue) {
+		if (applicationArguments.containsOption(key)) {
+			return Optional.of(applicationArguments.getOptionValues(key).get(0));
+		} else {
+			return Optional.ofNullable(defaultValue);
+		}
+	}
 }

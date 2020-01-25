@@ -363,4 +363,14 @@ public class StorageServiceImpl implements StorageService {
 						.withName("Update " + type + " " + name).build());
 	}
 
+	@Override
+	public Optional<ApplicationEntity> findApplicationByNameOrCode(String application) {
+		return applicationRepository.findByNameOrCode(application, application);
+	}
+
+	@Override
+	public Optional<EnvironmentEntity> findEnvironmentByNameOrCode(String environment) {
+		return environmentRepository.findByNameOrCode(environment, environment);
+	}
+
 }

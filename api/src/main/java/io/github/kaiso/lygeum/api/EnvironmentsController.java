@@ -45,7 +45,7 @@ public class EnvironmentsController extends LygeumRestController {
 			@PathVariable(required = true, name = "code") String code) {
 		EnvironmentEntity environment = environmentsManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + code));
-		AuthorizationManager.preAuthorize(null, environment.getName(), AuthorizationAction.UPDATE);
+		AuthorizationManager.preAuthorize(null, environment.getCode(), AuthorizationAction.UPDATE);
 
 		environmentsManager.update(env);
 

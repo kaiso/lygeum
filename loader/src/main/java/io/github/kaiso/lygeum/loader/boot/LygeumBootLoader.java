@@ -23,6 +23,7 @@ import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -51,9 +52,18 @@ public class LygeumBootLoader {
 	private static final Logger logger = LoggerFactory.getLogger(LygeumBootLoader.class);
 
 	public static void main(String[] args) {
+		AtomicReference<String> port = new AtomicReference<String>(null);
 		List<String> filteredArgs = Arrays.asList(args).stream().filter(arg -> {
+			if (arg.contains("server.port")) {
+				port.set(arg.replace("--server.port=", "").trim());
+			}
 			return !arg.contains("server.name");
 		}).collect(Collectors.toList());
+		port.compareAndSet(null, System.getProperty("server.port"));
+		if (port.get() == null) {
+			filteredArgs.add("--server.port=5000");
+			port.set("5000");
+		}
 		logger.debug("Lygeum starting with options:\n {}", filteredArgs);
 		filteredArgs.add(
 				"--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration");
@@ -70,6 +80,7 @@ public class LygeumBootLoader {
 		logger.info("Lygeum Version: {}", serverInfo.getImplementationVersion());
 		logger.info("\nSystem Info [{}\n]", serverInfo.getJvmInformation());
 		logger.info("\nPersistence Info [{}\n]", serverInfo.getPersistenceInfo());
+		logger.info("Lygeum HTTP connector listening on port {}", port.get());
 		logger.info("Lygeum ready Startup Date {}", startupDate);
 	}
 

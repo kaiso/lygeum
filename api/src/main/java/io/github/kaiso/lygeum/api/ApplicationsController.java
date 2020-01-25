@@ -45,7 +45,7 @@ public class ApplicationsController extends LygeumRestController {
 			@PathVariable(required = true, name = "code") String code) {
 		ApplicationEntity application = applicationsManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + code));
-		AuthorizationManager.preAuthorize(application.getName(), null, AuthorizationAction.UPDATE);
+		AuthorizationManager.preAuthorize(application.getCode(), null, AuthorizationAction.UPDATE);
 
 		applicationsManager.update(app);
 

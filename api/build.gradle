@@ -1,0 +1,3 @@
+dependencies {
+  implementation "org.springframework.security.oauth:spring-security-oauth2:${project. 'spring.security.oauth2.version'}"
+}

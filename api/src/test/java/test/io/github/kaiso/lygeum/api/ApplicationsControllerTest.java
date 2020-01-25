@@ -82,7 +82,7 @@ public class ApplicationsControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PROD_READ" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "APP01_READ" })
     public void should_return_all_applications() throws Exception {
 	List<ApplicationEntity> apps = new ArrayList<>();
 	ApplicationEntity entity = new ApplicationEntity("APP01", "PRODUCTION");
@@ -111,7 +111,7 @@ public class ApplicationsControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "PRODUCTION_UPDATE" })
+    @WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "CODE01_UPDATE" })
     public void should_update_application() throws Exception {
 	ApplicationEntity entity = new ApplicationEntity("code01", "production");
 	new Expectations() {

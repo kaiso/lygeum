@@ -12,6 +12,7 @@ dependencies {
 
 
 bootJar {
+  baseName = 'lygeum-server'
   manifest {
 		attributes(
 		['Specification-Title': 'Lygeum server',

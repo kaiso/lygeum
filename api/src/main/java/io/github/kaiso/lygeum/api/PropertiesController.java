@@ -106,13 +106,13 @@ public class PropertiesController extends LygeumRestController {
 	public ResponseEntity<byte[]> download(@RequestParam(name = "env", required = true) String environment,
 			@RequestParam(name = "app", required = true) String application,
 			@RequestParam(name = "layout", required = true) String layout) {
-		EnvironmentEntity env = environmentsManager.findByCode(environment)
+		EnvironmentEntity env = environmentsManager.findByNameOrCode(environment)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + environment));
-		ApplicationEntity app = applicationsManager.findByCode(application)
+		ApplicationEntity app = applicationsManager.findByNameOrCode(application)
 				.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + application));
 		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
 		Map<String, String> properties = propertiesManager
-				.findPropertiesByEnvironmentAndApplication(environment, application).stream().collect(HashMap::new,
+				.findPropertiesByEnvironmentAndApplication(env.getCode(), app.getCode()).stream().collect(HashMap::new,
 						(m, v) -> m.put(v.getName(), Optional.ofNullable(v.getValue()).orElse("")), HashMap::putAll);
 		String result;
 		String contentDisposition;
@@ -130,6 +130,10 @@ public class PropertiesController extends LygeumRestController {
 				result = addStandardComments(env, app, result);
 				contentDisposition = "attachment; filename=config.yaml";
 				mediaType = "application/yaml";
+			} else if (PropertiesLayout.JSON.toString().equalsIgnoreCase(layout)) {
+				result = PropertiesConverter.convertPropertiesMapToJsonString(properties);
+				contentDisposition = "attachment; filename=config.json";
+				mediaType = "application/json";
 			} else {
 				throw new IllegalArgumentException("invalid layout, accepted values are [PROPERTIES,YAML]");
 			}

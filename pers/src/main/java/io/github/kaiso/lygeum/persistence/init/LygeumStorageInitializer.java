@@ -38,7 +38,8 @@ public class LygeumStorageInitializer {
 
     private DataSource dataSource;
 
-    private ApplicationArguments applicationArguments;
+    @SuppressWarnings("unused")
+	private ApplicationArguments applicationArguments;
 
     public LygeumStorageInitializer(DataSource dataSource, ApplicationArguments applicationArguments) {
 	super();
@@ -53,8 +54,8 @@ public class LygeumStorageInitializer {
      * ApplicationArguments)
      */
     public void run() throws Exception {
-	if (applicationArguments.containsOption("install")) {
-	    logger.info("Lygeum started in install mode with (--install) option, will init storage");
+	//if (applicationArguments.containsOption("install")) {
+	  //  logger.info("Lygeum started in install mode with (--install) option, will init storage");
 	    Database database = DatabaseFactory.getInstance()
 		    .findCorrectDatabaseImplementation(new JdbcConnection(dataSource.getConnection()));
 	    database.setDatabaseChangeLogLockTableName("LGM_CHANNGESLOCK");
@@ -62,7 +63,7 @@ public class LygeumStorageInitializer {
 	    Liquibase liquibase = new Liquibase("migration/chliqaps.xml", new ClassLoaderResourceAccessor(), database);
 	    liquibase.update(new Contexts());
 	    logger.info("Storage initialized");
-	}
+	//}
     }
 
 }

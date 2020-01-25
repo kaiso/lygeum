@@ -15,6 +15,7 @@
 */
 package io.github.kaiso.lygeum.persistence.repositories;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.Query;
@@ -33,5 +34,7 @@ public interface EnvironmentRepository
 
 	@Query("SELECT p FROM EnvironmentEntity p")
 	Stream<EnvironmentEntity> streamAll();
+	
+	Optional<EnvironmentEntity> findByNameOrCode(String name, String code);
 
 }
