@@ -19,7 +19,7 @@
     <v-container slot="mainContent" grid-list-md text-xs-center style="height:100%">
       <div style="display:flex;justify-content:center;margin-top:70px;flex-direction:column">
         <img src="~@/assets/lygeum_logo_orange.png" style="max-width:200px;align-self:center;"/>
-        <img src="~@/assets/lygeum_logotext_orange_b.png" style="max-width:300px;align-self:center;"/>
+        <img src="~@/assets/lygeum_logotext_orange_b.png" style="max-width:300px;align-self:center;margin-bottom:90px;"/>
         <div class="aps-simple-input">
           <input
             type="text"
