@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -215,10 +216,8 @@ public class StorageServiceImpl implements StorageService {
 	@Override
 	public Collection<PropertyEntity> findPropertiesByEnvironmentAndApplication(String environment,
 			String application) {
-		return propertyRepository.findByEnvironmentAndApplicationNamed(environment, application).map(p -> {
-			p.getValues().removeIf(v -> !environment.equals(v.getEnvironment().getCode()));
-			return p;
-		}).collect(Collectors.toList());
+		return propertyRepository.findByEnvironmentAndApplicationNamed(environment, application)
+				.collect(Collectors.toList());
 	}
 
 	/*
@@ -236,17 +235,22 @@ public class StorageServiceImpl implements StorageService {
 		ApplicationEntity app = applicationRepository.findByCode(application).orElseThrow(
 				() -> new IllegalArgumentException("application can not be found with code " + application));
 
-		list.addAll(propertyRepository.findByEnvironmentAndApplicationNamed(environment, application).map(p -> {
+		list.addAll(propertyRepository.findByApplicationCode(application).map(p -> {
 			if (props.containsKey(p.getName())) {
-				p.getValues().add(PropertyValueEntity.builder().withProperty(p).withEnvironment(env)
-						.withValue(props.get(p.getName())).build());
-				props.remove(p.getName());
-			} else {
-				p.getValues().forEach(v -> {
-					if (v.getEnvironment().equals(env)) {
-						v.setValue(null);
+				AtomicBoolean found = new AtomicBoolean(false);
+				p.getValues().forEach(pv -> {
+					if (pv.getEnvironment().getCode().equals(env)) {
+						pv.setValue(props.get(p.getName()));
+						found.set(true);
 					}
 				});
+				if (!found.get()) {
+					p.getValues().add(PropertyValueEntity.builder().withProperty(p).withEnvironment(env)
+							.withValue(props.get(p.getName())).build());
+				}
+				props.remove(p.getName());
+			} else {
+				p.getValues().removeIf(v -> v.getEnvironment().equals(env));
 			}
 			return p;
 		}).collect(Collectors.toList()));

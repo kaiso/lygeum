@@ -14,6 +14,7 @@
    * limitations under the License.
    */
 <template>
+
   <div>
     <v-navigation-drawer
       v-model="drawer"
@@ -110,7 +111,9 @@
     </v-navigation-drawer>
     <v-toolbar app fixed clipped-left>
       <v-toolbar-side-icon v-show="!drawerDisabled" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title style="width:20%;">Lygeum</v-toolbar-title>
+      <img src="~@/assets/lygeum_logo_orange.png" style="max-width:40px;max-height:40px;"/>
+      <img src="~@/assets/lygeum_logotext_orange_b.png" style="width:70px;height:40px;margin-top:15px;"/>
+      <!--<v-toolbar-title style="width:20%;">Lygeum</v-toolbar-title>-->
       <div style="width:100%;">
         <v-toolbar-title style="margin:auto;width:200px">{{title}}</v-toolbar-title>
       </div>
@@ -125,8 +128,8 @@
         </v-layout>
       </v-container>
     </v-content>
-    <v-footer app fixed>
-      <span><center>&copy;  Kais OMRI 2020</center></span>
+    <v-footer app fixed style="flex-direction:column;">
+      <span style="align-self:center;height:100%;line-height:37px">&copy;  Kais OMRI 2020</span>
     </v-footer>
   </div>
 </template>

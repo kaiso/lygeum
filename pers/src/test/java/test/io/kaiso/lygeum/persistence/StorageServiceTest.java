@@ -32,6 +32,7 @@ import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -78,19 +79,22 @@ public class StorageServiceTest extends BasePersistenceTest {
 		});
 	}
 
-	@Test
+ 
+ @Test
 	public void should_find_all_applications() {
 		List<ApplicationEntity> apps = storageService.findAllApplications();
 		assertEquals(1, apps.size());
 	}
 
-	@Test
+	
+ @Test
 	public void should_find_application_code() {
 		Optional<ApplicationEntity> app = storageService.findApplicationByCode(createdApp.getCode());
 		assertTrue(app.isPresent());
 	}
 
-	@Test
+	
+ @Test
 	public void should_delete_application() {
 		Optional<ApplicationEntity> app = storageService.findApplicationByCode(createdApp.getCode());
 		assertTrue(app.isPresent());
@@ -99,7 +103,8 @@ public class StorageServiceTest extends BasePersistenceTest {
 		assertFalse(app.isPresent());
 	}
 
-	@Test
+	
+ @Test
 	public void should_update_application() {
 		Optional<ApplicationEntity> app = storageService.findApplicationByCode(createdApp.getCode());
 		app.get().setName("new_name");
@@ -109,7 +114,8 @@ public class StorageServiceTest extends BasePersistenceTest {
 		assertEquals("new_name", app.get().getName());
 	}
 
-	@Test
+	
+ @Test
 	@Transactional
 	public void should_update_application_using_natural_id() {
 		ApplicationEntity tmpApp = new ApplicationEntity();
@@ -121,8 +127,9 @@ public class StorageServiceTest extends BasePersistenceTest {
 		assertEquals("new_name", app.get().getName());
 	}
 
-	@Test
-	public void should_find_properties_without_values() {
+	
+ @Test
+	public void should_not_find_properties_without_values() {
 		EnvironmentEntity env = new EnvironmentEntity();
 		env.setName("ENVONE");
 		env.setDescription("environment 1");
@@ -133,16 +140,14 @@ public class StorageServiceTest extends BasePersistenceTest {
 		storageService.storeProperties(newEnv.getCode(), createdApp.getCode(), props);
 		Collection<PropertyEntity> result = storageService
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
-		assertEquals(3, result.size());
+		assertEquals(1, result.size());
 		assertEquals("value",
 				result.stream().filter(p -> p.getName().equals("key")).collect(Collectors.toList()).get(0).getValue());
-		assertEquals(null, result.stream().filter(p -> p.getName().equals("key-1")).collect(Collectors.toList()).get(0)
-				.getValue());
-		assertEquals(null, result.stream().filter(p -> p.getName().equals("key-2")).collect(Collectors.toList()).get(0)
-				.getValue());
+		
 	}
 
-	@Test
+	
+ @Test
 	public void should_store_properties() {
 		Collection<PropertyEntity> result = storageService
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
@@ -154,13 +159,13 @@ public class StorageServiceTest extends BasePersistenceTest {
 		props.put("key-spec", "value-spec");
 		storageService.storeProperties(createdEnv.getCode(), createdApp.getCode(), props);
 		result = storageService.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());
-		assertEquals(2, result.size());
+		assertEquals(1, result.size());
 		List<String> keyvaluecouples = result.stream().map(p -> p.getName() + p.getValue())
 				.collect(Collectors.toList());
-		assertTrue(keyvaluecouples.containsAll(Arrays.asList("keynull", "key-specvalue-spec")));
+		assertTrue(keyvaluecouples.containsAll(Arrays.asList("key-specvalue-spec")));
 	}
 
-	@Test
+ @Test
 	public void should_store_properties_isolated_environments() {
 
 		Collection<PropertyEntity> result = storageService
@@ -194,7 +199,8 @@ public class StorageServiceTest extends BasePersistenceTest {
 
 	}
 
-	@Test
+	 
+ @Test
 	public void should_update_properties() {
 		Collection<PropertyEntity> result = storageService
 				.findPropertiesByEnvironmentAndApplication(createdEnv.getCode(), createdApp.getCode());

@@ -498,7 +498,7 @@ export default {
       if (event !== undefined) {
         this.filteredAppProperties = this.appProperties.filter((value) => {
           return value.name.toLowerCase().includes(event.toLowerCase()) ||
-            value.value.toLowerCase().includes(event.toLowerCase())
+            (value.value !== null && value.value.toLowerCase().includes(event.toLowerCase()))
         })
       }
     }

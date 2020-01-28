@@ -17,9 +17,9 @@
 <template>
   <aps-layout :drawerDisabled="true" :drawer="false" :title="''">
     <v-container slot="mainContent" grid-list-md text-xs-center style="height:100%">
-      <h2>{{$t('actions.login.title')}}</h2>
-
       <div style="display:flex;justify-content:center;margin-top:70px;flex-direction:column">
+        <img src="~@/assets/lygeum_logo_orange.png" style="max-width:200px;align-self:center;"/>
+        <img src="~@/assets/lygeum_logotext_orange_b.png" style="max-width:300px;align-self:center;"/>
         <div class="aps-simple-input">
           <input
             type="text"
@@ -86,3 +86,15 @@ export default {
 
 }
 </script>
+<style scoped>
+.logo_container {
+  max-width: 400px;
+  max-height: 600px;
+  align-content: center;
+  display: grid;
+  grid-column-gap: 5px;
+  grid-template-columns: auto;
+  justify-items: center;
+}
+</style>
+

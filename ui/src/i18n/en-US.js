@@ -14,6 +14,9 @@
    * limitations under the License.
    */
 const messages = {
+  lygeum: {
+    copyright: '© 2020 Kais OMRI'
+  },
   generic: {
     nodata: 'No data available',
     confirm_delete: 'Are you sure to delete {target} ?'

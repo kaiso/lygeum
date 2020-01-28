@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "LGM_PROPERTY")
-@NamedQuery(name = "PropertyEntity.findByEnvironmentAndApplicationNamed", query = "select p from PropertyEntity p left join fetch p.values q left join q.environment e on e.code=?1 where p.application.code=?2")
+@NamedQuery(name = "PropertyEntity.findByEnvironmentAndApplicationNamed", query = "select p from PropertyEntity p inner join p.application a on a.code=?2 left join fetch p.values q inner join q.environment e on e.code=?1 ")
 public class PropertyEntity extends BaseEntity {
     
 	@Column(name = "name", unique = true)
@@ -46,7 +46,7 @@ public class PropertyEntity extends BaseEntity {
 	private String description;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<PropertyValueEntity> values;
 
 	@JsonIgnore
