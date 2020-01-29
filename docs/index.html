@@ -1,19 +1,44 @@
-<!DOCTYPE html>
-<html>
+---
+layout: default
+---
 
-<head>
-    <meta charset=utf-8>
-    <meta name=viewport content="width=device-width,initial-scale=1">
-    <title>lygeum</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel=stylesheet>
-    <link href=https://rawgit.com/kaiso/lygeum/master/docs/static/css/app.37b02b03450499c8273cfe2b31d6b5dc.css rel=stylesheet>
-</head>
+<div class="header-container jumbotron">
+    <div class="container" style="display: flex;flex-direction: row;">
+        <span style="display: flex;flex-direction: column;margin-right: 50px;">
+            <img src="{{ "/assets/img/lygeum_logo_orange.png" | relative_url }}" alt="Logo" style="align-self:center;max-height: 200px;max-width: 170px;"/>
+            <img src="{{ "/assets/img/lygeum_logotext_orange_b.png" | relative_url }}" alt="Logo" style="max-height: 100px;"/>
+        </span>
+        <span>
+            <h1>Configuration made easy</h1>
+            <p>{{ site.description }}</p>
+            <p><a class="btn btn-primary btn-lg" href="{{ "/docs/home/" | relative_url }}" role="button">Learn more</a></p>
+        </span>
+    </div>
+</div>
 
-<body>
-    <div id=app></div>
-    <script type=text/javascript src=https://rawgit.com/kaiso/lygeum/master/docs/static/js/manifest.2ae2e69a05c33dfc65f8.js></script>
-    <script type=text/javascript src=https://rawgit.com/kaiso/lygeum/master/docs/static/js/vendor.bf6cd1c0adf7660ed493.js></script>
-    <script type=text/javascript src=https://rawgit.com/kaiso/lygeum/master/docs/static/js/app.6a9affc8467cb363bd5e.js></script>
-</body>
-
-</html>
+<div class="container">
+    <!--<hr>-->
+    <div class="row">
+        <div class="col-sm-4">
+            <h1 class="text-center"><i class="fa fa-wrench" aria-hidden="true"></i></h1>
+            <h3 class="text-center">Easy to install and configure</h3>
+            <p>Get started by running <a href="https://hub.docker.com/r/kaiso/lygeum">the official docker image</a>, use the ergonomic and intuitive interface to configure
+                environments, applications, clients...<br>
+                With fine grained ACL permissions manage your users in a simple manner.
+            </p>
+        </div>
+        <div class="col-sm-4">
+            <h1 class="text-center"><i class="fa fa-cubes" aria-hidden="true"></i></h1>
+            <h3 class="text-center">Rich integrated toolbox</h3>
+            <p>Lygeum comes with different tools to be easily integrated in cloud environments and existing applications.<br>
+                like the <a href="https://pypi.org/project/lygeumcli/">the Command Line Interface</a> 
+                and many upcoming clients for different deployment scenarios.</p>
+        </div>
+        <div class="col-sm-4">
+            <h1 class="text-center"><i class="fa fa-cogs" aria-hidden="true"></i></h1>
+            <h3 class="text-center">Wide compatibility</h3>
+            <p>Lygeum supports downloading configuration in different layouts like
+                <code>json, yaml and java properties</code> which makes it compatible with most systems and applications.</p>
+        </div>
+    </div>
+</div>

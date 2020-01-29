@@ -1,0 +1,52 @@
+# Where things are
+source              : .
+destination         : ./_site
+collections_dir     : .
+plugins_dir         : _plugins
+layouts_dir         : _layouts
+data_dir            : _data
+includes_dir        : _includes
+sass:
+  sass_dir: _sass
+collections:
+  posts:
+    output          : true
+
+#theme
+theme: Hyperspace
+
+defaults:
+  - 
+    scope:
+      path: "README.md"
+    values:
+      permalink: "index.html"
+      layout: default
+      title: "Lygeum | Centralized configuration server for modern applications and services"
+      source_url: "https://github.com/kaiso/lygeum"
+      docs_url: "https://github.com/kaiso/relmongo/wiki"
+      description: "Lygeum is a centralized configuration server which comes with a complete toolbox allowing to create, manage and
+      quickly and reliably deploy application configurations"
+      keywords: "Centralized,Cloud,Application,Configuration,Environment"
+
+# Conversion
+markdown            : kramdown
+highlighter         : rouge
+lsi                 : false
+excerpt_separator   : "\n\n"
+incremental         : false
+
+# Markdown Processors
+kramdown:
+  auto_ids          : true
+  entity_output     : as_char
+  toc_levels        : 1..6
+  smart_quotes      : lsquo,rsquo,ldquo,rdquo
+  input             : GFM
+  hard_wrap         : false
+  footnote_nr       : 1
+  show_warnings     : true
+
+  # Plugins
+  plugins:
+  - jekyll-sitemap

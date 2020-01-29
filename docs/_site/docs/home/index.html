@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/lygeum/assets/css/main.css">
+    <link rel="stylesheet" href="/lygeum/assets/css/font-awesome.min.css">
+
+    <link rel="shortcut icon" href="/lygeum/assets/img/lygeum_logo_square_small.png?1">
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Getting started | Lygeum</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Getting started" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="NB: The Lygeum server is currently in beta version and the docs are under construction" />
+<meta property="og:description" content="NB: The Lygeum server is currently in beta version and the docs are under construction" />
+<link rel="canonical" href="http://localhost:4000/lygeum/docs/home/" />
+<meta property="og:url" content="http://localhost:4000/lygeum/docs/home/" />
+<meta property="og:site_name" content="Lygeum" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-01-30T00:32:11+01:00" />
+<script type="application/ld+json">
+{"description":"NB: The Lygeum server is currently in beta version and the docs are under construction","@type":"WebPage","url":"http://localhost:4000/lygeum/docs/home/","headline":"Getting started","dateModified":"2020-01-30T00:32:11+01:00","datePublished":"2020-01-30T00:32:11+01:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="alternate" type="application/rss+xml" title="Lygeum" href="http://localhost:4000/lygeum/feed.xml" />
+</head>
+
+
+<body>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container navbar-container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+            <a class="navbar-brand" href="/lygeum/">
+                <span><img src="/lygeum/assets/img/lygeum_logo_square_small.png" alt="Logo"></span>
+            </a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li  class="active" ><a href="/lygeum/docs/home/">Docs</a></li>
+               <!-- <li ><a href="/lygeum/blog/2017/05/03/jekyll-doc-theme/">Blog</a></li>-->
+            </ul>
+            <div class="navbar-right">
+                <form class="navbar-form navbar-left">
+                    <div class="form-group has-feedback">
+                        <input id="search-box" type="search" class="form-control" placeholder="Search...">
+                        <i class="fa fa-search form-control-feedback"></i>
+                    </div>
+                </form>
+                <ul class="nav navbar-nav">
+                    <li><a href="https://github.com/kaiso/lygeum"><i class="fa fa-github" aria-hidden="true"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+    <div class="page-content">
+        <div class="wrapper">
+            <div class="container">
+    <div class="row">
+        <div class="col-md-4">
+          <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-1" aria-expanded="false" aria-controls="collapse-1">
+            Guides
+          </a>
+        </h4>
+      </div>
+      
+      
+      <div class="panel-collapse" id="collapse-1" role="tabpanel" aria-label="Side Navigation">
+        <div class="list-group">
+          
+            
+            
+            <a class="list-group-item active" href="/lygeum/docs/home/">Getting started</a>
+          
+        </div>
+      </div>
+    </div>
+  
+</div>
+
+        </div>
+
+        <div class="col-md-8">
+            <h1>Getting started</h1>
+            <div id="markdown-content-container"><p><strong><code class="language-plaintext highlighter-rouge">NB: The Lygeum server is currently in beta version and the docs are under construction</code></strong></p>
+
+<p>This guide will help you start with Lygeum. it covers installing and booting the server as well as configuring a first environment and application and downloading the associated configuration</p>
+<h3 id="download--install">Download &amp; Install</h3>
+<p>Running lygeum is very simple, you can either download the fat jar and run it or boot the docker official image.</p>
+<h4 id="fat-jar">Fat jar</h4>
+<p>Assuming you have installed the Java Runtime Environment with version 11 or above.</p>
+<ol>
+  <li>First download the <a href="https://bintray.com/kaiso/lygeum/download_file?file_path=lygeum-server-0.1.0b1.jar">jar binary from here</a>.</li>
+  <li>start lygeum server with the following command:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> lygeum-server-&lt;version&gt;.jar &lt;arguments&gt;
+</code></pre></div>    </div>
+    <p>the arguments are the following and are optional if you want just to explore Lygeum in test mode.</p>
+  </li>
+</ol>
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th style="text-align: center">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>–db-vendor</td>
+      <td style="text-align: center">The database system vendor currently <code class="language-plaintext highlighter-rouge">postgres</code> or <code class="language-plaintext highlighter-rouge">h2</code>(default embedded <code class="language-plaintext highlighter-rouge">h2</code>)</td>
+    </tr>
+    <tr>
+      <td>–db-host</td>
+      <td style="text-align: center">The database server host (required if vendor is postgres)</td>
+    </tr>
+    <tr>
+      <td>–db-database</td>
+      <td style="text-align: center">The database to use (default <code class="language-plaintext highlighter-rouge">lygeum</code>)</td>
+    </tr>
+    <tr>
+      <td>–db-schema</td>
+      <td style="text-align: center">The database schema (default <code class="language-plaintext highlighter-rouge">public</code>)</td>
+    </tr>
+    <tr>
+      <td>–db-user</td>
+      <td style="text-align: center">The database user (default <code class="language-plaintext highlighter-rouge">postgres</code>)</td>
+    </tr>
+    <tr>
+      <td>–db-password</td>
+      <td style="text-align: center">The database user password (default <code class="language-plaintext highlighter-rouge">postgres</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<ol>
+  <li>Open <a href="http://localhost:5000">http://localhost:5000</a> in your favorite browser and login with the default credentials:
+    <ul>
+      <li>user: <code class="language-plaintext highlighter-rouge">lygeum</code></li>
+      <li>password: <code class="language-plaintext highlighter-rouge">lygeum</code>
+<em>(It is recommanded to change the default password in non test deployment)</em></li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="docker">Docker</h4>
+<h5 id="see-docker-setup-instructions-here">see <a href="https://hub.docker.com/r/kaiso/lygeum">docker setup instructions here</a></h5>
+
+<h3 id="set-up-your-first-configuration">Set up your first configuration</h3>
+<p>After you have logged in:</p>
+<ol>
+  <li>Select <strong><code class="language-plaintext highlighter-rouge">Configurations</code></strong> from the left side bar</li>
+  <li>Go to <strong><code class="language-plaintext highlighter-rouge">Environments</code></strong> and click on the <strong><code class="language-plaintext highlighter-rouge">Add</code></strong> button to add an environment, type the name and click <strong><code class="language-plaintext highlighter-rouge">save</code></strong></li>
+  <li>Back to <strong><code class="language-plaintext highlighter-rouge">Configurations</code></strong> and select <strong><code class="language-plaintext highlighter-rouge">Applications</code></strong></li>
+  <li>Click <strong><code class="language-plaintext highlighter-rouge">Add</code></strong> button to add an application, type the name and click <strong><code class="language-plaintext highlighter-rouge">save</code></strong></li>
+  <li>Back to <strong><code class="language-plaintext highlighter-rouge">Configurations</code></strong> and select <strong><code class="language-plaintext highlighter-rouge">Properties</code></strong></li>
+  <li>Select the environment from the dropdown and type the name of the application in the application field</li>
+  <li>Click <strong><code class="language-plaintext highlighter-rouge">Add</code></strong> button to add a property, type the name and the value and <strong><code class="language-plaintext highlighter-rouge">save</code></strong></li>
+</ol>
+
+<p>Now you have created your first configuration environment and application</p>
+
+<h3 id="use-your-configuration-through-the-lygeum-cli">Use your configuration through the Lygeum CLI</h3>
+<p>In order to configure the Lygeum <strong>Command Line Interface</strong>, first make sure you have Python 3.5 or above installed.</p>
+<ol>
+  <li>install the Lygeum CLI via the following command:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip3 <span class="nb">install </span>lygeumcli
+</code></pre></div>    </div>
+  </li>
+  <li>Now you have to add a client to access the configuration created before so go to the Lygeum console again and browse to <strong><code class="language-plaintext highlighter-rouge">Administration &gt; Clients</code></strong></li>
+  <li>Create a new client by giving a name and then save</li>
+  <li>Copy the <strong>Client ID</strong> and the <strong>Client Secret</strong> we will use them in the next step.</li>
+  <li>Configure the Lygeum CLI by running:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lygeum configure
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>answer the questions by providing the client id, the client secret and the server url<br />
+<strong>(the url in our case it is <code class="language-plaintext highlighter-rouge">http://localhost:5000</code> if you are running the CLI on the same machine)</strong></p>
+  </li>
+  <li>Use the lygeum CLI to download your configuration by running:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lygeum properties download <span class="nt">-e</span> &lt;the <span class="nb">env</span><span class="o">&gt;</span> <span class="nt">-a</span> &lt;the app&gt; <span class="nt">-l</span> &lt;layout&gt; <span class="nt">-f</span> &lt;the path to the file&gt;
+</code></pre></div>    </div>
+    <ul>
+      <li>The &lt;<code class="language-plaintext highlighter-rouge">layout</code>&gt; may be json, properties or yaml</li>
+      <li>Example:
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lygeum properties download <span class="nt">-e</span> my-env <span class="nt">-a</span> my-app <span class="nt">-l</span> json <span class="nt">-f</span> /tmp/my-config.json
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>Congratulations you have achieved your first Lygeum centralized configuration</strong></p>
+</div>
+            <div style="clear:both;">
+              <p class="text-center">
+                <br />
+                <a target="_blank" href="https://github.com/kaiso/lygeum/blob/gh-pages/_docs/index.md" class="btn btn-default" role="button">
+                  <i class="fa fa-pencil fa-lg"></i> Improve this page
+                </a>
+              </p>
+            </div>
+            <hr>
+            
+
+
+
+
+
+  
+  
+    <ul class="pager">
+      
+        <li class="previous disabled">
+          <a>
+            <span aria-hidden="true">&larr;</span> Previous
+          </a>
+        </li>
+      
+
+      
+        <li class="next disabled">
+          <a>
+            Next <span aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      
+      </ul>
+    <div class="clear"></div>
+    
+
+        </div>
+
+    </div>
+</div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+    <div class="container">
+
+        <p class="text-center">
+            Copyright © 2020 Kais OMRI
+        </p>
+        <!-- <p class="text-muted">Place sticky footer content here.</p> -->
+    </div>
+</footer>
+
+    <script>
+  var baseurl = '/lygeum'
+</script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="/lygeum/assets/js/bootstrap.min.js "></script>
+<script src="/lygeum/assets/js/typeahead.bundle.min.js "></script>
+
+<script src="/lygeum/assets/js/main.js "></script>
+
+</body>
+
+</html>
