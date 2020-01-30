@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
 import io.github.kaiso.lygeum.core.manager.PropertiesManager;
 import io.github.kaiso.lygeum.core.spi.StorageService;
@@ -77,8 +78,8 @@ public class PropertiesManagerImpl implements PropertiesManager {
 	}
 
 	@Override
-	public void delete(String code) {
-		storageService.deleteProperty(code);
+	public void delete(String code, EnvironmentEntity env) {
+		storageService.deleteProperty(code, env);
 	}
 
 	@Override

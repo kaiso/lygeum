@@ -13,3 +13,4 @@ ui/node_modules/
 ui/dist/
 ui/test/unit/coverage/
 pers/data
+docs/_site/

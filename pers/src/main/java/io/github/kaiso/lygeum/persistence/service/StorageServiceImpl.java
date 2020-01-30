@@ -31,6 +31,7 @@ import javax.transaction.Transactional.TxType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
 import io.github.kaiso.lygeum.core.entities.Client;
@@ -239,7 +240,7 @@ public class StorageServiceImpl implements StorageService {
 			if (props.containsKey(p.getName())) {
 				AtomicBoolean found = new AtomicBoolean(false);
 				p.getValues().forEach(pv -> {
-					if (pv.getEnvironment().getCode().equals(env)) {
+					if (pv.getEnvironment().getCode().equals(env.getCode())) {
 						pv.setValue(props.get(p.getName()));
 						found.set(true);
 					}
@@ -269,7 +270,31 @@ public class StorageServiceImpl implements StorageService {
 	 */
 	@Override
 	public void updateProperties(List<PropertyEntity> props) {
-		propertyRepository.saveAll(props);
+		List<PropertyEntity> toSave = props.parallelStream().map(p -> {
+			if (StringUtils.isEmpty(p.getCode())) {
+				Optional<PropertyEntity> existing = propertyRepository.findByName(p.getName());
+				if (existing.isPresent()) {
+					AtomicBoolean found = new AtomicBoolean(false);
+					PropertyValueEntity newValue = p.getValues().iterator().next();
+					existing.get().getValues().forEach(pv -> {
+						// in case of new added property it concerns only one environment
+						// and the values collection should contain only one element
+						if (pv.getEnvironment().getCode().equals(newValue.getEnvironment().getCode())) {
+							found.set(true);
+							pv.setValue(newValue.getValue());
+						}
+					});
+					if (!found.get()) {
+						newValue.setProperty(existing.get());
+						existing.get().getValues().add(newValue);
+					}
+					return existing.get();
+				}
+
+			}
+			return p;
+		}).collect(Collectors.toList());
+		propertyRepository.saveAll(toSave);
 	}
 
 	/*
@@ -296,10 +321,15 @@ public class StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public void deleteProperty(String code) {
-		propertyRepository.delete(propertyRepository.findByCode(code)
-				.orElseThrow(() -> new EntityNotFoundException("Can not find property with code " + code)));
-
+	public void deleteProperty(String code, EnvironmentEntity env) {
+		PropertyEntity prop = propertyRepository.findByCode(code)
+				.orElseThrow(() -> new EntityNotFoundException("Can not find property with code " + code));
+		prop.getValues().removeIf(pv -> pv.getEnvironment().getCode().equals(env.getCode()));
+		if (prop.getValues().isEmpty()) {
+			propertyRepository.delete(prop);
+		} else {
+			propertyRepository.save(prop);
+		}
 	}
 
 	@Override

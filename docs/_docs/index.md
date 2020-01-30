@@ -8,6 +8,7 @@ redirect_from: /docs/index.html
 
 
 This guide will help you start with Lygeum. it covers installing and booting the server as well as configuring a first environment and application and downloading the associated configuration
+<br><br>
 ### Download & Install
 Running lygeum is very simple, you can either download the fat jar and run it or boot the docker official image.
 #### Fat jar
@@ -35,7 +36,7 @@ _(It is recommanded to change the default password in non test deployment)_
 
 #### Docker
 ##### see [docker setup instructions here](https://hub.docker.com/r/kaiso/lygeum)
-
+<br><br>
 ### Set up your first configuration
 After you have logged in:
 1. Select **`Configurations`** from the left side bar
@@ -47,7 +48,7 @@ After you have logged in:
 7. Click **`Add`** button to add a property, type the name and the value and **`save`**
 
 Now you have created your first configuration environment and application
-
+<br><br>
 ### Use your configuration through the Lygeum CLI
 In order to configure the Lygeum **Command Line Interface**, first make sure you have Python 3.5 or above installed.
 1. install the Lygeum CLI via the following command:
@@ -73,5 +74,6 @@ lygeum properties download -e <the env> -a <the app> -l <layout> -f <the path to
 ```bash
 lygeum properties download -e my-env -a my-app -l json -f /tmp/my-config.json
 ```
+<br><br>
 
-**Congratulations you have achieved your first Lygeum centralized configuration**
+### Congratulations you have achieved your first Lygeum centralized configuration

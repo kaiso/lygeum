@@ -78,12 +78,14 @@ public class PropertiesController extends LygeumRestController {
 	}
 
 	@RequestMapping(path = "/properties/{code}", method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteProperty(@PathVariable(required = true, name = "code") String code) {
+	public ResponseEntity<String> deleteProperty(@PathVariable(required = true, name = "code") String code, @RequestParam(name = "env", required = true) String environment) {
 		PropertyEntity p = propertiesManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Property not found with code: " + code));
-		AuthorizationManager.preAuthorize(p.getApplication().getCode(), null, AuthorizationAction.UPDATE);
+		EnvironmentEntity env = environmentsManager.findByCode(environment)
+				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + environment));
+		AuthorizationManager.preAuthorize(p.getApplication().getCode(), env.getCode(), AuthorizationAction.UPDATE);
 
-		propertiesManager.delete(code);
+		propertiesManager.delete(code, env);
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Property successfully deleted");
 	}

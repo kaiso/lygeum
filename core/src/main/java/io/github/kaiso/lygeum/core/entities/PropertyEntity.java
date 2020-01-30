@@ -26,6 +26,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 import org.springframework.util.StringUtils;
 
@@ -41,6 +42,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class PropertyEntity extends BaseEntity {
     
 	@Column(name = "name", unique = true)
+	@NotEmpty
 	private String name;
 
 	private String description;

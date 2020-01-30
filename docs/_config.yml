@@ -2,8 +2,7 @@
 title: Lygeum
 email: kais.omri.int@gmail.com
 description: >
-  Lygeum is a centralized configuration server which comes with a complete toolbox allowing to create, manage and
-  quickly and reliably deploy application configurations.
+  Centralized configuration server for modern applications, systems and services
 lang: en-US
 
 baseurl: "/lygeum" # the subpath of your site, e.g. /blog/
@@ -13,7 +12,8 @@ git_edit_address: https://github.com/kaiso/lygeum/blob/gh-pages
 
 # theme options from https://bootswatch.com/3/
 # comment out this to use default Bootstrap
-bootwatch: paper # cerulean cosmo custom cyborg darkly flatly journal lumen readable sandstone simplex slate solar spacelab superhero united yeti
+#bootwatch: paper
+bootwatch: superhero
 
 # Build settings
 markdown: kramdown

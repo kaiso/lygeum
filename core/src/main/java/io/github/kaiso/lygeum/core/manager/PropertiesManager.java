@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
 
 /**
@@ -49,7 +50,7 @@ public interface PropertiesManager {
 	 */
 	void updateProperties(List<PropertyEntity> properties);
 
-	void delete(String code);
+	void delete(String code, EnvironmentEntity env);
 
 	Optional<PropertyEntity> findByCode(String code);
 }

@@ -250,7 +250,7 @@ export default {
             if (this.$store.state.dialog.action === CONST_ACTIONS.CONFIRM) {
               let context = this
               let target = this.$store.state.dialog.target
-              api.deleteProperty(this, target).then(function (result) {
+              api.deleteProperty(context, target, context.selectedEnv).then(function (result) {
                 let i = context.appProperties.indexOf(target)
                 if (i !== -1) {
                   context.appProperties.splice(i, 1)
@@ -381,6 +381,10 @@ export default {
       })
     },
     deleteAppProperty(item) {
+      if (!item.code) {
+        this.appProperties = this.appProperties.filter(p => p !== item)
+        return
+      }
       this.$store.dispatch('dialog/open', {
         message: this.$i18n.t('generic.confirm_delete', { target: item.name }),
         caller: this.$router.currentRoute.name + '/' + DELETE_PROP,

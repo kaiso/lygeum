@@ -144,11 +144,16 @@ export function downloadProperties(context, environment, application, layout) {
   )
 }
 
-export function deleteProperty(context, prop) {
+export function deleteProperty(context, prop, environment) {
   return client.call(
     context,
     'delete',
-    '/api/properties/' + prop.code
+    '/api/properties/' + prop.code,
+    {},
+    [],
+    {
+      env: environment.code
+    }
   )
 }
 

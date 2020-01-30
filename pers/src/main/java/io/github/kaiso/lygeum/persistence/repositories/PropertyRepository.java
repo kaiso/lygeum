@@ -15,6 +15,7 @@
 */
 package io.github.kaiso.lygeum.persistence.repositories;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -33,5 +34,7 @@ public interface PropertyRepository
 	Stream<PropertyEntity> findByApplicationCode(String code);
 
 	Stream<PropertyEntity> findByEnvironmentAndApplicationNamed(String environment, String application);
+	
+	Optional<PropertyEntity> findByName(String name);
 
 }
