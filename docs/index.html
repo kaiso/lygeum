@@ -3,18 +3,20 @@ layout: default
 ---
 
 <div class="header-container jumbotron">
-    <div class="container" style="display: flex;flex-direction: row;">
-        <span style="display: flex;flex-direction: column;margin-right: 50px;">
-            <img src="{{ "/assets/img/lygeum_logo_orange.png" | relative_url }}" alt="Logo" style="align-self:center;max-height: 200px;max-width: 170px;"/>
-            <img src="{{ "/assets/img/lygeum_logotext_orange_b.png" | relative_url }}" alt="Logo" style="max-height: 100px;"/>
-        </span>
-        <span>
-            <h1>Configuration made easy</h1>
-            <p>Lygeum is a centralized configuration server for modern applications, systems and services.<br>
-             Lygeum comes with a complete toolbox allowing to create, manage and
-                quickly and reliably deploy application configurations.</p>
-            <p><a class="btn btn-primary btn-lg" href="{{ "/docs/home/" | relative_url }}" role="button">Learn more</a></p>
-        </span>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <img src="{{ "/assets/img/lygeum_logo_orange.png" | relative_url }}" alt="Logo" style="margin-left: auto;margin-right: auto;display: block;max-height: 200px;max-width: 170px;"/>
+                <img src="{{ "/assets/img/lygeum_logotext_orange_b.png" | relative_url }}" alt="Logo" style="margin-left: auto;margin-right: auto;display: block;max-height: 100px;"/>
+            </div>
+            <div class="col-sm-7">
+                <h1>Configuration made easy</h1>
+                <p>Lygeum is a centralized configuration server for modern applications, systems and services.<br>
+                Lygeum comes with a complete toolbox allowing to create, manage and
+                    quickly and reliably deploy application configurations.</p>
+                <p><a class="btn btn-primary btn-lg" href="{{ "/docs/home/" | relative_url }}" role="button">Learn more</a></p>
+            </div>
+        </div>
     </div>
 </div>
 
