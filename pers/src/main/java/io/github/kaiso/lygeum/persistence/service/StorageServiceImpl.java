@@ -270,31 +270,51 @@ public class StorageServiceImpl implements StorageService {
 	 */
 	@Override
 	public void updateProperties(List<PropertyEntity> props) {
+		List<PropertyEntity> nameUpdated = new ArrayList<>();
 		List<PropertyEntity> toSave = props.parallelStream().map(p -> {
+			// at this step a property contains exactly one environment
+			PropertyValueEntity newValue = p.getValues().iterator().next();
 			if (StringUtils.isEmpty(p.getCode())) {
 				Optional<PropertyEntity> existing = propertyRepository.findByName(p.getName());
 				if (existing.isPresent()) {
-					AtomicBoolean found = new AtomicBoolean(false);
-					PropertyValueEntity newValue = p.getValues().iterator().next();
-					existing.get().getValues().forEach(pv -> {
-						// in case of new added property it concerns only one environment
-						// and the values collection should contain only one element
-						if (pv.getEnvironment().getCode().equals(newValue.getEnvironment().getCode())) {
-							found.set(true);
-							pv.setValue(newValue.getValue());
-						}
-					});
-					if (!found.get()) {
-						newValue.setProperty(existing.get());
-						existing.get().getValues().add(newValue);
-					}
-					return existing.get();
+					return updateValue(newValue, existing.get());
 				}
 
+			} else {
+				PropertyEntity existing = propertyRepository.findByCode(p.getCode()).orElseThrow(
+						() -> new EntityNotFoundException("Can not find property with code " + p.getCode()));
+
+				if (!p.getName().equals(existing.getName())) {
+					// name update
+					existing.getValues()
+							.removeIf(v -> v.getEnvironment().getCode().equals(newValue.getEnvironment().getCode()));
+					// add new property with the new name
+					p.setCode(null);
+					nameUpdated.add(p);
+					return existing;
+				} else {
+					return updateValue(newValue, existing);
+				}
 			}
 			return p;
 		}).collect(Collectors.toList());
+		toSave.addAll(nameUpdated);
 		propertyRepository.saveAll(toSave);
+	}
+
+	private PropertyEntity updateValue(PropertyValueEntity newValue, PropertyEntity property) {
+		AtomicBoolean found = new AtomicBoolean(false);
+		property.getValues().forEach(pv -> {
+			if (pv.getEnvironment().getCode().equals(newValue.getEnvironment().getCode())) {
+				found.set(true);
+				pv.setValue(newValue.getValue());
+			}
+		});
+		if (!found.get()) {
+			newValue.setProperty(property);
+			property.getValues().add(newValue);
+		}
+		return property;
 	}
 
 	/*

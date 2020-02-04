@@ -126,9 +126,9 @@ public class PropertiesControllerTest {
 	public void should_update_properties() throws Exception {
 		new Expectations() {
 			{
-				environmentsManager.findByCode(anyString);
+				environmentsManager.findByNameOrCode(anyString);
 				result = Optional.of(new EnvironmentEntity("env", null));
-				applicationsManager.findByCode(anyString);
+				applicationsManager.findByNameOrCode(anyString);
 				result = Optional.of(new ApplicationEntity("application", null));
 			}
 		};

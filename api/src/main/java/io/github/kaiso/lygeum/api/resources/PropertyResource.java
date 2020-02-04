@@ -4,10 +4,6 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-/**
- * @author kom3806
- *
- */
 public class PropertyResource {
 
 	private String code;

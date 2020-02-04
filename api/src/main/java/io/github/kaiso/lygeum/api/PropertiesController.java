@@ -81,7 +81,7 @@ public class PropertiesController extends LygeumRestController {
 	public ResponseEntity<String> deleteProperty(@PathVariable(required = true, name = "code") String code, @RequestParam(name = "env", required = true) String environment) {
 		PropertyEntity p = propertiesManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Property not found with code: " + code));
-		EnvironmentEntity env = environmentsManager.findByCode(environment)
+		EnvironmentEntity env = environmentsManager.findByNameOrCode(environment)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + environment));
 		AuthorizationManager.preAuthorize(p.getApplication().getCode(), env.getCode(), AuthorizationAction.UPDATE);
 
@@ -95,9 +95,9 @@ public class PropertiesController extends LygeumRestController {
 			@RequestParam(name = "app", required = true) String application,
 			@RequestBody(required = true) @Valid List<PropertyResource> properties) {
 		AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.UPDATE);
-		EnvironmentEntity env = environmentsManager.findByCode(environment)
+		EnvironmentEntity env = environmentsManager.findByNameOrCode(environment)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + environment));
-		ApplicationEntity app = applicationsManager.findByCode(application)
+		ApplicationEntity app = applicationsManager.findByNameOrCode(application)
 				.orElseThrow(() -> new IllegalArgumentException("Application not found with code: " + application));
 		propertiesManager.updateProperties(
 				properties.parallelStream().map(p -> PropertyMapper.map(p, app, env)).collect(Collectors.toList()));

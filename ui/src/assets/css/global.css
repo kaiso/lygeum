@@ -28,24 +28,27 @@
 * button
 */
 .aps-primary-btn {
-    min-width: 113px;
-    display: flex;
-    justify-content: center;
-    background-color: var(--input-primary-background-color) !important;
-    border-radius: var(--input-primary-border-radius);
-    border-color: var(--input-primary-border-color) !important;
-    border: var(--input-primary-border);
-    color: var(--input-primary-color) !important;
-    cursor: pointer;
-    height: 30px;
-  }
+  min-width: 113px;
+  display: flex;
+  justify-content: center;
+  background-color: var(--input-primary-background-color) !important;
+  border-radius: var(--input-primary-border-radius);
+  border-color: var(--input-primary-border-color) !important;
+  border: var(--input-primary-border);
+  color: var(--input-primary-color) !important;
+  cursor: pointer;
+  height: 30px;
+}
 
-  .aps-buttons-container-line {
-    display:flex;
-    justify-content:center;
-    margin-top:50px
-  }
+.aps-buttons-container-line {
+  display:flex;
+  justify-content:center;
+  margin-top:50px
+}
 
+.v-avatar > .v-btn{
+  height: 100%;
+}
 /*
 * dialog
 */

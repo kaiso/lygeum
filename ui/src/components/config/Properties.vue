@@ -90,7 +90,7 @@
           <v-spacer></v-spacer>
           <span class="aps-input-container">
             <v-text-field
-              class="aps-input-active"
+              class="aps-input-active search-input"
               append-icon="search"
               @input="triggerAppPropsfiltering"
               single-line
@@ -511,6 +511,10 @@ export default {
 </script>
 
 <style scoped>
+.search-input {
+    max-height: 27px;
+}
+
 .content .toolbar__title {
   font-family: Roboto, sans-serif;
   line-height: 2;
