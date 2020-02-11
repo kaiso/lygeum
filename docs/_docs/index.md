@@ -7,37 +7,33 @@ redirect_from: /docs/index.html
 **`NB: The Lygeum server is currently in beta version and the docs are under construction`**
 
 
-This guide will help you start with Lygeum. it covers installing and booting the server as well as configuring a first environment and application and downloading the associated configuration
+This guide will help you start with Lygeum. it covers installing and booting the server in **test mode** as well as configuring a first environment and application and downloading the associated configuration
 <br><br>
-### Download & Install
+
+### 1. Download & Install
 Running lygeum is very simple, you can either download the fat jar and run it or boot the docker official image.
-#### Fat jar
-Assuming you have installed the Java Runtime Environment with version 11 or above.
-1. First download the [jar binary from here](https://bintray.com/kaiso/lygeum/download_file?file_path=lygeum-server-0.1.0b1.jar).
-2. start lygeum server with the following command:
+go to [download page](/lygeum/downloads) and download the lygeum server based on your desired installation type.
+<br><br>
+
+### 2. Start lygeum server
+For this tutorial Lygeum will run in test mode with an embedded database if you want to run Lygeum in production check out [the detailed installation instructions](/lygeum/docs/installation/)
+* Fat jar
 ```bash
-java -jar lygeum-server-<version>.jar <arguments>
+java -jar lygeum-server-<version>.jar 
 ```
-the arguments are the following and are optional if you want just to explore Lygeum in test mode.
+* Docker 
+```bash
+docker run -itd --name lygeum -p 5000:5000 kaiso/lygeum:latest
+```
+<br><br>
 
-| Argument      | Description                |
-| ------------- |:--------------------------:|
-| --db-vendor   | The database system vendor currently `postgres` or `h2`(default embedded `h2`) |
-| --db-host   | The database server host (required if vendor is postgres)      |
-| --db-database   | The database to use (default `lygeum`)    |
-| --db-schema   | The database schema (default `public`)    |
-| --db-user   | The database user (default `postgres`)     |
-| --db-password   | The database user password (default `postgres`)     |
-
-3. Open [http://localhost:5000](http://localhost:5000) in your favorite browser and login with the default credentials:
+### 3. Open [http://localhost:5000](http://localhost:5000) in your favorite browser and login with the default credentials:
   * user: `lygeum`
   * password: `lygeum`
 _(It is recommanded to change the default password in non test deployment)_
-
-#### Docker
-##### see [docker setup instructions here](https://hub.docker.com/r/kaiso/lygeum)
 <br><br>
-### Set up your first configuration
+
+### 4. Set up your first configuration
 After you have logged in:
 1. Select **`Configurations`** from the left side bar
 2. Go to **`Environments`** and click on the **`Add`** button to add an environment, type the name and click **`save`**
@@ -49,7 +45,8 @@ After you have logged in:
 
 Now you have created your first configuration environment and application
 <br><br>
-### Use your configuration through the Lygeum CLI
+
+### 5. Use your configuration through the Lygeum CLI
 In order to configure the Lygeum **Command Line Interface**, first make sure you have Python 3.5 or above installed.
 1. install the Lygeum CLI via the following command:
 ```bash
@@ -69,7 +66,7 @@ lygeum configure
 ```bash
 lygeum properties download -e <the env> -a <the app> -l <layout> -f <the path to the file>
 ```
-* The <`layout`> may be json, properties or yaml
+* The `layout` may be `json`, `properties` or `yaml`
 * Example:
 ```bash
 lygeum properties download -e my-env -a my-app -l json -f /tmp/my-config.json

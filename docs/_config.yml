@@ -6,7 +6,7 @@ description: >
 lang: en-US
 
 baseurl: "/lygeum" # the subpath of your site, e.g. /blog/
-url: https://kaiso.github.io/lygeum # the base hostname & protocol for your site
+url: https://kaiso.github.io # the base hostname & protocol for your site
 git_address: https://github.com/kaiso/lygeum
 git_edit_address: https://github.com/kaiso/lygeum/blob/gh-pages
 
@@ -56,10 +56,22 @@ defaults:
     seo:
       type: "WebPage"
 
+- scope:
+    path: _downloads
+    type: downloads
+  values:
+    layout: page
+    sectionid: downloads
+    seo:
+      type: "WebPage"
+
 collections:
   docs:
     permalink: /:collection/:path/
     output: true
   posts:
     permalink: /blog/:year/:month/:day/:title/
+    output: true
+  downloads:
+    permalink: /:collection/:path/
     output: true

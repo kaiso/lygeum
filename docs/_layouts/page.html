@@ -1,15 +1,19 @@
 ---
 layout: default
 ---
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+        </div>
 
-<div class="post">
+        <div class="col-md-8">
+            <h1>{{ page.title }}</h1>
+            <hr>
+            <div id="markdown-content-container">{{ content }}</div>
+            
+            {% include section_nav.html %}
+        </div>
 
-    <header class="post-header">
-        <h1 class="post-title">{{ page.title }}</h1>
-    </header>
-
-    <article class="post-content">
-        {{ content }}
-    </article>
-
+    </div>
 </div>
+
