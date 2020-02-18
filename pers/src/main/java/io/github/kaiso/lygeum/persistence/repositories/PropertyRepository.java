@@ -35,6 +35,6 @@ public interface PropertyRepository
 
 	Stream<PropertyEntity> findByEnvironmentAndApplicationNamed(String environment, String application);
 	
-	Optional<PropertyEntity> findByName(String name);
+	Optional<PropertyEntity> findByNameAndApplicationCode(String name, String applicationCode);
 
 }

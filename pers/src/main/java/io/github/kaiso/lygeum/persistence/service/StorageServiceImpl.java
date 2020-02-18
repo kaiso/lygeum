@@ -259,6 +259,7 @@ public class StorageServiceImpl implements StorageService {
 		props.forEach((k, v) -> list.add(
 				PropertyEntity.builder().withName(k).withValue(v).withApplication(app).withEnvironment(env).build()));
 		propertyRepository.saveAll(list);
+		cleanUpProperties(list);
 	}
 
 	/*
@@ -270,36 +271,50 @@ public class StorageServiceImpl implements StorageService {
 	 */
 	@Override
 	public void updateProperties(List<PropertyEntity> props) {
-		List<PropertyEntity> nameUpdated = new ArrayList<>();
-		List<PropertyEntity> toSave = props.parallelStream().map(p -> {
-			// at this step a property contains exactly one environment
+		List<PropertyEntity> other = new ArrayList<>();
+		List<PropertyEntity> updated = props.parallelStream().map(p -> {
 			PropertyValueEntity newValue = p.getValues().iterator().next();
-			if (StringUtils.isEmpty(p.getCode())) {
-				Optional<PropertyEntity> existing = propertyRepository.findByName(p.getName());
-				if (existing.isPresent()) {
-					return updateValue(newValue, existing.get());
-				}
-
-			} else {
-				PropertyEntity existing = propertyRepository.findByCode(p.getCode()).orElseThrow(
-						() -> new EntityNotFoundException("Can not find property with code " + p.getCode()));
-
-				if (!p.getName().equals(existing.getName())) {
-					// name update
-					existing.getValues()
-							.removeIf(v -> v.getEnvironment().getCode().equals(newValue.getEnvironment().getCode()));
-					// add new property with the new name
-					p.setCode(null);
-					nameUpdated.add(p);
-					return existing;
+			Optional<PropertyEntity> existing = propertyRepository.findByNameAndApplicationCode(p.getName(), p.getApplication().getCode());
+			PropertyEntity result;
+			if (existing.isPresent()) {
+				if (StringUtils.isEmpty(p.getCode())) {
+					// no code specified so update the existing with the new value
+					result = updateValue(newValue, existing.get());
 				} else {
-					return updateValue(newValue, existing);
+					if (p.getCode().equals(existing.get().getCode())) {
+						// same code so it is an update
+						result = updateValue(newValue, existing.get());
+					} else {
+						// different codes so it is a rename
+						// remove value from renamed property
+						PropertyEntity renamed = propertyRepository.findByCode(p.getCode()).orElseThrow(
+								() -> new EntityNotFoundException("Can not find property with code " + p.getCode()));
+						renamed.getValues().removeIf(
+								v -> v.getEnvironment().getCode().equals(newValue.getEnvironment().getCode()));
+						other.add(renamed);
+						// put value in the existing property
+						result = updateValue(newValue, existing.get());
+					}
 				}
+			} else {
+				if (!StringUtils.isEmpty(p.getCode())) {
+					// the code is specified so it is a rename
+					// remove value from renamed property
+					PropertyEntity renamed = propertyRepository.findByCode(p.getCode()).orElseThrow(
+							() -> new EntityNotFoundException("Can not find property with code " + p.getCode()));
+					renamed.getValues()
+							.removeIf(v -> v.getEnvironment().getCode().equals(newValue.getEnvironment().getCode()));
+					other.add(renamed);
+					// new property
+					p.setCode(null);
+				}
+				result = p;
 			}
-			return p;
+			return result;
 		}).collect(Collectors.toList());
-		toSave.addAll(nameUpdated);
-		propertyRepository.saveAll(toSave);
+		updated.addAll(other);
+		propertyRepository.saveAll(updated);
+		cleanUpProperties(updated);
 	}
 
 	private PropertyEntity updateValue(PropertyValueEntity newValue, PropertyEntity property) {
@@ -315,6 +330,16 @@ public class StorageServiceImpl implements StorageService {
 			property.getValues().add(newValue);
 		}
 		return property;
+	}
+
+	private void cleanUpProperties(List<PropertyEntity> props) {
+		props.forEach(p -> {
+			propertyRepository.findByNameAndApplicationCode(p.getName(), p.getApplication().getCode()).ifPresent(pr -> {
+				if (pr.getValues().isEmpty()) {
+					propertyRepository.delete(pr);
+				}
+			});
+		});
 	}
 
 	/*
