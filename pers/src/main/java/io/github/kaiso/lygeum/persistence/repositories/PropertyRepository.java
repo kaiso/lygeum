@@ -18,6 +18,7 @@ package io.github.kaiso.lygeum.persistence.repositories;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +36,10 @@ public interface PropertyRepository
 
 	Stream<PropertyEntity> findByEnvironmentAndApplicationNamed(String environment, String application);
 	
+	@Query(value = "select p from PropertyEntity p inner join p.application a on a.code=?2 left join fetch p.values q inner join q.environment e where p.name=?1 ")
 	Optional<PropertyEntity> findByNameAndApplicationCode(String name, String applicationCode);
+
+	@Query(value = "select p from PropertyEntity p inner join fetch p.application a left join fetch p.values q inner join q.environment e where p.code=?1 ")
+	Optional<PropertyEntity> findByCodeEager(String code);
 
 }

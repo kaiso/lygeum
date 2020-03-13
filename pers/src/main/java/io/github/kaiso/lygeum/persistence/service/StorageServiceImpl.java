@@ -277,30 +277,31 @@ public class StorageServiceImpl implements StorageService {
 			Optional<PropertyEntity> existing = propertyRepository.findByNameAndApplicationCode(p.getName(), p.getApplication().getCode());
 			PropertyEntity result;
 			if (existing.isPresent()) {
+				PropertyEntity existingProperty = existing.get();
 				if (StringUtils.isEmpty(p.getCode())) {
 					// no code specified so update the existing with the new value
-					result = updateValue(newValue, existing.get());
+					result = updateValue(newValue, existingProperty);
 				} else {
-					if (p.getCode().equals(existing.get().getCode())) {
+					if (p.getCode().equals(existingProperty.getCode())) {
 						// same code so it is an update
-						result = updateValue(newValue, existing.get());
+						result = updateValue(newValue, existingProperty);
 					} else {
 						// different codes so it is a rename
 						// remove value from renamed property
-						PropertyEntity renamed = propertyRepository.findByCode(p.getCode()).orElseThrow(
+						PropertyEntity renamed = propertyRepository.findByCodeEager(p.getCode()).orElseThrow(
 								() -> new EntityNotFoundException("Can not find property with code " + p.getCode()));
 						renamed.getValues().removeIf(
 								v -> v.getEnvironment().getCode().equals(newValue.getEnvironment().getCode()));
 						other.add(renamed);
 						// put value in the existing property
-						result = updateValue(newValue, existing.get());
+						result = updateValue(newValue, existingProperty);
 					}
 				}
 			} else {
 				if (!StringUtils.isEmpty(p.getCode())) {
 					// the code is specified so it is a rename
 					// remove value from renamed property
-					PropertyEntity renamed = propertyRepository.findByCode(p.getCode()).orElseThrow(
+					PropertyEntity renamed = propertyRepository.findByCodeEager(p.getCode()).orElseThrow(
 							() -> new EntityNotFoundException("Can not find property with code " + p.getCode()));
 					renamed.getValues()
 							.removeIf(v -> v.getEnvironment().getCode().equals(newValue.getEnvironment().getCode()));

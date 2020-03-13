@@ -93,6 +93,7 @@
               class="aps-input-active search-input"
               append-icon="search"
               @input="triggerAppPropsfiltering"
+              v-model="filter"
               single-line
               hide-details
             ></v-text-field>
@@ -224,6 +225,7 @@ export default {
     selectedEnv: {},
     selectedApp: {},
     appProperties: [],
+    filter: null,
     filteredAppProperties: []
   }),
   mounted: function () {
@@ -302,6 +304,7 @@ export default {
       this.loadingProps = true
       this.appProperties = []
       this.filteredAppProperties = []
+      this.filter = null
       api.getProperties(this, this.selectedEnv, this.selectedApp).then((result) => {
         if (result.data != null) {
           result.data.sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }))
