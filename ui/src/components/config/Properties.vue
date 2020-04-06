@@ -230,6 +230,7 @@ export default {
   }),
   mounted: function () {
     this.loadEnvs()
+    this.queryAppSelections(null)
   },
   computed: {
     ...mapState({

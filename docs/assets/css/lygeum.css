@@ -46,3 +46,9 @@ pre {
 .highlight .nt {
     color: #34cc3e;
 }
+
+.nav > li span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
