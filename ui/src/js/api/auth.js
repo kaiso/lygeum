@@ -44,7 +44,7 @@ export function login(context, creds, redirect) {
     }
     resolve(response)
   }).catch(function (error) {
-    console.log('problem')
+    console.log('problem authenticating', error)
     reject(error)
   })
  })

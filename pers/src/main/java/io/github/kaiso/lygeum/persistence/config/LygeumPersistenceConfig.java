@@ -16,7 +16,6 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -41,15 +40,12 @@ public class LygeumPersistenceConfig {
 
 	private ApplicationArguments applicationArguments;
 
-	private Environment environment;
-
 	private String dialect;
 
 	@Autowired
-	public LygeumPersistenceConfig(ApplicationArguments applicationArguments, Environment environment) {
+	public LygeumPersistenceConfig(ApplicationArguments applicationArguments) {
 		super();
 		this.applicationArguments = applicationArguments;
-		this.environment = environment;
 	}
 
 	@PostConstruct
@@ -60,7 +56,7 @@ public class LygeumPersistenceConfig {
 	@Bean
 	public DataSource dataSource() throws Exception {
 		DataSource dataSource;
-		String dbVendor = getApplicationArgument("db-vendor","h2").get();
+		String dbVendor = getApplicationArgument("db-vendor", "h2").get();
 		switch (dbVendor) {
 		case "h2":
 			dataSource = createH2DataSource();
@@ -86,8 +82,9 @@ public class LygeumPersistenceConfig {
 		configuration.setPoolName("lygeum-db-pool");
 		configuration.setMaximumPoolSize(20);
 		configuration.setMinimumIdle(5);
-		String host = getApplicationArgument("db-host", null).orElseThrow(() -> new IllegalStateException("missing lygeum.db.host argument"));
-        System.setProperty("lygeum.db.host", host);
+		String host = getApplicationArgument("db-host", null)
+				.orElseThrow(() -> new IllegalStateException("missing lygeum.db.host argument"));
+		System.setProperty("lygeum.db.host", host);
 		String port = getApplicationArgument("db-port", "5432").get();
 		String database = getApplicationArgument("db-database", "lygeum").get();
 		configuration.setJdbcUrl("jdbc:postgresql://" + host + ":" + port + "/" + database);
@@ -100,10 +97,9 @@ public class LygeumPersistenceConfig {
 	private DataSource createH2DataSource() {
 		System.setProperty("lygeum.db.host", "embedded");
 		String home = System.getProperty("user.home");
-		DataSource dataSource = DataSourceBuilder.create().username("lygeum").password("")
+		return DataSourceBuilder.create().username("lygeum").password("")
 				.url("jdbc:h2:file:" + home + "/.lygeum/lygeumdb;AUTO_SERVER=TRUE").type(JdbcDataSource.class)
 				.driverClassName("org.h2.Driver").build();
-		return dataSource;
 	}
 
 	@Bean

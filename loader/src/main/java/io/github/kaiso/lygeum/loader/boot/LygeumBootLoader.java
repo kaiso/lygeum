@@ -52,24 +52,37 @@ public class LygeumBootLoader {
 	private static final Logger logger = LoggerFactory.getLogger(LygeumBootLoader.class);
 
 	public static void main(String[] args) {
-		AtomicReference<String> port = new AtomicReference<String>(null);
+		AtomicReference<String> port = new AtomicReference<>(null);
+		AtomicReference<String> contextPath = new AtomicReference<>(null);
+
 		List<String> filteredArgs = Arrays.asList(args).stream().filter(arg -> {
-			if (arg.contains("server.port")) {
+			if (arg.startsWith("--server.port")) {
 				port.set(arg.replace("--server.port=", "").trim());
 			}
-			return !arg.contains("server.name");
+			if (arg.startsWith("--context-path")) {
+				contextPath.set(arg.replace("--context-path=", "").trim());
+			}
+			return !arg.startsWith("--server.name") && !arg.startsWith("--server.servlet.context-path");
 		}).collect(Collectors.toList());
+
 		port.compareAndSet(null, System.getProperty("server.port"));
 		if (port.get() == null) {
 			filteredArgs.add("--server.port=5000");
 			port.set("5000");
 		}
+
 		logger.debug("Lygeum starting with options:\n {}", filteredArgs.stream().map(a -> {
 			if (a.contains("db-password")) {
 				return "--db-password=*****";
 			}
 			return a;
 		}).collect(Collectors.toList()));
+
+		contextPath.compareAndSet(null, System.getProperty("context-path"));
+		if (contextPath.get() != null) {
+			filteredArgs.add("--server.servlet.context-path=" + contextPath.get());
+		}
+
 		filteredArgs.add(
 				"--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration");
 		SpringApplication app = new SpringApplication(LygeumBootLoader.class);
@@ -78,14 +91,16 @@ public class LygeumBootLoader {
 		defaultProperties.put("server.error.whitelabel.enabled", "false");
 		app.setDefaultProperties(defaultProperties);
 		ApplicationContext context = app.run(filteredArgs.toArray(new String[(int) filteredArgs.size()]));
-		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL)
-				.withZone(ZoneId.systemDefault());
-		String startupDate = formatter.format(Instant.ofEpochMilli(context.getStartupDate()));
+
+		String startupDate = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).withZone(ZoneId.systemDefault())
+				.format(Instant.ofEpochMilli(context.getStartupDate()));
+
 		LygeumServerInfo serverInfo = ApplicationContextProvider.getBean(LygeumServerInfo.class);
 		logger.info("Lygeum Version: {}", serverInfo.getImplementationVersion());
 		logger.info("\nSystem Info [{}\n]", serverInfo.getJvmInformation());
 		logger.info("\nPersistence Info [{}\n]", serverInfo.getPersistenceInfo());
 		logger.info("Lygeum HTTP connector listening on port {}", port.get());
+		logger.info("Lygeum server context-path {}", contextPath.get() != null ? contextPath.get() : "/");
 		logger.info("Lygeum ready Startup Date {}", startupDate);
 	}
 
