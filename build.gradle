@@ -13,7 +13,7 @@ buildscript {
 
 allprojects {
     group = 'io.github.kaiso.lygeum'
-    version = '0.1.0b5'
+    version = '0.1.0b6'
 }
 
 subprojects {
