@@ -1,7 +1,7 @@
 (function () {
   window.__ENV = {};
   const configRequest = new XMLHttpRequest();
-  configRequest.open('GET', './lygeum-configs.json', false);
+  configRequest.open('GET', './lygeum-config.json', false);
   configRequest.onreadystatechange = function () {
     if (this.readyState === XMLHttpRequest.DONE && this.status !== 404) {
       extactConfig(configRequest);

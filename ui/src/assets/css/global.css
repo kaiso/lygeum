@@ -112,6 +112,16 @@
     margin-top: 1px !important;
   }
 
+  .aps-error {
+    border: solid;
+    border-top-color: currentcolor;
+    border-right-color: currentcolor;
+    border-bottom-color: currentcolor;
+    border-left-color: currentcolor;
+    border-color: lightcoral;
+    border-radius: 3px;
+  }
+
   /*
   * table
   */

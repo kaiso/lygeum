@@ -28,6 +28,8 @@ export function enhanceEditable (editableObject) {
   Vue.set(editableObject, 'original', deepCopy(editableObject))
   Vue.set(editableObject, 'editing', false)
   Vue.set(editableObject, 'hasChanges', false)
+  Vue.set(editableObject, 'errorAttributes', [])
+  Vue.set(editableObject, 'hidden', false)
   Vue.set(editableObject, 'displayIdentifier', guid())
 }
 
@@ -44,5 +46,8 @@ export function hasChanges (obj) {
   delete c.editing
   delete c.original
   delete c.hasChanges
+  delete c.displayIdentifier
+  delete c.hidden
+  delete c.errorAttributes
   return !equal(o, c)
 }

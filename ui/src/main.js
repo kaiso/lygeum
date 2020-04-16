@@ -68,7 +68,6 @@ Vue.directive('click-outside', {
       for (let index = 0; index < array.length; index++) {
         if (event.target === array[index]) {
           outside = false
-          console.log('click inside ', vNode.data.key)
           break
         }
       }

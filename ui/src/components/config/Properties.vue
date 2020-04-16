@@ -65,7 +65,7 @@
             <v-btn
               icon
               slot="activator"
-              @click.stop="dialogFileUpload=true"
+              @click.stop="openUploadDialog()"
               style="cursor: pointer;"
             >
               <v-icon>cloud_upload</v-icon>
@@ -110,7 +110,7 @@
               v-bind:style="{display:propItem.hidden ? 'none' : 'revert'}"
               v-for="(propItem, index) in appProperties"
             >
-              <td class="regular_cell">
+              <td class="regular_cell" v-bind:class="{ 'aps-error': propItem.errorAttributes.includes('name')}">
                 <input
                   v-model="propItem.name"
                   type="text"
@@ -120,7 +120,7 @@
                   :disabled="(propItem.editing === undefined || propItem.editing === false)? true : false"
                 />
               </td>
-              <td class="regular_cell">
+              <td class="regular_cell" v-bind:class="{ 'aps-error': propItem.errorAttributes.includes('value')}">
                 <input
                   v-model="propItem.value"
                   type="text"
@@ -325,6 +325,20 @@ export default {
         this.loadingProps = false
       })
     },
+    validate() {
+      let isValid = true
+      this.appProperties.forEach(element => {
+        if (element.name === '' && !element.errorAttributes.includes('name')) {
+          element.errorAttributes.push('name')
+          isValid = false
+        }
+        if (element.value === '' && !element.errorAttributes.includes('value')) {
+          element.errorAttributes.push('value')
+          isValid = false
+        }
+        return isValid
+      })
+    },
     selectEnv: function (env) {
       if (!this.selectedApp.code) {
         return
@@ -371,6 +385,7 @@ export default {
     },
     editAppProperty(index) {
       Vue.set(this.appProperties[index], 'editing', true)
+      Vue.set(this.appProperties[index], 'errorAttributes', [])
       let self = this
       Vue.nextTick(function () {
         self.$refs['valueinput' + index][0].focus()
@@ -401,6 +416,9 @@ export default {
       })
     },
     openDownloadDialog() {
+      if (!this.selectedApp.code || !this.selectedEnv) {
+        return
+      }
       this.dialogFileDownload = true
     },
     cancelFileDownload() {
@@ -408,6 +426,9 @@ export default {
       this.loadingDownload = false
     },
     saveAppProps() {
+      if (!this.hasUnsavedChanges() || !this.validate()) {
+        return
+      }
       this.loadingProps = true;
       let context = this
       api.saveProperties(context, context.selectedEnv, context.selectedApp, context.appProperties.filter(element => element.hasChanges))
@@ -427,6 +448,9 @@ export default {
         })
     },
     addAppProperty() {
+      if (!this.selectedApp.code || !this.selectedEnv) {
+        return
+      }
       this.triggerAppPropsfiltering('')
       let entry = {
         name: '',
@@ -440,6 +464,12 @@ export default {
         return
       }
       this.loadProps()
+    },
+    openUploadDialog() {
+      if (!this.selectedApp.code || !this.selectedEnv) {
+        return
+      }
+      this.dialogFileUpload = true
     },
     async fileUploaded(event) {
       this.fileUpload.ready = false
