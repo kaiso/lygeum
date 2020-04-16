@@ -15,7 +15,7 @@
    */
 
 import Vue from 'vue'
-import { deepCopy, equal } from '@/js/util/util'
+import { deepCopy, equal, guid } from '@/js/util/util'
 
 /**
  * add element to object to detect
@@ -28,6 +28,7 @@ export function enhanceEditable (editableObject) {
   Vue.set(editableObject, 'original', deepCopy(editableObject))
   Vue.set(editableObject, 'editing', false)
   Vue.set(editableObject, 'hasChanges', false)
+  Vue.set(editableObject, 'displayIdentifier', guid())
 }
 
 /**

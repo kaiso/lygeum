@@ -105,13 +105,16 @@
         <span class="aps-table-container">
           <table>
             <tr
-              :key="'tr' + index"
-              v-for="(propItem, index) in (filteredAppProperties.length > 0 ? filteredAppProperties : appProperties)"
+              :key="propItem.displayIdentifier"
+              v-click-outside="clickOutside"
+              v-bind:style="{display:propItem.hidden ? 'none' : 'revert'}"
+              v-for="(propItem, index) in appProperties"
             >
               <td class="regular_cell">
                 <input
                   v-model="propItem.name"
                   type="text"
+                  :ref="'nameinput' + index"
                   @blur="propChanged(index, $event)"
                   v-bind:class="{ 'aps-input-active': propItem.editing , 'aps-simple-input': true }"
                   :disabled="(propItem.editing === undefined || propItem.editing === false)? true : false"
@@ -121,7 +124,7 @@
                 <input
                   v-model="propItem.value"
                   type="text"
-                  :ref="'name' + index"
+                  :ref="'valueinput' + index"
                   @blur="propChanged(index, $event)"
                   v-bind:class="{ 'aps-input-active': propItem.editing , 'aps-simple-input': true }"
                   :disabled="(propItem.editing === undefined || propItem.editing === false)? true : false"
@@ -225,8 +228,7 @@ export default {
     selectedEnv: {},
     selectedApp: {},
     appProperties: [],
-    filter: null,
-    filteredAppProperties: []
+    filter: null
   }),
   mounted: function () {
     this.loadEnvs()
@@ -359,29 +361,19 @@ export default {
     },
     propChanged(index, e) {
       let target = e.relatedTarget ? e.relatedTarget.value : undefined
-      let realIndex = index
-      if (this.filteredAppProperties.length > 0) {
-        realIndex = this.appProperties.indexOf(this.filteredAppProperties[index])
-      }
-      if (!this.appProperties[realIndex].editing) {
+      if (!this.appProperties[index].editing) {
         return
       }
-      Vue.set(this.appProperties[realIndex], 'hasChanges', tableUtils.hasChanges(this.appProperties[realIndex]))
-      if (target && (this.appProperties[realIndex].name === target ||
-        this.appProperties[realIndex].value === target)) {
-        return
+      Vue.set(this.appProperties[index], 'hasChanges', tableUtils.hasChanges(this.appProperties[index]))
+      if (target && (this.appProperties[index].name === target ||
+        this.appProperties[index].value === target)) {
       }
-      Vue.set(this.appProperties[realIndex], 'editing', false)
     },
     editAppProperty(index) {
-      let realIndex = index
-      if (this.filteredAppProperties.length > 0) {
-        realIndex = this.appProperties.indexOf(this.filteredAppProperties[index])
-      }
-      Vue.set(this.appProperties[realIndex], 'editing', true)
+      Vue.set(this.appProperties[index], 'editing', true)
       let self = this
       Vue.nextTick(function () {
-        self.$refs['name' + index][0].focus()
+        self.$refs['valueinput' + index][0].focus()
       })
     },
     deleteAppProperty(item) {
@@ -435,12 +427,13 @@ export default {
         })
     },
     addAppProperty() {
-      this.filteredAppProperties = []
-      this.appProperties.unshift({
+      this.triggerAppPropsfiltering('')
+      let entry = {
         name: '',
-        value: '',
-        editing: true
-      })
+        value: ''
+      }
+      tableUtils.enhanceEditable(entry)
+      this.appProperties.unshift(entry)
     },
     appChanged(val) {
       if (!this.selectedEnv) {
@@ -504,11 +497,30 @@ export default {
     },
     triggerAppPropsfiltering(event) {
       if (event !== undefined) {
-        this.filteredAppProperties = this.appProperties.filter((value) => {
-          return value.name.toLowerCase().includes(event.toLowerCase()) ||
-            (value.value !== null && value.value.toLowerCase().includes(event.toLowerCase()))
+        this.filter = event
+        this.appProperties.forEach(function(element) {
+          if (element.name.toLowerCase().includes(event.toLowerCase()) ||
+            (element.value !== null && element.value.toLowerCase().includes(event.toLowerCase()))) {
+            Vue.set(element, 'hidden', false)
+          } else {
+            Vue.set(element, 'hidden', true)
+          }
         })
       }
+    },
+    clickOutside: function (event, vNode) {
+      this.appProperties.forEach(function(element, index) {
+        if (index === 0 && event.target.innerHTML === 'add_box') {
+          Vue.set(element, 'editing', true)
+          Vue.nextTick(function () {
+            vNode.context.$refs['nameinput' + index][0].focus()
+          })
+          return
+        }
+        if (element.displayIdentifier === vNode.data.key) {
+          Vue.set(element, 'editing', false)
+        }
+      })
     }
   }
 }

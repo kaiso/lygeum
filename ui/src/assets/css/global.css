@@ -95,9 +95,10 @@
     height: 33px;
   }
   
-  input.aps-simple-input:disabled {
+  .aps-simple-input:disabled {
     color: white;
     outline : none;
+    pointer-events: none;
   }
   
   .aps-input-active {

@@ -23,7 +23,7 @@
  * @param {Function} f
  * @return {*}
  */
-export function find (list, f) {
+export function find(list, f) {
   return list.filter(f)[0]
 }
 
@@ -36,7 +36,7 @@ export function find (list, f) {
  * @param {Array<Object>} cache
  * @return {*}
  */
-export function deepCopy (obj, cache = []) {
+export function deepCopy(obj, cache = []) {
   // just return if obj is immutable value
   if (obj === null || typeof obj !== 'object') {
     return obj
@@ -66,19 +66,19 @@ export function deepCopy (obj, cache = []) {
 /**
  * forEach for object
  */
-export function forEachValue (obj, fn) {
+export function forEachValue(obj, fn) {
   Object.keys(obj).forEach(key => fn(obj[key], key))
 }
 
-export function isObject (obj) {
+export function isObject(obj) {
   return obj !== null && typeof obj === 'object'
 }
 
-export function isPromise (val) {
+export function isPromise(val) {
   return val && typeof val.then === 'function'
 }
 
-export function assert (condition, msg) {
+export function assert(condition, msg) {
   if (!condition) throw new Error(`[vuex] ${msg}`)
 }
 
@@ -153,7 +153,7 @@ _equal.regexp = function (a, b) {
  * @param b {any}
  * @return {boolean} Are equal?
  */
-export function equal (a, b) {
+export function equal(a, b) {
   if (a !== b) {
     var atype = whatis(a)
     var btype = whatis(b)
@@ -163,4 +163,14 @@ export function equal (a, b) {
     return false
   }
   return true
+}
+
+export function guid() {
+  let s4 = () => {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  // return id of format 'aaaaaaaa'-'aaaa'-'aaaa'-'aaaa'-'aaaaaaaaaaaa'
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }

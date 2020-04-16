@@ -59,19 +59,33 @@ Vue.use(Vue2Storage, {
 
 Vue.config.productionTip = false
 
-/* Vue.directive('click-outside', {
-  bind: function (el, binding, vnode) {
-    this.dEvent = function (event) {
-      if (!(el === event.target || el.contains(event.target))) {
-        vnode.context[binding.expression](event)
+Vue.directive('click-outside', {
+  bind: function (el, binding, vNode) {
+    el.__vueClickOutside__ = event => {
+      // call method provided in v-click-outside value
+      let array = el.getElementsByTagName('*')
+      let outside = true
+      for (let index = 0; index < array.length; index++) {
+        if (event.target === array[index]) {
+          outside = false
+          console.log('click inside ', vNode.data.key)
+          break
+        }
+      }
+      if (outside) {
+        vNode.context[binding.expression](event, vNode)
+        event.stopPropagation()
       }
     }
-    document.body.addEventListener('click', this.dEvent)
+    document.body.addEventListener('click', el.__vueClickOutside__)
   },
-  unbind: function (el) {
-    document.body.removeEventListener('click', this.dEvent)
+  unbind: function (el, binding, vNode) {
+    // Remove Event Listeners
+    document.removeEventListener('click', el.__vueClickOutside__)
+    el.__vueClickOutside__ = null
   }
-}) */
+})
+
 
 /* eslint-disable no-new */
 new Vue({
