@@ -7,7 +7,7 @@ redirect_from: /downloads/index.html
 ## Server
 1. #### Fat JAR distribution
 
-    <a href='https://bintray.com/kaiso/lygeum/download_file?file_path=lygeum-server-0.1.0b6.jar'><img src='https://api.bintray.com/packages/kaiso/lygeum/lygeum-server/images/download.svg'></a>
+    <a href='https://bintray.com/kaiso/lygeum/download_file?file_path=lygeum-server-0.1.0b7.jar'><img src='https://api.bintray.com/packages/kaiso/lygeum/lygeum-server/images/download.svg'></a>
 
 <br><br>
 

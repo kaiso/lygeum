@@ -1,12 +1,16 @@
 buildscript {
 	ext {
 		springBootVersion = '2.1.5.RELEASE'
+		epagesRestDocsVersion = '0.9.5'
 	}
 	repositories {
 		mavenCentral()
+		jcenter()
+		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("com.epages:restdocs-api-spec-gradle-plugin:${epagesRestDocsVersion}")
 	}
 }
 
@@ -23,6 +27,7 @@ subprojects {
 	    }
 	    repositories {
      	   mavenCentral()
+     	   jcenter()
     	}
     	
     	apply plugin : 'java'
@@ -45,6 +50,7 @@ subprojects {
 		  exclude group: 'junit'
 		  exclude group: 'org.codehaus.jackson'
 		}
+		
 		
 		eclipse {
 		   classpath {
@@ -79,10 +85,10 @@ subprojects {
 	      
 	      //Test dependencies
           testImplementation 'org.jmockit:jmockit:1.47'
-	      testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
-          testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
-          testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.5.2'
-          testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.5.2'
+	      testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+          testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+          testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.6.2'
+          testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.6.2'
           testRuntimeOnly group: 'org.springframework', name: 'spring-aspects'
           testImplementation('org.springframework.boot:spring-boot-starter-test') {
              exclude group: 'org.mockito', module: 'mockito-core'
@@ -111,8 +117,32 @@ project(':loader') {
 }
 
 project(':api') {
+    apply plugin : 'com.epages.restdocs-api-spec'
+    
 	dependencies {
 	  implementation project(':core')
+	   //Rest API documentation
+      testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+      testImplementation "com.epages:restdocs-api-spec-mockmvc:${project.'epagesRestDocsVersion'}"
+	}
+	
+	openapi3 {
+		server = 'https://localhost:5000'
+		title = 'The Lygeum server API'
+		description = 'Lygeum is a centralized configuration server'
+		version = "${project.'version'}"
+		format = 'yaml'
+		tagDescriptionsPropertiesFile = "src/test/resources/tags.yaml"
+		oauth2SecuritySchemeDefinition = {
+	        flows = ['clientCredentials']
+	        tokenUrl = 'https://localhost:5000/lygeum/auth/access_token'
+	    }
+	}
+	
+	postman {
+		title = 'The Lygeum server API'
+		version = "${project.'version'}"
+		baseUrl = 'https://localhost:5000'
 	}
 }
 

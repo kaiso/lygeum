@@ -39,6 +39,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.github.kaiso.lygeum.core.context.ApplicationContextProvider;
 import io.github.kaiso.lygeum.core.security.AuthorizationAction;
 import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 
@@ -51,7 +52,6 @@ import io.github.kaiso.lygeum.core.security.AuthorizationManager;
 public class Client extends BaseEntity implements ClientDetails {
 
 	private static final long serialVersionUID = 5255223827480202386L;
-	public static final ObjectMapper mapper = new ObjectMapper();
 
 	private String name;
 
@@ -114,7 +114,7 @@ public class Client extends BaseEntity implements ClientDetails {
 		}
 		return resourceIdsList;
 	}
-	
+
 	public void setResourceIds(Set<String> uris) {
 		if (uris != null) {
 			resourceIds = uris.stream().collect(Collectors.joining(","));
@@ -285,7 +285,9 @@ public class Client extends BaseEntity implements ClientDetails {
 	@Override
 	public Map<String, Object> getAdditionalInformation() {
 		try {
-			return additionalInformation != null ? mapper.readValue(additionalInformation, Map.class) : null;
+			return additionalInformation != null
+					? ApplicationContextProvider.getBean(ObjectMapper.class).readValue(additionalInformation, Map.class)
+					: null;
 		} catch (Exception e) {
 			return null;
 		}

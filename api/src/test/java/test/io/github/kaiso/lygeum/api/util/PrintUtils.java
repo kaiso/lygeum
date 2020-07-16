@@ -21,7 +21,8 @@ import java.io.UnsupportedEncodingException;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+
+import io.github.kaiso.lygeum.core.context.ApplicationContextProvider;
 
 /**
  * @author Kais OMRI (kaiso)
@@ -37,9 +38,7 @@ public class PrintUtils {
 	}
 
 	public static String json(Object o) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new Jdk8Module());
-		return mapper.writeValueAsString(o);
+		return ApplicationContextProvider.getBean(ObjectMapper.class).writeValueAsString(o);
 	}
 
 }

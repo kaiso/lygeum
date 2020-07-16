@@ -328,16 +328,20 @@ export default {
     validate() {
       let isValid = true
       this.appProperties.forEach(element => {
-        if (element.name === '' && !element.errorAttributes.includes('name')) {
-          element.errorAttributes.push('name')
+        if (element.name === '') {
+          if (!element.errorAttributes.includes('name')) {
+            element.errorAttributes.push('name')
+          }
           isValid = false
         }
-        if (element.value === '' && !element.errorAttributes.includes('value')) {
-          element.errorAttributes.push('value')
+        if (element.value === '') {
+          if (!element.errorAttributes.includes('value')) {
+            element.errorAttributes.push('value')
+          }
           isValid = false
         }
-        return isValid
       })
+      return isValid
     },
     selectEnv: function (env) {
       if (!this.selectedApp.code) {

@@ -15,10 +15,19 @@
    */
 package test.io.github.kaiso.lygeum.api.config;
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+import io.github.kaiso.lygeum.core.config.JSONConfig;
+
 /**
  * @author Kais OMRI (kaiso)
  *
  */
 
+@Configuration
+@Import(JSONConfig.class)
+@ComponentScan(basePackages = { "io.github.kaiso.lygeum.core.context" })
 public class ApiTestConfig {
 }
