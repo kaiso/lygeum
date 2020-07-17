@@ -26,4 +26,9 @@
       </div>
     </div>
   {% endfor %}
+  <div class="panel-collapse{% if collapsed %} collapse{% endif %}" id="collapse-{{forloop.index}}" role="tabpanel" aria-label="Side Navigation">
+    <div class="list-group">
+        <a class="list-group-item {% if item_url == page.url %}active{% endif %}" href="/lygeum/api">API Docs</a>
+    </div>
+  </div>
 </div>

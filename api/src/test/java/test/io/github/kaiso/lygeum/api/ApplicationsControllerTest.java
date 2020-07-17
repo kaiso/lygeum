@@ -140,8 +140,7 @@ public class ApplicationsControllerTest {
 								fieldWithPath("[].description").description("The application description."))
 						.requestHeaders(
 								headerWithName("accept").optional().description("accept header: application/json"))
-						.tag("applications")
-						.build())))
+						.tag("applications").build())))
 				.andReturn();
 
 		PrintUtils.printResponse(result);
@@ -167,16 +166,14 @@ public class ApplicationsControllerTest {
 			}
 		};
 		String content = PrintUtils.json(entity);
-		RequestBuilder requestBuilder = RestDocumentationRequestBuilders.put("/lygeum/api/applications/{code}", entity.getCode())
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
+		RequestBuilder requestBuilder = RestDocumentationRequestBuilders
+				.put("/lygeum/api/applications/{code}", entity.getCode()).accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON).content(content);
 
-		MvcResult result = mockMvc.perform(requestBuilder)
-				.andDo(document("applications-update", resource(ResourceSnippetParameters.builder()
-						.summary("Update an application").description("")
-						.requestHeaders(
-								headerWithName("Content-type").optional().description("application/json"))
-						.tag("applications")
-						.build())))
+		MvcResult result = mockMvc.perform(requestBuilder).andDo(document("applications-update",
+				resource(ResourceSnippetParameters.builder().summary("Update an application").description("")
+						.requestHeaders(headerWithName("Content-type").optional().description("application/json"))
+						.tag("applications").build())))
 				.andReturn();
 		PrintUtils.printResponse(result);
 
@@ -220,7 +217,7 @@ public class ApplicationsControllerTest {
 	@Test
 	@WithMockUser(authorities = { AuthorizationManager.ROLE_PREFIX + "ALL_APP_CREATE" })
 	public void should_create_application() throws Exception {
-		ApplicationEntity entity = new ApplicationEntity("code01", "production");
+		ApplicationEntity entity = createApp();
 		new Expectations() {
 			{
 				applicationsManager.create(entity);
@@ -228,17 +225,21 @@ public class ApplicationsControllerTest {
 			}
 		};
 		String content = PrintUtils.json(entity);
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/lygeum/api/applications/")
+		RequestBuilder requestBuilder = RestDocumentationRequestBuilders.post("/lygeum/api/applications/")
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(content);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MvcResult result = mockMvc.perform(requestBuilder).andDo(document("applications-create",
+				resource(ResourceSnippetParameters.builder().summary("Create an application").description("")
+						.requestHeaders(headerWithName("Content-type").optional().description("application/json"))
+						.tag("applications").build())))
+				.andReturn();
 		PrintUtils.printResponse(result);
 
 		new Verifications() {
 			{
 				assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
-				MockMvcResultMatchers.jsonPath("$.code", Matchers.equalTo("code01")).match(result);
-				MockMvcResultMatchers.jsonPath("$.name", Matchers.equalTo("production")).match(result);
+				MockMvcResultMatchers.jsonPath("$.code", Matchers.equalTo("APP01")).match(result);
+				MockMvcResultMatchers.jsonPath("$.name", Matchers.equalTo("NGINX")).match(result);
 			}
 		};
 

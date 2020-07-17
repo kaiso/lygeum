@@ -1,0 +1,31 @@
+---
+layout: default
+---
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: " en " }}">
+
+{% include head.html %}
+
+<body>
+    <!--<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-rc.31/bundles/redoc.standalone.js"></script>
+    {% include topnav.html %}
+
+    <div class="page-content">
+        <div class="wrapper">
+            <div id="redoc" style="color: #363644;
+            background-color: white;"></div>
+            <script>
+                var container = document.getElementById('redoc');
+                let options = {
+                    "hideDownloadButton": true
+                };
+                Redoc.init("assets/openapi.yaml", options, container);
+            </script>
+        </div>
+    </div>
+
+    {% include footer.html %} {% include js_files.html %}
+</body>
+
+</html>

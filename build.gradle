@@ -17,7 +17,7 @@ buildscript {
 
 allprojects {
     group = 'io.github.kaiso.lygeum'
-    version = '0.1.0b6'
+    version = '0.1.0b7'
 }
 
 subprojects {
@@ -129,8 +129,10 @@ project(':api') {
 	openapi3 {
 		server = 'https://localhost:5000'
 		title = 'The Lygeum server API'
-		description = 'Lygeum is a centralized configuration server'
+		description = 'This is the api documentation for the Lygeum configuration server'
 		version = "${project.'version'}"
+		outputDirectory = "${project.rootDir}/docs/assets"
+		outputFileNamePrefix = 'openapi'
 		format = 'yaml'
 		tagDescriptionsPropertiesFile = "src/test/resources/tags.yaml"
 		oauth2SecuritySchemeDefinition = {

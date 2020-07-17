@@ -1,0 +1,178 @@
+openapi: 3.0.1
+info:
+  title: The Lygeum server API
+  description: This is the api documentation for the Lygeum configuration server
+  version: 0.1.0b7
+servers:
+- url: https://localhost:5000
+tags:
+- name: applications
+  description: Applications management
+paths:
+  /lygeum/api/applications:
+    get:
+      tags:
+      - applications
+      summary: Get all applications
+      operationId: applications-get
+      parameters:
+      - name: accept
+        in: header
+        description: 'accept header: application/json'
+        required: false
+        schema:
+          type: string
+        example: application/json
+      responses:
+        200:
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-applications-782445632'
+              examples:
+                applications-get:
+                  value: |-
+                    [ {
+                      "code" : "APP01",
+                      "createdBy" : "lygeum",
+                      "createdDate" : "2020-07-17T00:19:07.078464",
+                      "lastModifiedBy" : "lygeum",
+                      "lastModifiedDate" : "2020-07-17T00:19:07.079539",
+                      "name" : "NGINX",
+                      "description" : "The nginx server"
+                    } ]
+  /lygeum/api/applications/:
+    post:
+      tags:
+      - applications
+      summary: Create an application
+      operationId: applications-create
+      parameters:
+      - name: Content-type
+        in: header
+        description: application/json
+        required: false
+        schema:
+          type: string
+        example: application/json
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/lygeum-api-applications-486549215'
+            examples:
+              applications-create:
+                value: |-
+                  {
+                    "code" : "APP01",
+                    "createdBy" : "lygeum",
+                    "createdDate" : "2020-07-17T00:19:07.55918",
+                    "lastModifiedBy" : "lygeum",
+                    "lastModifiedDate" : "2020-07-17T00:19:07.559245",
+                    "name" : "NGINX",
+                    "description" : "The nginx server"
+                  }
+      responses:
+        204:
+          description: "204"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-applications-486549215'
+              examples:
+                applications-create:
+                  value: |-
+                    {
+                      "code" : "APP01",
+                      "createdBy" : "lygeum",
+                      "createdDate" : "2020-07-17T00:19:07.55918",
+                      "lastModifiedBy" : "lygeum",
+                      "lastModifiedDate" : "2020-07-17T00:19:07.559245",
+                      "name" : "NGINX",
+                      "description" : "The nginx server"
+                    }
+  /lygeum/api/applications/{code}:
+    put:
+      tags:
+      - applications
+      summary: Update an application
+      operationId: applications-update
+      parameters:
+      - name: code
+        in: path
+        description: ""
+        required: true
+        schema:
+          type: string
+      - name: Content-type
+        in: header
+        description: application/json
+        required: false
+        schema:
+          type: string
+        example: application/json
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/lygeum-api-applications-486549215'
+            examples:
+              applications-update:
+                value: |-
+                  {
+                    "code" : "APP01",
+                    "createdBy" : "lygeum",
+                    "createdDate" : "2020-07-17T00:19:07.893423",
+                    "lastModifiedBy" : "lygeum",
+                    "lastModifiedDate" : "2020-07-17T00:19:07.893485",
+                    "name" : "NGINX",
+                    "description" : "The nginx server"
+                  }
+      responses:
+        204:
+          description: "204"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-applications-486549215'
+              examples:
+                applications-update:
+                  value: '"Application successfully updated"'
+components:
+  schemas:
+    lygeum-api-applications-782445632:
+      type: array
+      items:
+        type: object
+        properties:
+          createdDate:
+            type: string
+            description: The creation date.
+          code:
+            type: string
+            description: The application code.
+          lastModifiedDate:
+            type: string
+            description: The date of the last modification.
+          createdBy:
+            type: string
+            description: The creator.
+          lastModifiedBy:
+            type: string
+            description: The last modifier.
+          name:
+            type: string
+            description: The application name.
+          description:
+            type: string
+            description: The application description.
+    lygeum-api-applications-486549215:
+      type: object
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://localhost:5000/lygeum/auth/access_token
+          scopes: {}
