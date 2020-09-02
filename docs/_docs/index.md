@@ -4,7 +4,6 @@ permalink: /docs/home/
 redirect_from: /docs/index.html
 ---
 
-**`NB: The Lygeum server is currently in beta version and the docs are under construction`**
 
 
 This guide will help you start with Lygeum. it covers installing and booting the server in **test mode** as well as configuring a first environment and application and downloading the associated configuration
