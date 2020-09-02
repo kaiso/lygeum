@@ -87,6 +87,7 @@
             </v-btn>
             <span>{{$t('props.actions.add_tooltip')}}</span>
           </v-tooltip>
+          <span v-if="lastUpdatedInfo.date">{{$t('generic.lastModifiedOn')}} {{lastUpdatedInfo.date}} {{$t('generic.by')}} {{lastUpdatedInfo.user}}</span>
           <v-spacer></v-spacer>
           <span class="aps-input-container">
             <v-text-field
@@ -184,7 +185,8 @@
         <div class="aps-dialog-content">
           <v-radio-group v-model="selectedLayout" row>
             <v-radio label="Yaml" value="yaml" style="margin-right:5px;"></v-radio>
-            <v-radio label="Properties" value="properties"></v-radio>
+            <v-radio label="Properties" value="properties" style="margin-right:5px;"></v-radio>
+            <v-radio label="Json" value="json"></v-radio>
           </v-radio-group>
           <div class="aps-dialog-actions">
             <v-btn :loading="loadingDownload" class="upload-btn" @click="downloadAppProps">Download</v-btn>
@@ -224,6 +226,7 @@ export default {
     apps: [],
     searchApp: null,
     envs: [],
+    lastUpdatedInfo: {},
     selectedLayout: 'yaml',
     selectedEnv: {},
     selectedApp: {},
@@ -308,13 +311,28 @@ export default {
       this.appProperties = []
       this.filteredAppProperties = []
       this.filter = null
+      this.lastUpdatedInfo = {}
       api.getProperties(this, this.selectedEnv, this.selectedApp).then((result) => {
         if (result.data != null) {
           result.data.sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }))
+          let lastModifiedDate = null
+          let lastModifiedBy = null
           result.data.forEach((entry) => {
-            tableUtils.enhanceEditable(entry)
-            this.appProperties.push(entry)
+            try {
+              if (new Date(entry.lastModifiedDate) > lastModifiedDate || lastModifiedDate === null) {
+                lastModifiedDate = new Date(entry.lastModifiedDate)
+                lastModifiedBy = entry.lastModifiedBy
+              }
+            } finally {
+              tableUtils.enhanceEditable(entry)
+              this.appProperties.push(entry)
+            }
           })
+          if (lastModifiedDate) {
+            let options = { dateStyle: 'medium', timeStyle: 'short' }
+            this.lastUpdatedInfo.date = lastModifiedDate.toLocaleString(this.$i18n.locale, options)
+            this.lastUpdatedInfo.user = lastModifiedBy
+          }
         }
       }).catch(error => {
         this.$store.dispatch('notification/open', {
@@ -464,7 +482,7 @@ export default {
       this.appProperties.unshift(entry)
     },
     appChanged(val) {
-      if (!this.selectedEnv) {
+      if (!this.selectedEnv.code) {
         return
       }
       this.loadProps()

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.kaiso.lygeum.api.resources.OperationResult;
+import io.github.kaiso.lygeum.api.resources.OperationResult.OperationResultCode;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.manager.EnvironmentsManager;
 import io.github.kaiso.lygeum.core.security.AuthorizationAction;
@@ -41,7 +43,7 @@ public class EnvironmentsController extends LygeumRestController {
 	}
 
 	@RequestMapping(path = "/environments/{code}", method = RequestMethod.PUT)
-	public ResponseEntity<String> updateEnvironment(@RequestBody(required = true) EnvironmentEntity env,
+	public ResponseEntity<OperationResult> updateEnvironment(@RequestBody(required = true) EnvironmentEntity env,
 			@PathVariable(required = true, name = "code") String code) {
 		EnvironmentEntity environment = environmentsManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + code));
@@ -49,7 +51,9 @@ public class EnvironmentsController extends LygeumRestController {
 
 		environmentsManager.update(env);
 
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Environment successfully updated");
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(OperationResult
+				.builder().withCode(OperationResultCode.SUCCESS)
+				.withMessage("Environment successfully updated").build());
 	}
 
 	@RequestMapping(path = "/environments", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,14 +66,16 @@ public class EnvironmentsController extends LygeumRestController {
 	}
 
 	@RequestMapping(path = "/environments/{code}", method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteEnvironment(@PathVariable(required = true, name = "code") String code) {
+	public ResponseEntity<OperationResult> deleteEnvironment(@PathVariable(required = true, name = "code") String code) {
 		EnvironmentEntity environment = environmentsManager.findByCode(code)
 				.orElseThrow(() -> new IllegalArgumentException("Environment not found with code: " + code));
 		AuthorizationManager.preAuthorize(null, null, AuthorizationAction.ALL_ENV_DELETE);
 
 		environmentsManager.delete(environment);
 
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Environment successfully deleted");
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(OperationResult
+				.builder().withCode(OperationResultCode.SUCCESS)
+				.withMessage("Application successfully deleted").build());
 	}
 
 }

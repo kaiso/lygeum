@@ -2,17 +2,21 @@ openapi: 3.0.1
 info:
   title: The Lygeum server API
   description: This is the api documentation for the Lygeum configuration server
-  version: 0.1.0b7
+  version: 0.1.0
 servers:
 - url: https://localhost:5000
 tags:
-- name: applications
+- name: Applications
   description: Applications management
+- name: Environments
+  description: Environments management
+- name: Properties
+  description: Properties management
 paths:
   /lygeum/api/applications:
     get:
       tags:
-      - applications
+      - Applications
       summary: Get all applications
       operationId: applications-get
       parameters:
@@ -36,16 +40,49 @@ paths:
                     [ {
                       "code" : "APP01",
                       "createdBy" : "lygeum",
-                      "createdDate" : "2020-07-17T00:19:07.078464",
+                      "createdDate" : "2020-09-02T16:04:33.348458",
                       "lastModifiedBy" : "lygeum",
-                      "lastModifiedDate" : "2020-07-17T00:19:07.079539",
+                      "lastModifiedDate" : "2020-09-02T16:04:33.349207",
                       "name" : "NGINX",
                       "description" : "The nginx server"
+                    } ]
+  /lygeum/api/environments:
+    get:
+      tags:
+      - Environments
+      summary: Get all environments
+      operationId: environments-get
+      parameters:
+      - name: accept
+        in: header
+        description: 'accept header: application/json'
+        required: false
+        schema:
+          type: string
+        example: application/json
+      responses:
+        200:
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-environments-1799074867'
+              examples:
+                environments-get:
+                  value: |-
+                    [ {
+                      "code" : "ENV01",
+                      "createdBy" : "Lygeum",
+                      "createdDate" : "2020-09-02T16:04:34.975587",
+                      "lastModifiedBy" : "Lygeum",
+                      "lastModifiedDate" : "2020-09-02T16:04:34.975652",
+                      "name" : "PRODUCTION",
+                      "description" : "The production environment"
                     } ]
   /lygeum/api/applications/:
     post:
       tags:
-      - applications
+      - Applications
       summary: Create an application
       operationId: applications-create
       parameters:
@@ -60,48 +97,48 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/lygeum-api-applications-486549215'
+              $ref: '#/components/schemas/lygeum-api-environments-486549215'
             examples:
               applications-create:
                 value: |-
                   {
                     "code" : "APP01",
                     "createdBy" : "lygeum",
-                    "createdDate" : "2020-07-17T00:19:07.55918",
+                    "createdDate" : "2020-09-02T16:04:33.782595",
                     "lastModifiedBy" : "lygeum",
-                    "lastModifiedDate" : "2020-07-17T00:19:07.559245",
+                    "lastModifiedDate" : "2020-09-02T16:04:33.782677",
                     "name" : "NGINX",
                     "description" : "The nginx server"
                   }
       responses:
-        204:
-          description: "204"
+        201:
+          description: "201"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/lygeum-api-applications-486549215'
+                $ref: '#/components/schemas/lygeum-api-environments-486549215'
               examples:
                 applications-create:
                   value: |-
                     {
                       "code" : "APP01",
                       "createdBy" : "lygeum",
-                      "createdDate" : "2020-07-17T00:19:07.55918",
+                      "createdDate" : "2020-09-02T16:04:33.782595",
                       "lastModifiedBy" : "lygeum",
-                      "lastModifiedDate" : "2020-07-17T00:19:07.559245",
+                      "lastModifiedDate" : "2020-09-02T16:04:33.782677",
                       "name" : "NGINX",
                       "description" : "The nginx server"
                     }
   /lygeum/api/applications/{code}:
     put:
       tags:
-      - applications
+      - Applications
       summary: Update an application
       operationId: applications-update
       parameters:
       - name: code
         in: path
-        description: ""
+        description: The application code
         required: true
         schema:
           type: string
@@ -116,16 +153,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/lygeum-api-applications-486549215'
+              $ref: '#/components/schemas/lygeum-api-environments-486549215'
             examples:
               applications-update:
                 value: |-
                   {
                     "code" : "APP01",
                     "createdBy" : "lygeum",
-                    "createdDate" : "2020-07-17T00:19:07.893423",
+                    "createdDate" : "2020-09-02T16:04:34.092683",
                     "lastModifiedBy" : "lygeum",
-                    "lastModifiedDate" : "2020-07-17T00:19:07.893485",
+                    "lastModifiedDate" : "2020-09-02T16:04:34.092746",
                     "name" : "NGINX",
                     "description" : "The nginx server"
                   }
@@ -135,12 +172,283 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/lygeum-api-applications-486549215'
+                $ref: '#/components/schemas/lygeum-api-environments-code-1093538149'
               examples:
                 applications-update:
-                  value: '"Application successfully updated"'
+                  value: |-
+                    {
+                      "message" : "Application successfully updated",
+                      "code" : "0_SUCCESS"
+                    }
+    delete:
+      tags:
+      - Applications
+      summary: Delete an application
+      operationId: applications-delete
+      parameters:
+      - name: code
+        in: path
+        description: The application code
+        required: true
+        schema:
+          type: string
+      - name: Content-type
+        in: header
+        description: application/json
+        required: false
+        schema:
+          type: string
+      responses:
+        204:
+          description: "204"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-environments-code-1093538149'
+              examples:
+                applications-delete:
+                  value: |-
+                    {
+                      "message" : "Application successfully deleted",
+                      "code" : "0_SUCCESS"
+                    }
+        422:
+          description: "422"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-environments-code-1093538149'
+              examples:
+                applications-delete-failure:
+                  value: |-
+                    {
+                      "message" : "Application not found with code: code22",
+                      "code" : "1_VALIDATION_FAILURE"
+                    }
+  /lygeum/api/environments/:
+    post:
+      tags:
+      - Environments
+      summary: Create an environment
+      operationId: environments-create
+      parameters:
+      - name: accept
+        in: header
+        description: 'accept header: application/json'
+        required: false
+        schema:
+          type: string
+        example: application/json
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/lygeum-api-environments-486549215'
+            examples:
+              environments-create:
+                value: |-
+                  {
+                    "code" : "code01",
+                    "createdBy" : "Lygeum",
+                    "createdDate" : "2020-09-02T16:04:34.757483",
+                    "lastModifiedBy" : "Lygeum",
+                    "lastModifiedDate" : "2020-09-02T16:04:34.757544",
+                    "name" : "production",
+                    "description" : "The production environment"
+                  }
+      responses:
+        201:
+          description: "201"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-environments-1769875994'
+              examples:
+                environments-create:
+                  value: |-
+                    {
+                      "code" : "code01",
+                      "createdBy" : "Lygeum",
+                      "createdDate" : "2020-09-02T16:04:34.757483",
+                      "lastModifiedBy" : "Lygeum",
+                      "lastModifiedDate" : "2020-09-02T16:04:34.757544",
+                      "name" : "production",
+                      "description" : "The production environment"
+                    }
+  /lygeum/api/environments/{code}:
+    put:
+      tags:
+      - Environments
+      summary: Update an environment
+      operationId: environments-update-failure
+      parameters:
+      - name: code
+        in: path
+        description: ""
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/lygeum-api-environments-486549215'
+            examples:
+              environments-update-failure:
+                value: |-
+                  {
+                    "code" : "env_3",
+                    "createdBy" : "Lygeum",
+                    "createdDate" : "2020-09-02T16:04:35.009928",
+                    "lastModifiedBy" : "Lygeum",
+                    "lastModifiedDate" : "2020-09-02T16:04:35.009976",
+                    "name" : "production",
+                    "description" : "The production environment"
+                  }
+              environments-update:
+                value: |-
+                  {
+                    "code" : "env11",
+                    "createdBy" : "Lygeum",
+                    "createdDate" : "2020-09-02T16:04:35.06327",
+                    "lastModifiedBy" : "Lygeum",
+                    "lastModifiedDate" : "2020-09-02T16:04:35.063316",
+                    "name" : "production",
+                    "description" : "The production environment"
+                  }
+      responses:
+        422:
+          description: "422"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-environments-code-1093538149'
+              examples:
+                environments-update-failure:
+                  value: |-
+                    {
+                      "message" : "Environment not found with code: env_3",
+                      "code" : "1_VALIDATION_FAILURE"
+                    }
+        204:
+          description: "204"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-environments-code-1093538149'
+              examples:
+                environments-update:
+                  value: |-
+                    {
+                      "message" : "Environment successfully updated",
+                      "code" : "0_SUCCESS"
+                    }
+    delete:
+      tags:
+      - Environments
+      summary: Delete an environment
+      operationId: environments-delete-failure
+      parameters:
+      - name: code
+        in: path
+        description: The environment code
+        required: true
+        schema:
+          type: string
+      - name: Content-type
+        in: header
+        description: environment/json
+        required: false
+        schema:
+          type: string
+      responses:
+        422:
+          description: "422"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-environments-code-1093538149'
+              examples:
+                environments-delete-failure:
+                  value: |-
+                    {
+                      "message" : "Environment not found with code: code22",
+                      "code" : "1_VALIDATION_FAILURE"
+                    }
+        204:
+          description: "204"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lygeum-api-environments-code-1093538149'
+              examples:
+                environments-delete:
+                  value: |-
+                    {
+                      "message" : "Application successfully deleted",
+                      "code" : "0_SUCCESS"
+                    }
 components:
   schemas:
+    lygeum-api-environments-1769875994:
+      type: object
+      properties:
+        createdDate:
+          type: string
+          description: The creation date.
+        code:
+          type: string
+          description: The environment code.
+        lastModifiedDate:
+          type: string
+          description: The date of the last modification.
+        createdBy:
+          type: string
+          description: The creator.
+        lastModifiedBy:
+          type: string
+          description: The last modifier.
+        name:
+          type: string
+          description: The environment name.
+        description:
+          type: string
+          description: The environment description.
+    lygeum-api-environments-1799074867:
+      type: array
+      items:
+        type: object
+        properties:
+          createdDate:
+            type: string
+            description: The creation date.
+          code:
+            type: string
+            description: The environment code.
+          lastModifiedDate:
+            type: string
+            description: The date of the last modification.
+          createdBy:
+            type: string
+            description: The creator.
+          lastModifiedBy:
+            type: string
+            description: The last modifier.
+          name:
+            type: string
+            description: The environment name.
+          description:
+            type: string
+            description: The environment description.
+    lygeum-api-environments-code-1093538149:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The reason code.
+        message:
+          type: string
+          description: The message.
     lygeum-api-applications-782445632:
       type: array
       items:
@@ -167,7 +475,7 @@ components:
           description:
             type: string
             description: The application description.
-    lygeum-api-applications-486549215:
+    lygeum-api-environments-486549215:
       type: object
   securitySchemes:
     oauth2:

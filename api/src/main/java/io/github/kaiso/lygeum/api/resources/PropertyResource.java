@@ -1,132 +1,169 @@
 package io.github.kaiso.lygeum.api.resources;
 
+import java.time.LocalDateTime;
+import java.util.Map.Entry;
+
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class PropertyResource {
 
-	private String code;
-	@NotBlank
-	private String name;
-	private String description;
-	private String value;
+  private String code;
+  @NotBlank private String name;
+  private String description;
+  private String value;
 
-	@JsonIgnore
-	private String appCode;
-	@JsonIgnore
-	private String envCode;
+  @JsonIgnore private String appCode;
+  @JsonIgnore private String envCode;
 
-	public PropertyResource() {
-		super();
-	}
+  private LocalDateTime lastModifiedDate;
 
-	private PropertyResource(String code, String name, String description, String value, String appCode,
-			String envCode) {
-		super();
-		this.code = code;
-		this.name = name;
-		this.description = description;
-		this.value = value;
-		this.appCode = appCode;
-		this.envCode = envCode;
-	}
+  private String lastModifiedBy;
 
-	public String getCode() {
-		return code;
-	}
+  public PropertyResource() {
+    super();
+  }
 
-	public String getAppCode() {
-		return appCode;
-	}
+  private PropertyResource(
+      String code,
+      String name,
+      String description,
+      String value,
+      String appCode,
+      String envCode,
+      LocalDateTime lastModifiedDate,
+      String lastModifiedBy) {
+    super();
+    this.code = code;
+    this.name = name;
+    this.description = description;
+    this.value = value;
+    this.appCode = appCode;
+    this.envCode = envCode;
+    this.lastModifiedDate = lastModifiedDate;
+    this.lastModifiedBy = lastModifiedBy;
+  }
 
-	public String getEnvCode() {
-		return envCode;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+  public String getAppCode() {
+    return appCode;
+  }
 
-	public void setAppCode(String appCode) {
-		this.appCode = appCode;
-	}
+  public String getEnvCode() {
+    return envCode;
+  }
 
-	public void setEnvCode(String envCode) {
-		this.envCode = envCode;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public void setAppCode(String appCode) {
+    this.appCode = appCode;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setEnvCode(String envCode) {
+    this.envCode = envCode;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getValue() {
-		return value;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public static PropertyResourceBuilder builder() {
-		return new PropertyResourceBuilder();
-	}
+  public String getValue() {
+    return value;
+  }
 
-	public static class PropertyResourceBuilder {
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-		private String code;
-		private String name;
-		private String description;
-		private String value;
-		private String appCode;
-		private String envCode;
+  public LocalDateTime getLastModifiedDate() {
+    return lastModifiedDate;
+  }
 
-		public PropertyResourceBuilder withCode(String code) {
-			this.code = code;
-			return this;
-		}
+  public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+    this.lastModifiedDate = lastModifiedDate;
+  }
 
-		public PropertyResourceBuilder withAppCode(String appCode) {
-			this.appCode = appCode;
-			return this;
-		}
+  public String getLastModifiedBy() {
+    return lastModifiedBy;
+  }
 
-		public PropertyResourceBuilder withEnvCode(String envCode) {
-			this.envCode = envCode;
-			return this;
-		}
+  public void setLastModifiedBy(String lastModifiedBy) {
+    this.lastModifiedBy = lastModifiedBy;
+  }
 
-		public PropertyResourceBuilder withName(String name) {
-			this.name =  name;
-			return this;
-		}
+  public static PropertyResourceBuilder builder() {
+    return new PropertyResourceBuilder();
+  }
 
-		public PropertyResourceBuilder withDescription(String description) {
-			this.description = description;
-			return this;
-		}
+  public static class PropertyResourceBuilder {
 
-		public PropertyResourceBuilder withValue(String value) {
-			this.value = value;
-			return this;
-		}
+    private String code;
+    private String name;
+    private String description;
+    private String value;
+    private String appCode;
+    private String envCode;
+    private LocalDateTime lastModifiedDate;
+    private String lastModifiedBy;
 
-		public PropertyResource build() {
-			return new PropertyResource(code, name, description, value, appCode, envCode);
-		}
+    public PropertyResourceBuilder withCode(String code) {
+      this.code = code;
+      return this;
+    }
 
-	}
+    public PropertyResourceBuilder withAppCode(String appCode) {
+      this.appCode = appCode;
+      return this;
+    }
 
+    public PropertyResourceBuilder withEnvCode(String envCode) {
+      this.envCode = envCode;
+      return this;
+    }
+
+    public PropertyResourceBuilder withName(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public PropertyResourceBuilder withDescription(String description) {
+      this.description = description;
+      return this;
+    }
+
+    public PropertyResourceBuilder withValue(String value) {
+      this.value = value;
+      return this;
+    }
+
+    public PropertyResourceBuilder withLastModifiedInformation(
+        Entry<String, LocalDateTime> lastModifiedInfo) {
+      this.lastModifiedBy = lastModifiedInfo.getKey();
+      this.lastModifiedDate = lastModifiedInfo.getValue();
+      return this;
+    }
+
+    public PropertyResource build() {
+      return new PropertyResource(
+          code, name, description, value, appCode, envCode, lastModifiedDate, lastModifiedBy);
+    }
+  }
 }
