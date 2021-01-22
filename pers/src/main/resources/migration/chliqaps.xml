@@ -15,4 +15,7 @@
     <include file="migration/v0.0.1/10-property_value.sql"/>
     <include file="migration/v0.0.1/11-client.sql"/>
     <include file="migration/v0.0.1/12-client_role.sql"/>
+    <!-- v1.0.1 -->
+    <include file="migration/v1.0.1/13-commit.sql"/>
+    <include file="migration/v1.0.1/14-commit-property.sql"/>
 </databaseChangeLog>

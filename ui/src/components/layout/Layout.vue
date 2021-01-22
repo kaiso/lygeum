@@ -129,7 +129,7 @@
       </v-container>
     </v-content>
     <v-footer app fixed style="flex-direction:column;">
-      <span style="align-self:center;height:100%;line-height:37px">&copy;  Kais OMRI 2020</span>
+      <span style="align-self:center;height:100%;line-height:37px">Copyright {{ $t('lygeum.copyright') }}</span>
     </v-footer>
   </div>
 </template>

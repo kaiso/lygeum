@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.github.kaiso.lygeum.persistence.repositories;
+package io.github.kaiso.lygeum.persistence.repositories.base;
 
 import java.util.stream.Stream;
 

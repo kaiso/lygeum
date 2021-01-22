@@ -1,0 +1,25 @@
+{
+    "editor.tabSize": 2,
+    "javascript.preferences.quoteStyle": "single",
+    "javascript.suggest.completeFunctionCalls": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": false,
+    "breadcrumbs.enabled": true,
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.codeActionsOnSave": {
+        // For ESLint
+				"source.fixAll.eslint": true,
+				"source.organizeImports": true,
+				
+
+    }
+  },
+  "files.associations": {
+		"*.js": "javascript"
+	},
+"editor.detectIndentation": false,
+"prettier.singleQuote": true,
+"editor.formatOnSaveMode": "modifications",
+"prettier.trailingComma": "none",
+}

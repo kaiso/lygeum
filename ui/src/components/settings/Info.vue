@@ -27,7 +27,7 @@
             <div><pre>
             {{ $t('settings.version') }} : {{ sysInfo.version }}</pre></div>
             <h5><pre>
-              Copyright &copy; Kais OMRI 2020</pre></h5>
+              Copyright {{ $t('lygeum.copyright') }}</pre></h5>
           </div>
         </v-card-title>
       </v-card>

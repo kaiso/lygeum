@@ -87,6 +87,7 @@
             </v-btn>
             <span>{{$t('props.actions.add_tooltip')}}</span>
           </v-tooltip>
+          <aps-chistory-menu :env="selectedEnv" :app="selectedApp" :random="historyMenuRandom"></aps-chistory-menu>
           <span v-if="lastUpdatedInfo.date">{{$t('generic.lastModifiedOn')}} {{lastUpdatedInfo.date}} {{$t('generic.by')}} {{lastUpdatedInfo.user}}</span>
           <v-spacer></v-spacer>
           <span class="aps-input-container">
@@ -200,6 +201,7 @@
 <script>
 
 import Layout from '@/components/layout/Layout'
+import CommitHistoryMenu from '@/components/config/CommitHistoryMenu'
 import * as api from '@/js/api/api'
 import * as tableUtils from '@/js/util/tableUtils'
 import Vue from 'vue'
@@ -209,7 +211,7 @@ const DELETE_PROP = 'deleteAppProperty'
 
 export default {
   name: 'appconfig-component',
-  components: { 'aps-layout': Layout },
+  components: { 'aps-layout': Layout, 'aps-chistory-menu': CommitHistoryMenu },
   data: () => ({
     loadingApps: false,
     loadingProps: false,
@@ -231,7 +233,8 @@ export default {
     selectedEnv: {},
     selectedApp: {},
     appProperties: [],
-    filter: null
+    filter: null,
+    historyMenuRandom: null
   }),
   mounted: function () {
     this.loadEnvs()
@@ -341,6 +344,7 @@ export default {
         })
       }).finally(() => {
         this.loadingProps = false
+        this.historyMenuRandom = Math.random()
       })
     },
     validate() {

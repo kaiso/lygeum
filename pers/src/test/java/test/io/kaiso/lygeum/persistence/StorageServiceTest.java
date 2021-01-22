@@ -16,7 +16,13 @@ package test.io.kaiso.lygeum.persistence;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
+import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
+import io.github.kaiso.lygeum.core.entities.PropertyEntity;
+import io.github.kaiso.lygeum.core.spi.StorageService;
+import io.github.kaiso.lygeum.core.spi.VersionningService;
+import mockit.Injectable;
+import test.io.kaiso.lygeum.persistence.config.BasePersistenceTest;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,30 +31,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import javax.transaction.Transactional;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
-import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
-import io.github.kaiso.lygeum.core.entities.PropertyEntity;
-import io.github.kaiso.lygeum.core.spi.StorageService;
-import test.io.kaiso.lygeum.persistence.config.BasePersistenceTest;
 
 /** @author Kais OMRI (kaiso) */
 public class StorageServiceTest extends BasePersistenceTest {
 
   @Autowired private StorageService storageService;
 
+  @Injectable private VersionningService versionningService;
+
   private ApplicationEntity app1;
   private EnvironmentEntity env1;
 
   @BeforeEach
   public void setUp() {
+
     ApplicationEntity app = new ApplicationEntity();
     app.setDescription("application 1");
     app.setName("APPONE");
@@ -147,8 +148,7 @@ public class StorageServiceTest extends BasePersistenceTest {
     props.put("key-2", "value-2");
     storageService.storeProperties(newEnv.getCode(), app1.getCode(), props);
     Collection<PropertyEntity> result =
-        storageService.findPropertiesByEnvironmentAndApplication(
-            env1.getCode(), app1.getCode());
+        storageService.findPropertiesByEnvironmentAndApplication(env1.getCode(), app1.getCode());
     assertEquals(1, result.size());
     assertEquals(
         "value",
@@ -163,8 +163,7 @@ public class StorageServiceTest extends BasePersistenceTest {
   @Test
   public void should_store_properties() {
     Collection<PropertyEntity> result =
-        storageService.findPropertiesByEnvironmentAndApplication(
-            env1.getCode(), app1.getCode());
+        storageService.findPropertiesByEnvironmentAndApplication(env1.getCode(), app1.getCode());
     assertEquals(1, result.size());
     assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
     assertEquals(
@@ -181,8 +180,7 @@ public class StorageServiceTest extends BasePersistenceTest {
     props.put("key-spec", "value-spec");
     storageService.storeProperties(env1.getCode(), app1.getCode(), props);
     result =
-        storageService.findPropertiesByEnvironmentAndApplication(
-            env1.getCode(), app1.getCode());
+        storageService.findPropertiesByEnvironmentAndApplication(env1.getCode(), app1.getCode());
     assertEquals(1, result.size());
     List<String> keyvaluecouples =
         result.stream().map(p -> p.getName() + p.getValue()).collect(Collectors.toList());
@@ -193,8 +191,7 @@ public class StorageServiceTest extends BasePersistenceTest {
   public void should_store_properties_isolated_environments() {
 
     Collection<PropertyEntity> result =
-        storageService.findPropertiesByEnvironmentAndApplication(
-            env1.getCode(), app1.getCode());
+        storageService.findPropertiesByEnvironmentAndApplication(env1.getCode(), app1.getCode());
     assertEquals(1, result.size());
     assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
     assertEquals(
@@ -218,8 +215,7 @@ public class StorageServiceTest extends BasePersistenceTest {
 
     // old env does not change
     result =
-        storageService.findPropertiesByEnvironmentAndApplication(
-            env1.getCode(), app1.getCode());
+        storageService.findPropertiesByEnvironmentAndApplication(env1.getCode(), app1.getCode());
     assertEquals(1, result.size());
     assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
     assertEquals(
@@ -235,8 +231,7 @@ public class StorageServiceTest extends BasePersistenceTest {
 
     // new env with different value
     result =
-        storageService.findPropertiesByEnvironmentAndApplication(
-            newEnv.getCode(), app1.getCode());
+        storageService.findPropertiesByEnvironmentAndApplication(newEnv.getCode(), app1.getCode());
     assertEquals(1, result.size());
     assertEquals("key", result.stream().collect(Collectors.toList()).get(0).getName());
     assertEquals(
@@ -254,8 +249,7 @@ public class StorageServiceTest extends BasePersistenceTest {
   @Test
   public void should_update_properties() {
     Collection<PropertyEntity> result =
-        storageService.findPropertiesByEnvironmentAndApplication(
-            env1.getCode(), app1.getCode());
+        storageService.findPropertiesByEnvironmentAndApplication(env1.getCode(), app1.getCode());
 
     PropertyEntity toUpdate =
         PropertyEntity.builder()
@@ -269,8 +263,7 @@ public class StorageServiceTest extends BasePersistenceTest {
 
     storageService.updateProperties(Collections.singletonList(toUpdate));
     result =
-        storageService.findPropertiesByEnvironmentAndApplication(
-            env1.getCode(), app1.getCode());
+        storageService.findPropertiesByEnvironmentAndApplication(env1.getCode(), app1.getCode());
     assertEquals(1, result.size());
     assertEquals("new-key", result.stream().collect(Collectors.toList()).get(0).getName());
     assertEquals(

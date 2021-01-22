@@ -15,33 +15,6 @@ package test.io.github.kaiso.lygeum.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import io.github.kaiso.lygeum.api.PropertiesController;
 import io.github.kaiso.lygeum.api.handler.GlobalControllerExceptionHandler;
 import io.github.kaiso.lygeum.api.resources.PropertyResource;
@@ -54,13 +27,37 @@ import io.github.kaiso.lygeum.core.manager.PropertiesManager;
 import io.github.kaiso.lygeum.core.manager.impl.PropertiesManagerImpl;
 import io.github.kaiso.lygeum.core.properties.PropertiesMediaType;
 import io.github.kaiso.lygeum.core.security.AuthorizationManager;
+import io.github.kaiso.lygeum.core.security.SecurityContextHolder;
 import io.github.kaiso.lygeum.core.spi.StorageService;
+import io.github.kaiso.lygeum.core.spi.VersionningService;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import mockit.integration.springframework.FakeBeanFactory;
 import test.io.github.kaiso.lygeum.api.config.ApiTestConfig;
 import test.io.github.kaiso.lygeum.api.util.PrintUtils;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /** @author Kais OMRI (kaiso) */
 @ExtendWith({RestDocumentationExtension.class})
@@ -68,16 +65,19 @@ import test.io.github.kaiso.lygeum.api.util.PrintUtils;
 @AutoConfigureRestDocs
 public class PropertiesControllerTest {
 
-
   private PropertiesManager propertiesManager;
 
   @Mocked private StorageService storageService;
+
+  @Mocked private VersionningService versionningService;
 
   private MockMvc mockMvc;
 
   @Mocked private EnvironmentsManager environmentsManager;
 
   @Mocked private ApplicationsManager applicationsManager;
+  
+  @Mocked private SecurityContextHolder securityContextHolder;
 
   @BeforeAll
   public static void applySpringIntegration() {
@@ -86,7 +86,7 @@ public class PropertiesControllerTest {
 
   @BeforeEach
   public void setup() {
-    propertiesManager = new PropertiesManagerImpl(storageService);
+    propertiesManager = new PropertiesManagerImpl(storageService, versionningService, securityContextHolder);
     mockMvc =
         MockMvcBuilders.standaloneSetup(
                 new PropertiesController(
@@ -172,7 +172,7 @@ public class PropertiesControllerTest {
       {
         assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
         List<PropertyEntity> calledList;
-        propertiesManager.updateProperties(calledList = withCapture());
+        storageService.updateProperties(calledList = withCapture());
         assertEquals(calledList.get(0).getCode(), r.getCode());
         assertEquals(calledList.get(0).getApplication().getCode(), "application");
       }
@@ -410,7 +410,7 @@ public class PropertiesControllerTest {
       {
         String env;
         Map<String, String> map;
-        propertiesManager.storeProperties(env = withCapture(), anyString, map = withCapture());
+        storageService.storeProperties(env = withCapture(), anyString, map = withCapture());
         assertTrue(HttpStatus.valueOf(result.getResponse().getStatus()).is2xxSuccessful());
         assertEquals(env, "prod");
         assertEquals(map.size(), 4);

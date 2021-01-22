@@ -103,4 +103,9 @@ public class UsersManagerImpl implements UsersManager {
 		storageService.deleteUserByCode(code);
 	}
 
+  @Override
+  public List<User> findUsersByPattern(String search) {
+    return storageService.findUsersByPattern(search);
+  }
+
 }

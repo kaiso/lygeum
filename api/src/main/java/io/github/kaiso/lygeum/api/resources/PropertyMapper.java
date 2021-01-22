@@ -2,7 +2,6 @@ package io.github.kaiso.lygeum.api.resources;
 
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
@@ -48,12 +47,11 @@ public final class PropertyMapper {
 
   private static Entry<String, LocalDateTime> mapLastModifiedInformation(PropertyEntity r) {
     String user = r.getLastModifiedBy().orElse("");
-    LocalDateTime date = r.getLastModifiedDate().isPresent() ? r.getLastModifiedDate().get() : null;
+    LocalDateTime date = r.getLastModifiedDate().orElse(null);
 
     if (!r.getValues().isEmpty()) {
       PropertyValueEntity value = r.getValues().iterator().next();
-      if (value.getLastModifiedDate().isPresent()
-          && (date != null || value.getLastModifiedDate().get().isAfter(date))) {
+      if (value.getLastModifiedDate().isPresent()) {
         date = value.getLastModifiedDate().get();
         user = value.getLastModifiedBy().orElse("");
       }

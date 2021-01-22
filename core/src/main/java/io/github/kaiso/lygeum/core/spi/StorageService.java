@@ -120,7 +120,7 @@ public interface StorageService {
 	 */
 	Optional<User> findUserByUsername(String username);
 
-	void deleteProperty(String code, EnvironmentEntity env);
+	void deleteProperty(PropertyEntity prop, String environment);
 
 	Optional<PropertyEntity> findPropertyByCode(String code);
 
@@ -143,5 +143,7 @@ public interface StorageService {
 	Optional<ApplicationEntity> findApplicationByNameOrCode(String application);
 
 	Optional<EnvironmentEntity> findEnvironmentByNameOrCode(String environment);
+
+  List<User> findUsersByPattern(String search);
 
 }

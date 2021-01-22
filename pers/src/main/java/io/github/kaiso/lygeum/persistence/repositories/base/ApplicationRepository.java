@@ -13,24 +13,28 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.github.kaiso.lygeum.persistence.repositories;
+package io.github.kaiso.lygeum.persistence.repositories.base;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import io.github.kaiso.lygeum.core.entities.Client;
+import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
 
 /**
  * @author Kais OMRI (kaiso)
  *
  */
 @Repository
-public interface ClientRepository extends PagingAndSortingRepository<Client, Long>, BaseJpaRepository<Client> {
+public interface ApplicationRepository
+		extends PagingAndSortingRepository<ApplicationEntity, Long>, BaseJpaRepository<ApplicationEntity> {
 
-	@Query("SELECT p FROM Client p")
-	Stream<Client> streamAll();
+	@Query("SELECT p FROM ApplicationEntity p")
+	Stream<ApplicationEntity> streamAll();
+
+	Optional<ApplicationEntity> findByNameOrCode(String name, String code);
 
 }

@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import io.github.kaiso.lygeum.core.entities.Change;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
 
@@ -48,9 +48,11 @@ public interface PropertiesManager {
 	 * @param application
 	 * @param properties
 	 */
-	void updateProperties(List<PropertyEntity> properties);
+	void updateProperties(String environment, String application,List<PropertyEntity> properties);
 
 	void delete(String code, EnvironmentEntity env);
 
 	Optional<PropertyEntity> findByCode(String code);
+	
+	Collection<Change> loadCommitHistory(String environment, String application);
 }

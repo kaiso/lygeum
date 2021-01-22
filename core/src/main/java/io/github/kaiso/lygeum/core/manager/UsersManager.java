@@ -41,4 +41,6 @@ public interface UsersManager extends UserDetailsService{
     public User createUser(User user);
 
     public void deleteUserByCode(String code);
+
+    public List<User> findUsersByPattern(String search);
 }

@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.github.kaiso.lygeum.persistence.repositories;
+package io.github.kaiso.lygeum.persistence.repositories.base;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -36,7 +36,7 @@ public interface PropertyRepository
 
 	Stream<PropertyEntity> findByEnvironmentAndApplicationNamed(String environment, String application);
 	
-	@Query(value = "select p from PropertyEntity p inner join p.application a on a.code=?2 left join fetch p.values q inner join q.environment e where p.name=?1 ")
+	@Query(value = "select p from PropertyEntity p inner join p.application a on a.code=?2 left join fetch p.values q left join q.environment e where p.name=?1 ")
 	Optional<PropertyEntity> findByNameAndApplicationCode(String name, String applicationCode);
 
 	@Query(value = "select p from PropertyEntity p inner join fetch p.application a left join fetch p.values q inner join q.environment e where p.code=?1 ")

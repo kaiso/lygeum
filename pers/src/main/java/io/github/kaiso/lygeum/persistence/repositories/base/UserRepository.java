@@ -13,8 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.github.kaiso.lygeum.persistence.repositories;
+package io.github.kaiso.lygeum.persistence.repositories.base;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -22,19 +23,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
+import io.github.kaiso.lygeum.core.entities.User;
 
 /**
  * @author Kais OMRI (kaiso)
  *
  */
 @Repository
-public interface ApplicationRepository
-		extends PagingAndSortingRepository<ApplicationEntity, Long>, BaseJpaRepository<ApplicationEntity> {
+public interface UserRepository
+	extends PagingAndSortingRepository<User, Long>, BaseJpaRepository<User> {
 
-	@Query("SELECT p FROM ApplicationEntity p")
-	Stream<ApplicationEntity> streamAll();
+    @Query("SELECT p FROM User p")
+    Stream<User> streamAll();
+    
+    Optional<User> findByUsername(String username);
 
-	Optional<ApplicationEntity> findByNameOrCode(String name, String code);
+    @Query("select p from User p where upper(p.firstName) like concat('%', upper(?1), '%') or upper(p.lastName) like concat('%', upper(?1), '%') or upper(p.username) like concat('%', upper(?1), '%')")
+    List<User> findUsersByPattern(String search);
 
 }

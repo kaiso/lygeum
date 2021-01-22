@@ -1,4 +1,4 @@
-package io.github.kaiso.lygeum.persistence.repositories;
+package io.github.kaiso.lygeum.persistence.repositories.base;
 
 import java.util.Optional;
 

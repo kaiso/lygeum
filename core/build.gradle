@@ -1,4 +1,5 @@
 apply plugin : 'java-library'
 dependencies {
   implementation "org.springframework.security.oauth:spring-security-oauth2:${project. 'spring.security.oauth2.version'}"
+  implementation group: 'org.mongodb', name: 'bson', version: '4.1.1'
 }

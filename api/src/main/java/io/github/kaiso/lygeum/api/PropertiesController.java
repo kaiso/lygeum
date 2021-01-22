@@ -38,6 +38,7 @@ import io.github.kaiso.lygeum.api.resources.OperationResult.OperationResultCode;
 import io.github.kaiso.lygeum.api.resources.PropertyMapper;
 import io.github.kaiso.lygeum.api.resources.PropertyResource;
 import io.github.kaiso.lygeum.core.entities.ApplicationEntity;
+import io.github.kaiso.lygeum.core.entities.Change;
 import io.github.kaiso.lygeum.core.entities.EnvironmentEntity;
 import io.github.kaiso.lygeum.core.entities.PropertyEntity;
 import io.github.kaiso.lygeum.core.manager.ApplicationsManager;
@@ -135,6 +136,8 @@ public class PropertiesController extends LygeumRestController {
                     new IllegalArgumentException(
                         "Application not found with code: " + application));
     propertiesManager.updateProperties(
+        env.getCode(),
+        app.getCode(),
         properties
             .parallelStream()
             .map(p -> PropertyMapper.map(p, app, env))
@@ -270,5 +273,16 @@ public class PropertiesController extends LygeumRestController {
             .withCode(OperationResultCode.SUCCESS)
             .withMessage("File successfully submitted")
             .build());
+  }
+  
+  
+  @RequestMapping(method = RequestMethod.GET, path = "/properties/commits", produces = "application/json")
+  public ResponseEntity<Collection<Change>> loadCommitHistory(
+      @RequestParam(name = "env", required = true) String environment,
+      @RequestParam(name = "app", required = true) String application) {
+    AuthorizationManager.preAuthorize(application, environment, AuthorizationAction.READ);
+        
+    return ResponseEntity.ok(propertiesManager
+        .loadCommitHistory(environment, application));
   }
 }

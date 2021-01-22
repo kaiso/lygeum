@@ -43,11 +43,16 @@ pre {
     border: 1px ridge #1a1717;
 }
 
+.footer {
+    background-color: #4E5D6C;
+    color: #f5eaea;
+}
+
 .highlight .nt {
     color: #34cc3e;
 }
 
-.nav > li span {
+.nav>li span {
     display: flex;
     justify-content: center;
     align-items: center;
